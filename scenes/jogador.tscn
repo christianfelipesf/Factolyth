@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b8oku6opv2bq" path="res://scripts/jogador.gd" id="1_uahlj"]
 [ext_resource type="Texture2D" uid="uid://bdn21qkvr6opd" path="res://images/criatura.png" id="1_vwxko"]
-[ext_resource type="PackedScene" uid="uid://cp36x28u6o7iv" path="res://scenes/broca.tscn" id="2_g1ob3"]
+[ext_resource type="PackedScene" uid="uid://cp36x28u6o7iv" path="res://scenes/posicionaveis/broca.tscn" id="2_g1ob3"]
 [ext_resource type="Texture2D" uid="uid://cml6qdh5fisyv" path="res://images/target_round_b.png" id="4_qcln2"]
 [ext_resource type="Shader" uid="uid://cxfqaxiy367r1" path="res://scripts/cursor.gdshader" id="4_s760d"]
 

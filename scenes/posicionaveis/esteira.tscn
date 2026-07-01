@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://d0v82jkqbhyw5"]
+
+[node name="Esteira" type="Node2D" unique_id=352686121]
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=1059485709]
