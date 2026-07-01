@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://ipe32kmj2hky"]
+
+[ext_resource type="PackedScene" uid="uid://cp36x28u6o7iv" path="res://scenes/broca.tscn" id="1_0vka0"]
+[ext_resource type="PackedScene" uid="uid://cp6y5ftt0rtb" path="res://scenes/tilesets.tscn" id="1_wqn8j"]
+[ext_resource type="PackedScene" uid="uid://bemv5lqoxi88n" path="res://scenes/jogador.tscn" id="2_a2ps7"]
+
+[node name="Mundo" type="Node2D" unique_id=1419332585]
+
+[node name="Mapa" parent="." unique_id=1582223863 instance=ExtResource("1_wqn8j")]
+
+[node name="Jogador" parent="." unique_id=1832973260 instance=ExtResource("2_a2ps7")]
+
+[node name="Broca" parent="." unique_id=2048994282 instance=ExtResource("1_0vka0")]
+position = Vector2(79, 225)

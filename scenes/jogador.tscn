@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://bemv5lqoxi88n"]
+
+[ext_resource type="Script" uid="uid://b8oku6opv2bq" path="res://scripts/jogador.gd" id="1_uahlj"]
+[ext_resource type="Texture2D" uid="uid://bdn21qkvr6opd" path="res://images/criatura.png" id="1_vwxko"]
+[ext_resource type="PackedScene" uid="uid://cp36x28u6o7iv" path="res://scenes/broca.tscn" id="2_g1ob3"]
+[ext_resource type="Texture2D" uid="uid://cml6qdh5fisyv" path="res://images/target_round_b.png" id="4_qcln2"]
+[ext_resource type="Shader" uid="uid://cxfqaxiy367r1" path="res://scripts/cursor.gdshader" id="4_s760d"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_uahlj"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_32758"]
+shader = ExtResource("4_s760d")
+shader_parameter/velocidade_pulsar = 3.0
+shader_parameter/intensidade_pulso = 0.05
+shader_parameter/brilho_borda = 1.5
+
+[node name="Jogador" type="Node2D" unique_id=1832973260]
+
+[node name="player" type="CharacterBody2D" parent="." unique_id=1088754334]
+script = ExtResource("1_uahlj")
+MIN_ZOOM = 0.7
+MAX_ZOOM = 1.4
+ZOOM_STEP = 0.5
+CENA_BROCA = ExtResource("2_g1ob3")
+
+[node name="Sprite2D" type="Sprite2D" parent="player" unique_id=101199477]
+rotation = 1.5707964
+texture = ExtResource("1_vwxko")
+vframes = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="player" unique_id=1700214607]
+shape = SubResource("CircleShape2D_uahlj")
+
+[node name="Camera2D" type="Camera2D" parent="player" unique_id=1239451589]
+position_smoothing_enabled = true
+
+[node name="Marker2D" type="Marker2D" parent="player" unique_id=1326570300]
+position = Vector2(88, 61)
+
+[node name="Sprite2D" type="Sprite2D" parent="player/Marker2D" unique_id=2143726212]
+material = SubResource("ShaderMaterial_32758")
+texture = ExtResource("4_qcln2")

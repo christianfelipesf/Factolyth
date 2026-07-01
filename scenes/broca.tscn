@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://cp36x28u6o7iv"]
+
+[ext_resource type="Script" uid="uid://cm1icmsbkfx1l" path="res://scripts/broca.gd" id="1_4o6is"]
+[ext_resource type="Texture2D" uid="uid://cgr8gho8nwgyy" path="res://images/britadeira.png" id="1_y5yqx"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4o6is"]
+atlas = ExtResource("1_y5yqx")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ppthj"]
+atlas = ExtResource("1_y5yqx")
+region = Rect2(0, 32, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_rhn81"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4o6is")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ppthj")
+}],
+"loop": true,
+"name": &"default",
+"speed": 6.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5fm0o"]
+size = Vector2(32, 32)
+
+[node name="Broca" type="Node2D" unique_id=2048994282]
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=507273594]
+script = ExtResource("1_4o6is")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="StaticBody2D" unique_id=1923068045]
+sprite_frames = SubResource("SpriteFrames_rhn81")
+autoplay = "default"
+frame_progress = 0.6490111
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=1990728668]
+shape = SubResource("RectangleShape2D_5fm0o")
