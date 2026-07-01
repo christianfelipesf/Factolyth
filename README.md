@@ -1,23 +1,56 @@
-Projeto de factorio modular
+# Factolyth
 
--- FOCO EM AUTOMAÇÃO E TOWER DEFENSE
+> Um jogo de automação modular e tower defense desenvolvido na Godot Engine.
 
--- JOGABILIDADE SUAVE
+---
 
--- INIMIGOS E ADAPTACAO
+## Sobre o jogo
 
-Historia resumida do game um mini robo organico usa um teleportador quantico que o leva pra um planeta desconhecido
+Um mini robô orgânico usa um teleportador quântico que o leva para um planeta desconhecido. Agora você precisa minerar, automatizar e se defender para construir um novo teleportador e voltar para casa.
 
+---
 
-## ELEMENTOS
+## Características
 
-1 Planeta
+- **Automação e Tower Defense** — Construa esteiras, britadeiras e torres automatizadas enquanto enfrenta inimigos.
+- **Jogabilidade suave** — Movimentação responsiva e controles intuitivos.
+- **Inimigos adaptativos** — Criaturas que evoluem e se adaptam ao seu progresso.
 
-1 inimigo
+---
 
-3 minerios
+## Elementos do jogo
 
-Bronze, Ferro, Cloropyte
+| Item           | Descrição                     |
+|----------------|-------------------------------|
+| Planeta        | 1 mapa gerado                 |
+| Inimigo        | 1 tipo de criatura            |
+| Minérios       | Bronze, Ferro, Cloropyte      |
+
+---
 
 ## Objetivo
-Contruir um teleportador quantico e voltar para casa
+
+Construir um teleportador quântico e voltar para casa.
+
+---
+
+## Tecnologias
+
+- **Engine:** Godot 4.6
+- **Linguagem:** GDScript
+- **Renderização:** GL Compatibility
+- **Física:** Jolt Physics 3D
+
+---
+
+## Como jogar
+
+1. Clone o repositório
+2. Abra o projeto na Godot Engine 4.6+
+3. Execute a cena principal (`main.tscn`)
+
+---
+
+## Licença
+
+Distribuído sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais informações.
