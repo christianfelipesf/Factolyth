@@ -11,13 +11,38 @@ const ROTATION_SPEED = 10.0
 @export var ZOOM_SPEED := 5.0     
 @export var ZOOM_STEP := 0.05     
 
-# --- 🌟 NOVAS CONFIGURAÇÕES MODULARES DE CONSTRUÇÃO ---
-@export var recurso_esteira: ItemConstrucao
-@export var recurso_broca: ItemConstrucao
+# --- 🌟 ITENS CONSTRUÍVEIS (carregados automaticamente de res://scenes/posicionaveis/) ---
+var _itens_construcao: Array[ItemConstrucao] = []
+var _indice_item_atual: int = -1
 
 @onready var target_zoom_value: float = (MIN_ZOOM + MAX_ZOOM) / 2.0
 @onready var camera: Camera2D = $Camera2D 
-@onready var marker: Marker2D = $Marker2D # Pega a referência do seu cursor modular
+@onready var marker: Marker2D = $Marker2D
+
+func _ready() -> void:
+	carregar_itens_construcao()
+
+func carregar_itens_construcao() -> void:
+	var dir = DirAccess.open("res://scenes/posicionaveis/")
+	if dir == null:
+		push_error("Não foi possível abrir res://scenes/posicionaveis/")
+		return
+	dir.list_dir_begin()
+	var nome_arquivo = dir.get_next()
+	while nome_arquivo != "":
+		if nome_arquivo.ends_with(".tscn") and not nome_arquivo.begins_with("."):
+			var caminho = "res://scenes/posicionaveis/" + nome_arquivo
+			var cena = load(caminho) as PackedScene
+			if cena != null:
+				var item = ItemConstrucao.new()
+				item.nome = nome_arquivo.replace(".tscn", "").capitalize()
+				item.cena_objeto = cena
+				item.compensar_rotacao_90 = false
+				_itens_construcao.append(item)
+		nome_arquivo = dir.get_next()
+	dir.list_dir_end()
+	if _itens_construcao.is_empty():
+		push_error("Nenhum item construível encontrado em res://scenes/posicionaveis/")
 
 func _physics_process(delta: float) -> void:
 	# 1. Movimento e Direção da Nave
@@ -50,13 +75,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			target_zoom_value -= ZOOM_STEP
 		target_zoom_value = clamp(target_zoom_value, MIN_ZOOM, MAX_ZOOM)
 
-	# [🌟 SELEÇÃO DOS ITENS VIA RECURSOS]
-	# Certifique-se de que esses nomes de Input Actions ("selecionar_esteira", etc.) 
-	# batem com o que você configurou no seu Input Map!
-	if event.is_action_pressed("selecionar_esteira") and recurso_esteira != null:
-		marker.equipar_item(recurso_esteira)
-		print("Modular: Esteira equipada no cursor.")
-		
-	elif event.is_action_pressed("selecionar_broca") and recurso_broca != null:
-		marker.equipar_item(recurso_broca)
-		print("Modular: Broca equipada no cursor.")
+	# [🌟 CICLO DE ITENS COM E]
+	if event.is_action_pressed("interact"):
+		if _itens_construcao.is_empty():
+			return
+		_indice_item_atual = (_indice_item_atual + 1) % _itens_construcao.size()
+		var item = _itens_construcao[_indice_item_atual]
+		marker.equipar_item(item)
+		print("🔧 Item selecionado: ", item.nome)

@@ -74,13 +74,16 @@ Adicione via `add_to_group("nome")` no `_ready()` ou no editor Godot.
 
 ---
 
-## Fluxo de Seleção de Item (Teclas 1 / 2)
+## Fluxo de Seleção de Item (Tecla E)
+
+Os itens construíveis são carregados **automaticamente** de `res://scenes/posicionaveis/` em `jogador.gd:carregar_itens_construcao()`. Cada arquivo `.tscn` na pasta vira um `ItemConstrucao` com nome derivado do nome do arquivo.
 
 ```
-Tecla 1 → jogador.gd:_unhandled_input()
-         → marker.equipar_item(recurso_esteira)
+Tecla E → jogador.gd:_unhandled_input()
+         → _indice_item_atual = (_indice_item_atual + 1) % _itens_construcao.size()
+         → marker.equipar_item(item)
          → cursor.gd:equipar_item()
-             → item_atual = recurso_esteira
+             → item_atual = item
              → rotation_atual = 0
              → _atualizar_preview_visual()
                  → remove preview antigo
@@ -90,10 +93,10 @@ Tecla 1 → jogador.gd:_unhandled_input()
                  → alpha 0.4, aplica rotação
                  → adiciona como filho do Marker2D
 
-Tecla 2 → mesmo fluxo com recurso_broca
+Tecla 0 → cursor.gd:_unhandled_input() → desequipar_item()
 ```
 
-Os recursos são atribuídos ao jogador via Inspector em `jogador.tscn` como `SubResource` inline (não arquivos `.tres` externos).
+Não é mais necessário configurar recursos no Inspector. Basta adicionar a cena em `res://scenes/posicionaveis/` que o jogo a detecta automaticamente.
 
 ---
 
@@ -294,8 +297,9 @@ Node2D ("Jogador")
 - Movimento 8-directional com WASD (aceleração/atrito)
 - Rotação suave da nave na direção do movimento
 - Zoom com scroll do mouse (min 0.5–0.7, max 1.4–1.5)
-- Teclas 1/2 chamam `marker.equipar_item(recurso)` passando os `ItemConstrucao`
-- Os recursos (SubResources) são configurados inline no `jogador.tscn`, não em arquivos `.tres` externos (os arquivos em `recurso/` estão desatualizados/sem `cena_objeto`)
+- Tecla **E** cicla entre os itens construíveis carregados de `res://scenes/posicionaveis/`
+- Tecla **0** cancela/desequipa o item selecionado
+- Os `ItemConstrucao` são criados dinamicamente em `carregar_itens_construcao()` — não use SubResources ou arquivos `.tres` para isso
 
 ---
 
@@ -350,8 +354,7 @@ Ações existentes (configuradas em `project.godot`):
 | `interact` | E |
 | `instanciar_objeto` | Mouse 1 |
 | `remover_objeto` | Mouse 2 |
-| `selecionar_esteira` | 1 |
-| `selecionar_broca` | 2 |
+| `interact` | E (cicla entre itens construíveis) |
 | `cancelar_construcao` | 0 |
 | `rotacionar_objeto` | R |
 

@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://cp36x28u6o7iv" path="res://scenes/posicionaveis/broca.tscn" id="1_0vka0"]
 [ext_resource type="PackedScene" uid="uid://cp6y5ftt0rtb" path="res://scenes/tilesets.tscn" id="1_wqn8j"]
 [ext_resource type="PackedScene" uid="uid://bemv5lqoxi88n" path="res://scenes/jogador.tscn" id="2_a2ps7"]
-[ext_resource type="PackedScene" uid="uid://hf2slnik78ij" path="res://scenes/nucleo.tscn" id="4_yi5ae"]
+[ext_resource type="PackedScene" uid="uid://hf2slnik78ij" path="res://scenes/posicionaveis/nucleo.tscn" id="4_yi5ae"]
 
 [node name="Mundo" type="Node2D" unique_id=1419332585]
 
@@ -16,3 +16,5 @@ position = Vector2(79, 225)
 
 [node name="Nucleo" parent="." unique_id=1060668434 instance=ExtResource("4_yi5ae")]
 position = Vector2(377, 76)
+collision_layer = 4
+collision_mask = 16
