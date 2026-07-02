@@ -7,6 +7,7 @@ var _loading: Node = null
 const CENA_CARREGANDO := preload("res://scenes/carregando.tscn")
 
 func _ready() -> void:
+	process_mode = PROCESS_MODE_ALWAYS
 	DirAccess.make_dir_recursive_absolute(DIR_SAVES)
 	print("SaveManager pronto — F5=salvar, F9=carregar, F12=deletar saves")
 
@@ -82,17 +83,23 @@ func deletar_todos_saves() -> void:
 func mostrar_carregando() -> void:
 	if _loading != null:
 		return
-	var tela := CENA_CARREGANDO.instantiate()
 	var layer := CanvasLayer.new()
 	layer.layer = 128
+	var fundo := ColorRect.new()
+	fundo.color = Color(0, 0, 0, 0.9)
+	fundo.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	layer.add_child(fundo)
+	var tela := CENA_CARREGANDO.instantiate()
 	layer.add_child(tela)
 	_loading = layer
 	add_child(_loading)
+	get_tree().paused = true
 
 func esconder_carregando() -> void:
 	if _loading != null:
 		_loading.queue_free()
 		_loading = null
+	get_tree().paused = false
 
 func _obter_semente() -> int:
 	var mapa := get_tree().current_scene.get_node_or_null("Mapa")

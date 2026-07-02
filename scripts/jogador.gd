@@ -93,6 +93,7 @@ func get_save_data() -> Dictionary:
 	}
 
 func set_save_data(dados: Dictionary) -> void:
+	velocity = Vector2.ZERO
 	if dados.has("posicao"):
 		var p: Array = dados.posicao
 		global_position = Vector2(p[0], p[1])
