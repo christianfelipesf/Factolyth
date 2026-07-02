@@ -13,6 +13,8 @@ config_version=5
 config/name="Factolyth"
 run/main_scene="uid://ipe32kmj2hky"
 config/features=PackedStringArray("4.6", "GL Compatibility")
+boot_splash/bg_color=Color(0.7919991, 0.79199916, 0.7919991, 1)
+boot_splash/image="uid://bmdbdhjmemmo7"
 config/icon="res://icon.svg"
 config/main_scene="res://scenes/main.tscn"
 
