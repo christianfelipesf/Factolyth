@@ -2,9 +2,15 @@
 
 [ext_resource type="Script" uid="uid://b8oku6opv2bq" path="res://scripts/jogador.gd" id="1_uahlj"]
 [ext_resource type="Texture2D" uid="uid://bdn21qkvr6opd" path="res://images/criatura.png" id="1_vwxko"]
+[ext_resource type="Shader" uid="uid://cy1qxv0cnw1pq" path="res://scenes/jogador.gdshader" id="2_32758"]
 [ext_resource type="Texture2D" uid="uid://cml6qdh5fisyv" path="res://images/target_round_b.png" id="4_qcln2"]
 [ext_resource type="Shader" uid="uid://cxfqaxiy367r1" path="res://scripts/cursor.gdshader" id="4_s760d"]
 [ext_resource type="Script" uid="uid://dbpjo4ncb31jf" path="res://scripts/cursor.gd" id="5_lj65x"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lj65x"]
+shader = ExtResource("2_32758")
+shader_parameter/deslocamento = Vector2(1.8, -2.335)
+shader_parameter/cor_sombra = Color(0, 0, 0, 0.4)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_uahlj"]
 
@@ -29,6 +35,7 @@ MAX_ZOOM = 1.4
 ZOOM_STEP = 0.5
 
 [node name="Sprite2D" type="Sprite2D" parent="player" unique_id=101199477]
+material = SubResource("ShaderMaterial_lj65x")
 rotation = 1.5707964
 texture = ExtResource("1_vwxko")
 vframes = 2
@@ -38,6 +45,7 @@ shape = SubResource("CircleShape2D_uahlj")
 
 [node name="Camera2D" type="Camera2D" parent="player" unique_id=1239451589]
 position_smoothing_enabled = true
+position_smoothing_speed = 8.0
 
 [node name="Marker2D" type="Marker2D" parent="player" unique_id=1326570300]
 position = Vector2(88, 61)

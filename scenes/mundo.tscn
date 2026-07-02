@@ -3,8 +3,19 @@
 [ext_resource type="PackedScene" uid="uid://cp6y5ftt0rtb" path="res://scenes/tilesets.tscn" id="1_wqn8j"]
 [ext_resource type="PackedScene" uid="uid://bemv5lqoxi88n" path="res://scenes/jogador.tscn" id="2_a2ps7"]
 
+[sub_resource type="Environment" id="Environment_a2ps7"]
+background_mode = 3
+glow_enabled = true
+glow_intensity = 0.98
+glow_hdr_threshold = 0.2
+glow_hdr_scale = 2.24
+glow_hdr_luminance_cap = 18.97
+
 [node name="Mundo" type="Node2D" unique_id=1419332585]
 
 [node name="Mapa" parent="." unique_id=1582223863 instance=ExtResource("1_wqn8j")]
 
 [node name="Jogador" parent="." unique_id=1832973260 instance=ExtResource("2_a2ps7")]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=884080138]
+environment = SubResource("Environment_a2ps7")
