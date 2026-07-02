@@ -23,44 +23,17 @@ func _ready() -> void:
 	carregar_itens_construcao()
 
 func carregar_itens_construcao() -> void:
-	var dir = DirAccess.open("res://scenes/posicionaveis/")
-	if dir != null:
-		_carregar_itens_do_dir(dir)
-	else:
-		_carregar_itens_do_manifesto()
-
+	_adicionar_item_com_cena("Broca", _BROCA)
+	_adicionar_item_com_cena("Esteira", _ESTEIRA)
+	_adicionar_item_com_cena("Nucleo", _NUCLEO)
+	_adicionar_item_com_cena("Canhao", _CANHAO)
 	if _itens_construcao.is_empty():
-		push_error("Nenhum item construível encontrado em res://scenes/posicionaveis/")
+		push_error("Nenhum item construível encontrado")
 
-func _carregar_itens_do_dir(dir: DirAccess) -> void:
-	dir.list_dir_begin()
-	var nome_arquivo = dir.get_next()
-	while nome_arquivo != "":
-		if nome_arquivo.ends_with(".tscn") and not nome_arquivo.begins_with("."):
-			_adicionar_item("res://scenes/posicionaveis/" + nome_arquivo, nome_arquivo.replace(".tscn", "").capitalize())
-		nome_arquivo = dir.get_next()
-	dir.list_dir_end()
-
-func _carregar_itens_do_manifesto() -> void:
-	_preloads_fallback()
-	
-const _ITENS_FALLBACK = {
-	"Broca": preload("res://scenes/posicionaveis/broca.tscn"),
-	"Esteira": preload("res://scenes/posicionaveis/esteira.tscn"),
-	"Nucleo": preload("res://scenes/posicionaveis/nucleo.tscn"),
-	"Simplecanon": preload("res://scenes/posicionaveis/simplecanon.tscn"),
-}
-
-func _preloads_fallback() -> void:
-	for nome in _ITENS_FALLBACK:
-		var cena: PackedScene = _ITENS_FALLBACK[nome]
-		_adicionar_item_com_cena(nome, cena)
-
-func _adicionar_item(caminho: String, nome: String) -> void:
-	var cena = load(caminho) as PackedScene
-	if cena == null:
-		return
-	_adicionar_item_com_cena(nome, cena)
+const _BROCA = preload("res://scenes/posicionaveis/broca.tscn")
+const _ESTEIRA = preload("res://scenes/posicionaveis/esteira.tscn")
+const _NUCLEO = preload("res://scenes/posicionaveis/nucleo.tscn")
+const _CANHAO = preload("res://scenes/posicionaveis/simplecanon.tscn")
 
 func _adicionar_item_com_cena(nome: String, cena: PackedScene) -> void:
 	var item = ItemConstrucao.new()
@@ -112,6 +85,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _extrair_tamanho_grid(cena: PackedScene) -> Vector2i:
 	var inst = cena.instantiate()
+	if inst == null:
+		return Vector2i(1, 1)
 	var val = inst.get("TAMANHO_GRID")
 	inst.free()
 	return val if val != null else Vector2i(1, 1)
