@@ -46,7 +46,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # Define o caminho correto apontando para a pasta do HTML exportado
-          path: 'Factolyth/html'
+          path: 'html'
 
       - name: Deploy to GitHub Pages
         id: deployment
