@@ -42,19 +42,27 @@ func _carregar_itens_do_dir(dir: DirAccess) -> void:
 	dir.list_dir_end()
 
 func _carregar_itens_do_manifesto() -> void:
-	var caminhos := PackedStringArray()
-	caminhos.append("res://scenes/posicionaveis/broca.tscn")
-	caminhos.append("res://scenes/posicionaveis/esteira.tscn")
-	caminhos.append("res://scenes/posicionaveis/nucleo.tscn")
-	caminhos.append("res://scenes/posicionaveis/simplecanon.tscn")
-	for caminho in caminhos:
-		var nome_arquivo = caminho.get_file().replace(".tscn", "").capitalize()
-		_adicionar_item(caminho, nome_arquivo)
+	_preloads_fallback()
+	
+const _ITENS_FALLBACK = {
+	"Broca": preload("res://scenes/posicionaveis/broca.tscn"),
+	"Esteira": preload("res://scenes/posicionaveis/esteira.tscn"),
+	"Nucleo": preload("res://scenes/posicionaveis/nucleo.tscn"),
+	"Simplecanon": preload("res://scenes/posicionaveis/simplecanon.tscn"),
+}
+
+func _preloads_fallback() -> void:
+	for nome in _ITENS_FALLBACK:
+		var cena: PackedScene = _ITENS_FALLBACK[nome]
+		_adicionar_item_com_cena(nome, cena)
 
 func _adicionar_item(caminho: String, nome: String) -> void:
 	var cena = load(caminho) as PackedScene
 	if cena == null:
 		return
+	_adicionar_item_com_cena(nome, cena)
+
+func _adicionar_item_com_cena(nome: String, cena: PackedScene) -> void:
 	var item = ItemConstrucao.new()
 	item.nome = nome
 	item.cena_objeto = cena
