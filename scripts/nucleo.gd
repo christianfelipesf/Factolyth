@@ -44,3 +44,10 @@ func _on_coletor_body_entered(body: Node2D) -> void:
 		
 		# 💥 Faz o item ir "para dentro dele" (deleta o objeto do mapa com segurança)
 		body.queue_free()
+
+func get_save_data() -> Dictionary:
+	return {inventario = inventario.duplicate()}
+
+func set_save_data(dados: Dictionary) -> void:
+	if dados.has("inventario"):
+		inventario = dados.inventario.duplicate()

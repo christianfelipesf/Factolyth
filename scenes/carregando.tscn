@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://d3fhctwalthm4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_22due"]
+bg_color = Color(0.13333334, 0.13333334, 0.13333334, 0.6156863)
+
+[node name="Control" type="Control" unique_id=54387847]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = 5.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="." unique_id=1057981368]
+layout_mode = 0
+offset_left = -22.0
+offset_top = -11.0
+offset_right = 18.0
+offset_bottom = 29.0
+scale = Vector2(30.502522, 16.820074)
+theme_override_styles/panel = SubResource("StyleBoxFlat_22due")
+
+[node name="Label" type="Label" parent="." unique_id=1053491120]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 19.0
+offset_bottom = 4.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Carregando..."
+horizontal_alignment = 1
+vertical_alignment = 1

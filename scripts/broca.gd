@@ -79,13 +79,8 @@ func _on_timer_producao_timeout() -> void:
 
 func _spawnar_bronze(esteira: Node2D) -> void:
 	var bronze = BRONZE.instantiate()
-	
-	# Nasce de dentro da broca sem glitch
-	bronze.global_position = global_position
-	get_parent().add_child(bronze)
-
-	# Posiciona na esteira alvo
 	bronze.global_position = esteira.global_position
+	get_parent().call_deferred(&"add_child", bronze)
 	print("🏭 [PRODUÇÃO] Bronze extraído com sucesso para a esteira!")
 
 func _on_detector_body_entered(body: Node2D) -> void:

@@ -113,6 +113,7 @@ func _criar_objeto_posicionavel() -> void:
 	
 	get_tree().current_scene.add_child(novo_objeto)
 	novo_objeto.global_position = global_position
+	novo_objeto.add_to_group("estrutura")
 
 	_ultima_posicao_colocacao = global_position
 

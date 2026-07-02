@@ -83,3 +83,24 @@ func _unhandled_input(event: InputEvent) -> void:
 		var item = _itens_construcao[_indice_item_atual]
 		marker.equipar_item(item)
 		print("🔧 Item selecionado: ", item.nome)
+
+func get_save_data() -> Dictionary:
+	return {
+		posicao = [global_position.x, global_position.y],
+		rotacao = rotation,
+		zoom = target_zoom_value,
+		item_atual = _indice_item_atual
+	}
+
+func set_save_data(dados: Dictionary) -> void:
+	if dados.has("posicao"):
+		var p: Array = dados.posicao
+		global_position = Vector2(p[0], p[1])
+	if dados.has("rotacao"):
+		rotation = dados.rotacao
+	if dados.has("zoom"):
+		target_zoom_value = dados.zoom
+	if dados.has("item_atual"):
+		_indice_item_atual = dados.item_atual
+		if _indice_item_atual >= 0 and _indice_item_atual < _itens_construcao.size():
+			marker.equipar_item(_itens_construcao[_indice_item_atual])
