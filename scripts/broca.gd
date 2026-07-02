@@ -1,6 +1,6 @@
 extends StaticBody2D
 
-const BRONZE = preload("res://scenes/itens/bronze.tscn")
+const BRONZE = preload("res://scenes/itens/itens.tscn")
 
 # 💡 Velocidade de produção configurável pelo Inspetor (em segundos)
 @export var tempo_producao : float = 2.0
@@ -24,6 +24,9 @@ func _ready() -> void:
 	timer_producao.timeout.connect(_on_timer_producao_timeout)
 	
 	print("Broca criada!")
+
+	detector.body_entered.connect(_on_detector_body_entered)
+	detector.body_exited.connect(_on_detector_body_exited)
 
 	# Espera o mapa carregar e liga o ciclo autônomo
 	await get_tree().physics_frame
@@ -84,3 +87,27 @@ func _spawnar_bronze(esteira: Node2D) -> void:
 	# Posiciona na esteira alvo
 	bronze.global_position = esteira.global_position
 	print("🏭 [PRODUÇÃO] Bronze extraído com sucesso para a esteira!")
+
+func _on_detector_body_entered(body: Node2D) -> void:
+	var esteira = _extrair_esteira(body)
+	if esteira != null:
+		esteira_atual = esteira
+		_on_timer_producao_timeout()
+
+func _on_detector_body_exited(body: Node2D) -> void:
+	var esteira = _extrair_esteira(body)
+	if esteira != null and esteira == esteira_atual:
+		esteira_atual = null
+		print("🛑 Broca: Esteira removida. Aguardando nova esteira.")
+
+func _extrair_esteira(body: Node2D) -> Node2D:
+	if body == self:
+		return null
+	if body.is_in_group("esteira"):
+		return body
+	if body.get_parent() and body.get_parent().is_in_group("esteira"):
+		return body.get_parent()
+	return null
+
+func verificar_extrutura_e_atualizar_estado() -> void:
+	esteira_atual = _procurar_esteira_no_chao()

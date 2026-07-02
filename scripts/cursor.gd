@@ -3,34 +3,40 @@ extends Marker2D
 # O cursor agora só se importa com QUAL recurso está ativo
 var item_atual: ItemConstrucao = null
 var rotation_atual: float = 0.0
+var _ultima_posicao_colocacao: Vector2 = Vector2.INF
 
 @onready var camera: Camera2D = $"../Camera2D"
 @onready var area_checagem: Area2D = $AreaChecagem
+
+func _ready() -> void:
+	for filho in get_children():
+		if filho is CanvasItem:
+			filho.z_index = 10
 
 func _physics_process(_delta: float) -> void:
 	global_rotation = 0.0
 	_atualizar_posicao_marker_no_grid()
 	
+	if not Input.is_action_pressed("instanciar_objeto") and not Input.is_action_pressed("remover_objeto"):
+		_ultima_posicao_colocacao = Vector2.INF
+	
 	if item_atual != null:
 		if Input.is_action_pressed("instanciar_objeto"):
-			if not _area_esta_ocupada():
+			if global_position != _ultima_posicao_colocacao and not _area_esta_ocupada():
 				_criar_objeto_posicionavel()
 		elif Input.is_action_pressed("remover_objeto"):
 			_remover_objeto_na_posicao()
-
-	# Mantém o cursor com shader no topo
-	for filho in get_children():
-		if not filho.has_meta("is_construction_preview") and filho is CanvasItem:
-			filho.z_index = 10
 
 # FUNÇÃO PÚBLICA: Chame isso a partir dos seus botões de inventário ou UI!
 func equipar_item(novo_item: ItemConstrucao) -> void:
 	item_atual = novo_item
 	rotation_atual = 0.0
+	_ultima_posicao_colocacao = Vector2.INF
 	_atualizar_preview_visual()
 
 func desequipar_item() -> void:
 	item_atual = null
+	_ultima_posicao_colocacao = Vector2.INF
 	_atualizar_preview_visual()
 
 func _atualizar_posicao_marker_no_grid() -> void:
@@ -50,9 +56,11 @@ func _atualizar_posicao_marker_no_grid() -> void:
 	_gerenciar_cor_do_preview()
 
 func _area_esta_ocupada() -> bool:
-	return area_checagem.has_overlapping_bodies() or area_checagem.has_overlapping_areas()
+	return area_checagem.has_overlapping_bodies()
 
 func _gerenciar_cor_do_preview() -> void:
+	if item_atual == null:
+		return
 	var ocupado = _area_esta_ocupada()
 	for filho in get_children():
 		if filho.has_meta("is_construction_preview"):
@@ -100,27 +108,18 @@ func _criar_objeto_posicionavel() -> void:
 	if "is_preview" in novo_objeto: novo_objeto.is_preview = false
 	if "esta_posicionando" in novo_objeto: novo_objeto.esta_posicionando = false
 		
-	novo_objeto.global_position = $"..".global_position
-	
 	var offset = -90.0 if item_atual.compensar_rotacao_90 else 0.0
 	novo_objeto.global_rotation = deg_to_rad(rotation_atual + offset)
 	
 	get_tree().current_scene.add_child(novo_objeto)
 	novo_objeto.global_position = global_position
 
-	# 🌟 CORREÇÃO COMPLETA DE TIMING:
-	# 1. Força o servidor de física a registrar o novo objeto no mapa AGORA
-	PhysicsServer2D.set_active(true)
-	
-	# 2. Aguarda um milissegundo de frame físico para os colisores "acordarem"
+	_ultima_posicao_colocacao = global_position
+
 	await get_tree().physics_frame
-	
-	# 3. Procura TODAS as brocas já existentes no mapa e manda elas reescanearem o chão!
-	# Isso quebra a dependência de os sinais enter/exit falharem.
+
 	get_tree().call_group("broca", "verificar_extrutura_e_atualizar_estado")
 
 func _remover_objeto_na_posicao() -> void:
 	for corpo in area_checagem.get_overlapping_bodies():
 		if corpo != $"..": corpo.queue_free()
-	for area in area_checagem.get_overlapping_areas():
-		if area != area_checagem: area.queue_free()

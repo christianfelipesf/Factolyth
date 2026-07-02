@@ -63,9 +63,7 @@ target_position = Vector2(0, -32)
 target_position = Vector2(0, 32)
 
 [node name="Area2D" type="Area2D" parent="." unique_id=1790987531]
-collision_mask = 3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1940091423]
 shape = SubResource("RectangleShape2D_moo3v")
 
-[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]

@@ -57,9 +57,12 @@ Adicione via `add_to_group("nome")` no `_ready()` ou no editor Godot.
 
 | Layer | Usado por |
 |---|---|
-| 1 (default) | jogador, broca, esteira, núcleo (StaticBody2D/CharacterBody2D) |
-| 2 | `bronze.tscn` (`collision_layer = 2`), `Detector` da broca (`collision_layer = 2`) |
-| 3 | `Coletor` do núcleo e `Area2D` da esteira (`collision_mask = 3`) |
+| 1 (default) | broca, esteira, núcleo (StaticBody2D), bronze (CharacterBody2D), todas as Area2D (Detector, Coletor, Area2D da esteira, AreaChecagem) |
+| 2 | jogador (`collision_layer = 2`, `collision_mask = 0`) |
+
+**Regras:**
+- Jogador está na layer 2 com mask 0 → **não colide com nada** (quando houver paredes, colocá-las na layer 1 e ajustar `collision_mask` do jogador para 1)
+- Todos os objetos e áreas interagem entre si na layer 1 (padrão)
 
 ---
 

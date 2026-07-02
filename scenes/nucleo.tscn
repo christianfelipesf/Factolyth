@@ -23,7 +23,6 @@ scale = Vector2(2, 2)
 texture = ExtResource("2_wtdvg")
 
 [node name="Coletor" type="Area2D" parent="." unique_id=1618559782]
-collision_mask = 3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Coletor" unique_id=127539619]
 position = Vector2(0.5, 0.5)

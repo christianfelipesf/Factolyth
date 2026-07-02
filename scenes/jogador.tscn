@@ -35,6 +35,9 @@ radius = 13.0
 [node name="Jogador" type="Node2D" unique_id=1832973260]
 
 [node name="player" type="CharacterBody2D" parent="." unique_id=1088754334]
+z_index = 10
+collision_layer = 2
+collision_mask = 0
 script = ExtResource("1_uahlj")
 MIN_ZOOM = 0.7
 MAX_ZOOM = 1.4
