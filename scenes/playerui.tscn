@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://bqtyhcvde0fi4"]
+
+[ext_resource type="Script" uid="uid://b6p0mqvla7410" path="res://scripts/joygstick.gd" id="1_5vk06"]
+[ext_resource type="Texture2D" uid="uid://o3arr50pkf48" path="res://icon.svg" id="2_ukr85"]
+
+[node name="CanvasLayer" type="CanvasLayer" unique_id=216092279]
+
+[node name="Joystick" type="Control" parent="." unique_id=943145230]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 119.0
+offset_top = 479.0
+offset_right = 159.0
+offset_bottom = 519.0
+script = ExtResource("1_5vk06")
+
+[node name="TouchScreenButton" type="TouchScreenButton" parent="Joystick" unique_id=828656199]
+
+[node name="Sprite2D" type="Sprite2D" parent="Joystick/TouchScreenButton" unique_id=378925084]
+texture = ExtResource("2_ukr85")

@@ -23,9 +23,7 @@ shader_parameter/brilho_borda = 1.5
 [sub_resource type="CircleShape2D" id="CircleShape2D_lj65x"]
 radius = 13.0
 
-[node name="Jogador" type="Node2D" unique_id=1832973260]
-
-[node name="player" type="CharacterBody2D" parent="." unique_id=1088754334]
+[node name="player" type="CharacterBody2D" unique_id=1088754334]
 z_index = 10
 collision_layer = 2
 collision_mask = 0
@@ -34,29 +32,29 @@ MIN_ZOOM = 0.7
 MAX_ZOOM = 1.4
 ZOOM_STEP = 0.5
 
-[node name="Sprite2D" type="Sprite2D" parent="player" unique_id=101199477]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=101199477]
 material = SubResource("ShaderMaterial_lj65x")
 rotation = 1.5707964
 texture = ExtResource("1_vwxko")
 vframes = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="player" unique_id=1700214607]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1700214607]
 shape = SubResource("CircleShape2D_uahlj")
 
-[node name="Camera2D" type="Camera2D" parent="player" unique_id=1239451589]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1239451589]
 position_smoothing_enabled = true
 position_smoothing_speed = 8.0
 
-[node name="Marker2D" type="Marker2D" parent="player" unique_id=1326570300]
+[node name="Marker2D" type="Marker2D" parent="." unique_id=1326570300]
 position = Vector2(88, 61)
 script = ExtResource("5_lj65x")
 
-[node name="Sprite2D" type="Sprite2D" parent="player/Marker2D" unique_id=2143726212]
+[node name="Sprite2D" type="Sprite2D" parent="Marker2D" unique_id=2143726212]
 material = SubResource("ShaderMaterial_32758")
 scale = Vector2(0.4, 0.4)
 texture = ExtResource("6_32758")
 
-[node name="AreaChecagem" type="Area2D" parent="player/Marker2D" unique_id=1193033712]
+[node name="AreaChecagem" type="Area2D" parent="Marker2D" unique_id=1193033712]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="player/Marker2D/AreaChecagem" unique_id=274808384]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Marker2D/AreaChecagem" unique_id=274808384]
 shape = SubResource("CircleShape2D_lj65x")

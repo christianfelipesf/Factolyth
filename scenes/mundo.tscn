@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://cp6y5ftt0rtb" path="res://scenes/tilesets.tscn" id="1_wqn8j"]
 [ext_resource type="PackedScene" uid="uid://bemv5lqoxi88n" path="res://scenes/jogador.tscn" id="2_a2ps7"]
+[ext_resource type="PackedScene" uid="uid://bqtyhcvde0fi4" path="res://scenes/playerui.tscn" id="3_0vka0"]
 
 [sub_resource type="Environment" id="Environment_a2ps7"]
 background_mode = 3
@@ -19,3 +20,5 @@ glow_hdr_luminance_cap = 18.97
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=884080138]
 environment = SubResource("Environment_a2ps7")
+
+[node name="Playerui" parent="." unique_id=1646976867 instance=ExtResource("3_0vka0")]

@@ -43,11 +43,20 @@ func _adicionar_item_com_cena(nome: String, cena: PackedScene) -> void:
 	item.tamanho_grid = _extrair_tamanho_grid(cena)
 	_itens_construcao.append(item)
 
+@onready var joystick: Control = get_tree().root.find_child("Joystick", true, false)
+
 func _physics_process(delta: float) -> void:
 	# 1. Movimento e Direção da Nave
 	var input_direction := Vector2.ZERO
+	
+	# Primeiro tenta ler o teclado com base no seu Input Map (WASD)
 	input_direction.x = Input.get_axis("move_left", "move_right")
 	input_direction.y = Input.get_axis("move_up", "move_down")
+	
+	# Se nenhuma tecla for apertada e o joystick existir, lê o Joystick virtual
+	if input_direction == Vector2.ZERO and joystick:
+		input_direction = joystick.get_velocity()
+		
 	input_direction = input_direction.normalized()
 	
 	if input_direction != Vector2.ZERO:
@@ -61,7 +70,7 @@ func _physics_process(delta: float) -> void:
 		var target_angle = velocity.angle()
 		rotation = rotate_toward(rotation, target_angle, ROTATION_SPEED * delta)
 
-	# 2. Suavização do Zoom
+	# 2. Suavização do Zoom (Sua lógica original mantida)
 	var target_zoom = Vector2(target_zoom_value, target_zoom_value)
 	camera.zoom = camera.zoom.lerp(target_zoom, ZOOM_SPEED * delta)
 
