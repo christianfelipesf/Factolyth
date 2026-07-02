@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://hf2slnik78ij"]
+
+[ext_resource type="Script" uid="uid://5mdeolhrwsn0" path="res://scripts/nucleo.gd" id="1_aoddb"]
+[ext_resource type="Texture2D" uid="uid://db1ju6pt2ny0c" path="res://images/nucleo.png" id="2_wtdvg"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dj03t"]
+size = Vector2(17, 19)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pdgul"]
+size = Vector2(81, 83)
+
+[node name="Nucleo" type="StaticBody2D" unique_id=1060668434]
+script = ExtResource("1_aoddb")
+
+[node name="Nucleo" type="Node2D" parent="." unique_id=2049332674]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=775506742]
+position = Vector2(-0.5, 0.5)
+shape = SubResource("RectangleShape2D_dj03t")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=88097282]
+scale = Vector2(2, 2)
+texture = ExtResource("2_wtdvg")
+
+[node name="Coletor" type="Area2D" parent="." unique_id=1618559782]
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Coletor" unique_id=127539619]
+position = Vector2(0.5, 0.5)
+shape = SubResource("RectangleShape2D_pdgul")

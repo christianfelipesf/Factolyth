@@ -28,15 +28,27 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5fm0o"]
 size = Vector2(32, 32)
 
-[node name="Broca" type="Node2D" unique_id=2048994282]
+[sub_resource type="CircleShape2D" id="CircleShape2D_4g6kx"]
+radius = 31.780497
 
-[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=507273594]
+[node name="StaticBody2D" type="StaticBody2D" unique_id=507273594]
 script = ExtResource("1_4o6is")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="StaticBody2D" unique_id=1923068045]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1923068045]
 sprite_frames = SubResource("SpriteFrames_rhn81")
 autoplay = "default"
 frame_progress = 0.6490111
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=1990728668]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1990728668]
 shape = SubResource("RectangleShape2D_5fm0o")
+
+[node name="Detector" type="Area2D" parent="." unique_id=1554491524]
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Detector" unique_id=2112315543]
+shape = SubResource("CircleShape2D_4g6kx")
+
+[node name="TimerProducao" type="Timer" parent="." unique_id=1345611043]
+
+[connection signal="body_entered" from="Detector" to="." method="_on_detector_body_entered"]
+[connection signal="body_exited" from="Detector" to="." method="_on_detector_body_exited"]

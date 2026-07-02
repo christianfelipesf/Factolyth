@@ -1,5 +1,71 @@
 [gd_scene format=3 uid="uid://d0v82jkqbhyw5"]
 
-[node name="Esteira" type="Node2D" unique_id=352686121]
+[ext_resource type="Texture2D" uid="uid://t0xgorixfakk" path="res://images/esteira.png" id="1_0mu7r"]
+[ext_resource type="Script" uid="uid://bgjhwr0f5qg58" path="res://scripts/esteira.gd" id="1_moo3v"]
 
-[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=1059485709]
+[sub_resource type="AtlasTexture" id="AtlasTexture_moo3v"]
+atlas = ExtResource("1_0mu7r")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_01ut3"]
+atlas = ExtResource("1_0mu7r")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_t5gqv"]
+atlas = ExtResource("1_0mu7r")
+region = Rect2(0, 32, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_vcyuc"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_moo3v")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_01ut3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_t5gqv")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_jl4ft"]
+size = Vector2(22, 33)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_moo3v"]
+size = Vector2(20, 32)
+
+[node name="Esteira" type="StaticBody2D" unique_id=1059485709 groups=["esteira"]]
+script = ExtResource("1_moo3v")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=601443202]
+sprite_frames = SubResource("SpriteFrames_vcyuc")
+autoplay = "default"
+frame_progress = 0.17804997
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1602761574 groups=["esteira"]]
+position = Vector2(0, -0.5)
+shape = SubResource("RectangleShape2D_jl4ft")
+
+[node name="RayDireita" type="RayCast2D" parent="." unique_id=1958637384]
+target_position = Vector2(32, 0)
+
+[node name="RayEsquerda" type="RayCast2D" parent="." unique_id=1501209735]
+target_position = Vector2(-32, 0)
+
+[node name="RayCima" type="RayCast2D" parent="." unique_id=917475578]
+target_position = Vector2(0, -32)
+
+[node name="RayBaixo" type="RayCast2D" parent="." unique_id=1239811413]
+target_position = Vector2(0, 32)
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1790987531]
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1940091423]
+shape = SubResource("RectangleShape2D_moo3v")
+
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]

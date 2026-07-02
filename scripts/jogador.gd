@@ -11,14 +11,13 @@ const ROTATION_SPEED = 10.0
 @export var ZOOM_SPEED := 5.0     
 @export var ZOOM_STEP := 0.05     
 
-# --- CONFIGURAÇÕES DA BROCA ---
-@export var CENA_BROCA: PackedScene 
+# --- 🌟 NOVAS CONFIGURAÇÕES MODULARES DE CONSTRUÇÃO ---
+@export var recurso_esteira: ItemConstrucao
+@export var recurso_broca: ItemConstrucao
 
 @onready var target_zoom_value: float = (MIN_ZOOM + MAX_ZOOM) / 2.0
 @onready var camera: Camera2D = $Camera2D 
-
-# Pega a referência do seu nó filho chamado Marker
-@onready var cursor_marker: Marker2D = $Marker2D
+@onready var marker: Marker2D = $Marker2D # Pega a referência do seu cursor modular
 
 func _physics_process(delta: float) -> void:
 	# 1. Movimento e Direção da Nave
@@ -42,29 +41,6 @@ func _physics_process(delta: float) -> void:
 	var target_zoom = Vector2(target_zoom_value, target_zoom_value)
 	camera.zoom = camera.zoom.lerp(target_zoom, ZOOM_SPEED * delta)
 
-	# 3. Atualiza a posição do seu $Marker com base no mouse + limites da tela
-	_atualizar_posicao_marker()
-
-func _atualizar_posicao_marker() -> void:
-	# Pega a posição global do mouse
-	var mouse_raw_pos = get_global_mouse_position()
-	
-	# Calcula a área visível da tela baseada no zoom
-	var tamanho_tela = get_viewport_rect().size
-	var area_visivel = tamanho_tela / camera.zoom
-	
-	# Define as bordas máximas e mínimas da câmera
-	var limite_min = camera.get_screen_center_position() - (area_visivel / 2.0)
-	var limite_max = camera.get_screen_center_position() + (area_visivel / 2.0)
-	
-	# Cria o vetor final limitando a posição do mouse às bordas
-	var posicao_travada = Vector2.ZERO
-	posicao_travada.x = clamp(mouse_raw_pos.x, limite_min.x, limite_max.x)
-	posicao_travada.y = clamp(mouse_raw_pos.y, limite_min.y, limite_max.y)
-	
-	# Aplica diretamente na posição GLOBAL do Marker para ignorar a rotação do Player
-	cursor_marker.global_position = posicao_travada
-
 func _unhandled_input(event: InputEvent) -> void:
 	# [Lógica do Zoom]
 	if event is InputEventMouseButton:
@@ -73,15 +49,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN and event.pressed:
 			target_zoom_value -= ZOOM_STEP
 		target_zoom_value = clamp(target_zoom_value, MIN_ZOOM, MAX_ZOOM)
-	
-	# [Lógica de Criar a Broca]
-	if event.is_action_pressed("instanciar_broca"):
-		_criar_nova_broca()
 
-func _criar_nova_broca() -> void:
-	if CENA_BROCA:
-		var nova_broca = CENA_BROCA.instantiate()
-		get_tree().current_scene.add_child(nova_broca)
+	# [🌟 SELEÇÃO DOS ITENS VIA RECURSOS]
+	# Certifique-se de que esses nomes de Input Actions ("selecionar_esteira", etc.) 
+	# batem com o que você configurou no seu Input Map!
+	if event.is_action_pressed("selecionar_esteira") and recurso_esteira != null:
+		marker.equipar_item(recurso_esteira)
+		print("Modular: Esteira equipada no cursor.")
 		
-		# A broca agora nasce exatamente onde o seu $Marker está posicionado no mundo!
-		nova_broca.global_position = cursor_marker.global_position
+	elif event.is_action_pressed("selecionar_broca") and recurso_broca != null:
+		marker.equipar_item(recurso_broca)
+		print("Modular: Broca equipada no cursor.")
