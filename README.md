@@ -51,6 +51,10 @@ Construir um teleportador quântico e voltar para casa.
 
 ---
 
+## Desenvolvimento
+
+Para contribuir com o projeto, leia as [instruções para IA](INSTRUCOES_AI.md) com convenções de código e arquitetura.
+
 ## Licença
 
 Distribuído sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais informações.
