@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://cfed6of0h56nw"]
+
+[ext_resource type="Texture2D" uid="uid://d1qtuvrfiet7x" path="res://images/canon1.png" id="1_5bbch"]
+[ext_resource type="Texture2D" uid="uid://g7e513opwxnr" path="res://images/canon2.png" id="2_kvelt"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5vqs7"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_dmmmb"]
+radius = 116.15507
+
+[node name="Simplecanon" type="StaticBody2D" unique_id=1151319704]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=725229530]
+texture = ExtResource("1_5bbch")
+
+[node name="Sprite2D2" type="Sprite2D" parent="." unique_id=1775790100]
+texture = ExtResource("2_kvelt")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1127470707]
+shape = SubResource("RectangleShape2D_5vqs7")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1686967008]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1157046381]
+shape = SubResource("CircleShape2D_dmmmb")
+debug_color = Color(0.26787272, 0.34738302, 0.38229713, 0.41960785)
