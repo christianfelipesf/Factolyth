@@ -35,11 +35,11 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      # Renomeia o HTML para index.html para o GitHub Pages reconhecer como página principal
+      # CORRIGIDO: Removido o prefixo "Factolyth/" do caminho do arquivo
       - name: Rename entry point to index.html
         run: |
-          if [ -f "Factolyth/html/Factolyth.html" ]; then
-            mv Factolyth/html/Factolyth.html Factolyth/html/index.html
+          if [ -f "html/Factolyth.html" ]; then
+            mv html/Factolyth.html html/index.html
           fi
 
       - name: Upload artifact
