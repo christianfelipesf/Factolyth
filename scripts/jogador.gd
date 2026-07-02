@@ -47,8 +47,8 @@ func carregar_itens_construcao() -> void:
 func _physics_process(delta: float) -> void:
 	# 1. Movimento e Direção da Nave
 	var input_direction := Vector2.ZERO
-	input_direction.x = Input.get_axis("ui_left", "ui_right")
-	input_direction.y = Input.get_axis("ui_up", "ui_down")
+	input_direction.x = Input.get_axis("move_left", "move_right")
+	input_direction.y = Input.get_axis("move_up", "move_down")
 	input_direction = input_direction.normalized()
 	
 	if input_direction != Vector2.ZERO:
