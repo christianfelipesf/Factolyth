@@ -3,9 +3,9 @@
 [ext_resource type="Script" uid="uid://b8oku6opv2bq" path="res://scripts/jogador.gd" id="1_uahlj"]
 [ext_resource type="Texture2D" uid="uid://bdn21qkvr6opd" path="res://images/criatura.png" id="1_vwxko"]
 [ext_resource type="Shader" uid="uid://cy1qxv0cnw1pq" path="res://scenes/jogador.gdshader" id="2_32758"]
-[ext_resource type="Texture2D" uid="uid://cml6qdh5fisyv" path="res://images/target_round_b.png" id="4_qcln2"]
 [ext_resource type="Shader" uid="uid://cxfqaxiy367r1" path="res://scripts/cursor.gdshader" id="4_s760d"]
 [ext_resource type="Script" uid="uid://dbpjo4ncb31jf" path="res://scripts/cursor.gd" id="5_lj65x"]
+[ext_resource type="Texture2D" uid="uid://dhv6tsd0e8rfj" path="res://images/cursornew.png" id="6_32758"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lj65x"]
 shader = ExtResource("2_32758")
@@ -53,7 +53,8 @@ script = ExtResource("5_lj65x")
 
 [node name="Sprite2D" type="Sprite2D" parent="player/Marker2D" unique_id=2143726212]
 material = SubResource("ShaderMaterial_32758")
-texture = ExtResource("4_qcln2")
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("6_32758")
 
 [node name="AreaChecagem" type="Area2D" parent="player/Marker2D" unique_id=1193033712]
 

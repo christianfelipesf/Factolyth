@@ -12,6 +12,11 @@ const TEMPO_PARA_DESAPARECER := 3.0
 
 func _ready() -> void:
 	add_to_group("item")
+	collision_layer = 5
+	collision_mask = 4
+	var shape = $CollisionShape2D.shape as CircleShape2D
+	if shape != null:
+		shape.radius = 6.0
 
 func _physics_process(delta: float) -> void:
 	if impulso != Vector2.ZERO:

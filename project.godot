@@ -22,6 +22,10 @@ config/main_scene="res://scenes/main.tscn"
 
 SaveManager="*res://scripts/save_manager.gd"
 
+[display]
+
+mouse_cursor/custom_image="uid://bxkgmjgs2ofmk"
+
 [input]
 
 move_left={

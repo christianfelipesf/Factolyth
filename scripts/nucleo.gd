@@ -1,5 +1,7 @@
 extends StaticBody2D
 
+const TAMANHO_GRID: Vector2i = Vector2i(2, 2)
+
 var is_preview := false
 
 # 📊 Dicionário para guardar o tipo de item e a quantidade armazenada

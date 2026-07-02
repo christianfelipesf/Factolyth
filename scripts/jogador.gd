@@ -38,6 +38,7 @@ func carregar_itens_construcao() -> void:
 				item.nome = nome_arquivo.replace(".tscn", "").capitalize()
 				item.cena_objeto = cena
 				item.compensar_rotacao_90 = false
+				item.tamanho_grid = _extrair_tamanho_grid(cena)
 				_itens_construcao.append(item)
 		nome_arquivo = dir.get_next()
 	dir.list_dir_end()
@@ -83,6 +84,12 @@ func _unhandled_input(event: InputEvent) -> void:
 		var item = _itens_construcao[_indice_item_atual]
 		marker.equipar_item(item)
 		print("🔧 Item selecionado: ", item.nome)
+
+func _extrair_tamanho_grid(cena: PackedScene) -> Vector2i:
+	var inst = cena.instantiate()
+	var val = inst.get("TAMANHO_GRID")
+	inst.free()
+	return val if val != null else Vector2i(1, 1)
 
 func get_save_data() -> Dictionary:
 	return {
