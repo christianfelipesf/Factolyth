@@ -24,26 +24,43 @@ func _ready() -> void:
 
 func carregar_itens_construcao() -> void:
 	var dir = DirAccess.open("res://scenes/posicionaveis/")
-	if dir == null:
-		push_error("Não foi possível abrir res://scenes/posicionaveis/")
-		return
+	if dir != null:
+		_carregar_itens_do_dir(dir)
+	else:
+		_carregar_itens_do_manifesto()
+
+	if _itens_construcao.is_empty():
+		push_error("Nenhum item construível encontrado em res://scenes/posicionaveis/")
+
+func _carregar_itens_do_dir(dir: DirAccess) -> void:
 	dir.list_dir_begin()
 	var nome_arquivo = dir.get_next()
 	while nome_arquivo != "":
 		if nome_arquivo.ends_with(".tscn") and not nome_arquivo.begins_with("."):
-			var caminho = "res://scenes/posicionaveis/" + nome_arquivo
-			var cena = load(caminho) as PackedScene
-			if cena != null:
-				var item = ItemConstrucao.new()
-				item.nome = nome_arquivo.replace(".tscn", "").capitalize()
-				item.cena_objeto = cena
-				item.compensar_rotacao_90 = false
-				item.tamanho_grid = _extrair_tamanho_grid(cena)
-				_itens_construcao.append(item)
+			_adicionar_item("res://scenes/posicionaveis/" + nome_arquivo, nome_arquivo.replace(".tscn", "").capitalize())
 		nome_arquivo = dir.get_next()
 	dir.list_dir_end()
-	if _itens_construcao.is_empty():
-		push_error("Nenhum item construível encontrado em res://scenes/posicionaveis/")
+
+func _carregar_itens_do_manifesto() -> void:
+	var caminhos := PackedStringArray()
+	caminhos.append("res://scenes/posicionaveis/broca.tscn")
+	caminhos.append("res://scenes/posicionaveis/esteira.tscn")
+	caminhos.append("res://scenes/posicionaveis/nucleo.tscn")
+	caminhos.append("res://scenes/posicionaveis/simplecanon.tscn")
+	for caminho in caminhos:
+		var nome_arquivo = caminho.get_file().replace(".tscn", "").capitalize()
+		_adicionar_item(caminho, nome_arquivo)
+
+func _adicionar_item(caminho: String, nome: String) -> void:
+	var cena = load(caminho) as PackedScene
+	if cena == null:
+		return
+	var item = ItemConstrucao.new()
+	item.nome = nome
+	item.cena_objeto = cena
+	item.compensar_rotacao_90 = false
+	item.tamanho_grid = _extrair_tamanho_grid(cena)
+	_itens_construcao.append(item)
 
 func _physics_process(delta: float) -> void:
 	# 1. Movimento e Direção da Nave
