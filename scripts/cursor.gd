@@ -108,6 +108,17 @@ func _criar_objeto_posicionavel() -> void:
 	get_tree().current_scene.add_child(novo_objeto)
 	novo_objeto.global_position = global_position
 
+	# 🌟 CORREÇÃO COMPLETA DE TIMING:
+	# 1. Força o servidor de física a registrar o novo objeto no mapa AGORA
+	PhysicsServer2D.set_active(true)
+	
+	# 2. Aguarda um milissegundo de frame físico para os colisores "acordarem"
+	await get_tree().physics_frame
+	
+	# 3. Procura TODAS as brocas já existentes no mapa e manda elas reescanearem o chão!
+	# Isso quebra a dependência de os sinais enter/exit falharem.
+	get_tree().call_group("broca", "verificar_extrutura_e_atualizar_estado")
+
 func _remover_objeto_na_posicao() -> void:
 	for corpo in area_checagem.get_overlapping_bodies():
 		if corpo != $"..": corpo.queue_free()
