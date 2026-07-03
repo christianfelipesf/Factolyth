@@ -15,20 +15,29 @@ func _input(event: InputEvent) -> void:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed and event.position.distance_to(_centro) <= max_distance:
 				is_dragging = true
+				get_viewport().set_input_as_handled()
 			elif not event.pressed:
 				_resetar()
+				get_viewport().set_input_as_handled()
 
 	elif event is InputEventMouseMotion and is_dragging:
 		_arrastar(event.position)
+		get_viewport().set_input_as_handled()
 
 	elif event is InputEventScreenTouch:
 		if event.pressed and event.position.distance_to(_centro) <= max_distance:
 			is_dragging = true
+			get_viewport().set_input_as_handled()
 		elif not event.pressed:
 			_resetar()
+			get_viewport().set_input_as_handled()
 
 	elif event is InputEventScreenDrag and is_dragging:
 		_arrastar(event.position)
+		get_viewport().set_input_as_handled()
+
+func esta_arrastando() -> bool:
+	return is_dragging
 
 func _arrastar(pos: Vector2) -> void:
 	var desloc := pos - _centro

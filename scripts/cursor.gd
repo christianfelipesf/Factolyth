@@ -1,6 +1,8 @@
 extends Marker2D
 
 const PARTICULA = preload("res://scenes/particles/particula.tscn")
+const VELOCIDADE_CURSOR := 600.0
+const DEADZONE := 0.2
 
 var item_atual: ItemConstrucao = null
 var rotation_atual: float = 0.0
@@ -9,16 +11,25 @@ var _ultima_posicao_colocacao: Vector2 = Vector2.INF
 var _indicador_grid: Sprite2D = null
 var _tamanho_grid_atual: Vector2i = Vector2i(1, 1)
 
+var _joystick: Control = null
+var _cursor_controle: Vector2 = Vector2.ZERO
+var _modo_controle: bool = false
+var _mouse_moveu: bool = false
+
 @onready var camera: Camera2D = $"../Camera2D"
 @onready var area_checagem: Area2D = $AreaChecagem
 @onready var shape_checagem: CollisionShape2D = $AreaChecagem/CollisionShape2D
 
 func _ready() -> void:
+	_joystick = get_tree().root.find_child("Joystick", true, false)
 	for filho in get_children():
 		if filho is CanvasItem:
 			filho.z_index = 10
-
 	_recriar_indicador(Vector2i(1, 1))
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseMotion:
+		_mouse_moveu = true
 
 func _recriar_indicador(tamanho: Vector2i) -> void:
 	if _indicador_grid != null:
@@ -46,14 +57,38 @@ func _offset_colocacao() -> Vector2:
 		(_tamanho_grid_atual.y - 1) * 16.0
 	)
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	global_rotation = 0.0
-	_atualizar_cursor_e_grid()
+
+	var stick := Vector2(
+		Input.get_joy_axis(0, JOY_AXIS_RIGHT_X),
+		Input.get_joy_axis(0, JOY_AXIS_RIGHT_Y)
+	)
+
+	if stick.length() > DEADZONE:
+		if not _modo_controle:
+			var mouse_tela := get_viewport().get_mouse_position()
+			_cursor_controle = mouse_tela if mouse_tela != Vector2.ZERO else get_viewport().get_visible_rect().size / 2.0
+			_modo_controle = true
+		_cursor_controle += stick * VELOCIDADE_CURSOR * delta
+		var screen_size := get_viewport().get_visible_rect().size
+		_cursor_controle = _cursor_controle.clamp(Vector2.ZERO, screen_size)
+	elif _modo_controle and _mouse_moveu:
+		_modo_controle = false
+	_mouse_moveu = false
+
+	if _modo_controle:
+		var screen_size := get_viewport().get_visible_rect().size
+		var centro := camera.get_screen_center_position()
+		var world_pos := centro + (_cursor_controle - screen_size / 2.0) / camera.zoom
+		_atualizar_cursor_e_grid(world_pos)
+	else:
+		_atualizar_cursor_e_grid()
 
 	if not Input.is_action_pressed("instanciar_objeto") and not Input.is_action_pressed("remover_objeto"):
 		_ultima_posicao_colocacao = Vector2.INF
 
-	if item_atual != null:
+	if item_atual != null and not _arrastando_joystick():
 		if Input.is_action_pressed("instanciar_objeto"):
 			if _posicao_grid != _ultima_posicao_colocacao and not _area_esta_ocupada():
 				_criar_objeto_posicionavel()
@@ -75,8 +110,13 @@ func desequipar_item() -> void:
 	_ultima_posicao_colocacao = Vector2.INF
 	_atualizar_preview_visual()
 
-func _atualizar_cursor_e_grid() -> void:
-	var mouse_pos := get_global_mouse_position()
+func _atualizar_cursor_e_grid(pos_alternativa: Vector2 = Vector2.INF) -> void:
+	var alvo: Vector2
+	if pos_alternativa != Vector2.INF:
+		alvo = pos_alternativa
+	else:
+		alvo = get_global_mouse_position()
+
 	var tam_tela := get_viewport_rect().size
 	var area_visivel := tam_tela / camera.zoom
 	var centro := camera.get_screen_center_position()
@@ -84,13 +124,13 @@ func _atualizar_cursor_e_grid() -> void:
 	var lim_max := centro + area_visivel / 2.0
 
 	global_position = Vector2(
-		clamp(mouse_pos.x, lim_min.x, lim_max.x),
-		clamp(mouse_pos.y, lim_min.y, lim_max.y)
+		clamp(alvo.x, lim_min.x, lim_max.x),
+		clamp(alvo.y, lim_min.y, lim_max.y)
 	)
 
 	_posicao_grid = Vector2(
-		floor(mouse_pos.x / 32.0) * 32.0 + 16,
-		floor(mouse_pos.y / 32.0) * 32.0 + 16
+		floor(alvo.x / 32.0) * 32.0 + 16,
+		floor(alvo.y / 32.0) * 32.0 + 16
 	)
 
 	var ofs := _offset_colocacao()
@@ -120,13 +160,38 @@ func _gerenciar_cor_do_preview() -> void:
 		if filho.has_meta("is_construction_preview"):
 			filho.modulate = cor
 
+func _arrastando_joystick() -> bool:
+	return _joystick != null and _joystick.has_method("esta_arrastando") and _joystick.esta_arrastando()
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("cancelar_construcao"):
 		desequipar_item()
+		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("rotacionar_objeto") and item_atual != null:
 		rotation_atual = fmod(rotation_atual + 90.0, 360.0)
 		_atualizar_preview_visual()
 		get_viewport().set_input_as_handled()
+
+	if item_atual == null:
+		return
+
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed and not _arrastando_joystick():
+			if not _area_esta_ocupada():
+				_criar_objeto_posicionavel()
+			get_viewport().set_input_as_handled()
+		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+			_remover_objeto_na_posicao()
+			get_viewport().set_input_as_handled()
+
+	if event is InputEventJoypadButton:
+		if event.button_index == JOY_BUTTON_A and event.pressed:
+			if not _area_esta_ocupada():
+				_criar_objeto_posicionavel()
+			get_viewport().set_input_as_handled()
+		elif event.button_index == JOY_BUTTON_B and event.pressed:
+			_remover_objeto_na_posicao()
+			get_viewport().set_input_as_handled()
 
 func _atualizar_preview_visual() -> void:
 	for child in get_children():
