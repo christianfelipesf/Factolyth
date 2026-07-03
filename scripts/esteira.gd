@@ -2,7 +2,7 @@ extends StaticBody2D
 
 var is_preview := false
 
-const VELOCIDADE := 100.0 
+@export var VELOCIDADE := 100.0
 
 @onready var colisao: CollisionShape2D = $CollisionShape2D
 @onready var area: Area2D = $Area2D

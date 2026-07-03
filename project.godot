@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Factolyth"
-run/main_scene="uid://ipe32kmj2hky"
+run/main_scene="uid://cdvo0srdwci2"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 boot_splash/bg_color=Color(0.7919991, 0.79199916, 0.7919991, 1)
 boot_splash/image="uid://bmdbdhjmemmo7"
@@ -24,11 +24,10 @@ SaveManager="*res://scripts/save_manager.gd"
 
 [display]
 
-mouse_cursor/custom_image="uid://bxkgmjgs2ofmk"
 window/size/viewport_width=1280
 window/size/viewport_height=720
 window/stretch/mode="canvas_items"
-window/stretch/aspect="keep"
+mouse_cursor/custom_image="uid://l16so7vl8s0b"
 
 [input]
 

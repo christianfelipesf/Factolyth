@@ -13,47 +13,75 @@ Um mini robô orgânico usa um teleportador quântico que o leva para um planeta
 ## Características
 
 - **Automação e Tower Defense** — Construa esteiras, britadeiras e torres automatizadas enquanto enfrenta inimigos.
-- **Jogabilidade suave** — Movimentação responsiva e controles intuitivos.
-- **Inimigos adaptativos** — Criaturas que evoluem e se adaptam ao seu progresso.
+- **Geração procedural** — Mapas gerados proceduralmente com FastNoiseLite, cache em PackedFloat32Array
+- **Sistema de Save/Load** — Salva semente, estruturas, jogador (posição/rotação/zoom/item) com tela de loading.
+- **Barra de Seleção** — Interface inferior para selecionar itens com suporte a teclas 1-4, clique, e sincronizada via signals
+- **Controles** — Teclado, mouse, tela sensível ao toque (joystick virtual) e controle (analógico direito para cursor, A/B para ações)
+- **Som** — Som ambiente em loop, SFX de colocar/destruir estruturas, partículas ao interagir
+- **Preview de Construção** — Indicador visual com snap ao grid, rotação (R), preview semi-transparente, detecção de área ocupada
+
+---
+
+## Controles
+
+| Ação | Teclado | Mouse | Controle | Touch |
+|---|---|---|---|---|
+| Mover | WASD | — | Analógico esquerdo | Joystick virtual |
+| Colocar estrutura | — | Clique Esquerdo | Botão A (Xbox) | Toque no mundo |
+| Remover estrutura | — | Clique Direito | Botão B (Xbox) | — |
+| Ciclar item | E | — | — | — |
+| Selecionar item (1-4) | 1-4 | Clique na barra | — | Toque na barra |
+| Cancelar | 0 | — | — | — |
+| Rotacionar | R | — | — | — |
+| Zoom | — | Scroll | Pinça (2 dedos) | Pinça |
+| Salvar | F5 | — | — | — |
+| Carregar | F9 | — | — | — |
+| Mover cursor | — | Mouse | Analógico direito | Toque |
 
 ---
 
 ## Elementos do jogo
 
-| Item           | Descrição                     |
-|----------------|-------------------------------|
-| Planeta        | 1 mapa gerado                 |
-| Inimigo        | 1 tipo de criatura            |
-| Minérios       | Bronze, Ferro, Cloropyte      |
-
----
-
-## Objetivo
-
-Construir um teleportador quântico e voltar para casa.
+| Item | Descrição |
+|---|---|
+| Broca | Mina minério automaticamente |
+| Esteira | Transporta itens entre estruturas |
+| Canhão | Torre de defesa automática |
+| Núcleo | Coleta itens e armazena |
+| Bronze | Recurso minerável |
 
 ---
 
 ## Tecnologias
 
-- **Engine:** Godot 4.6
+- **Engine:** Godot 4.7
 - **Linguagem:** GDScript
-- **Renderização:** GL Compatibility
-- **Física:** Jolt Physics 3D
+- **Resolução:** 1280×720, stretch `canvas_items` + `keep`
+- **Input:** `emulate_touch_from_mouse = true`
 
 ---
 
 ## Como jogar
 
 1. Clone o repositório
-2. Abra o projeto na Godot Engine 4.6+
-3. Execute a cena principal (`main.tscn`)
+2. Abra o projeto na Godot Engine 4.7+
+3. Execute a cena principal (`scenes/mundo.tscn`)
 
 ---
 
-## Desenvolvimento
+## Estrutura do Projeto
 
-Para contribuir com o projeto, leia as [instruções para IA](INSTRUCOES_AI.md) com convenções de código e arquitetura.
+| Diretório | Finalidade |
+|---|---|
+| `scripts/` | Código-fonte GDScript |
+| `scenes/` | Cenas Godot (.tscn) |
+| `scenes/posicionaveis/` | Estruturas construíveis |
+| `scenes/itens/` | Itens/recursos |
+| `scenes/particles/` | Efeitos de partícula |
+| `sound/` | Áudio (ambiente, SFX) |
+| `images/` | Sprites e tilesets |
+
+---
 
 ## Licença
 

@@ -7,8 +7,9 @@ var is_preview := false
 # 📊 Dicionário para guardar o tipo de item e a quantidade armazenada
 var inventario := {
 	"bronze": 0,
-	# Você pode adicionar outros itens futuramente aqui, ex: "ferro": 0
 }
+
+signal inventario_atualizado(inv: Dictionary)
 
 @onready var colisao: CollisionShape2D = $CollisionShape2D
 @onready var coletor: Area2D = $Coletor
@@ -43,7 +44,8 @@ func _on_coletor_body_entered(body: Node2D) -> void:
 			inventario[tipo_item] = 1
 			
 		print("📥 Item absorvido pelo Núcleo! Estoque atual de ", tipo_item, ": ", inventario[tipo_item])
-		
+		inventario_atualizado.emit(inventario)
+
 		# 💥 Faz o item ir "para dentro dele" (deleta o objeto do mapa com segurança)
 		body.queue_free()
 
@@ -53,3 +55,4 @@ func get_save_data() -> Dictionary:
 func set_save_data(dados: Dictionary) -> void:
 	if dados.has("inventario"):
 		inventario = dados.inventario.duplicate()
+	inventario_atualizado.emit(inventario)

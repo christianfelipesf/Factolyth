@@ -15,6 +15,7 @@ var _joystick: Control = null
 var _cursor_controle: Vector2 = Vector2.ZERO
 var _modo_controle: bool = false
 var _mouse_moveu: bool = false
+var _warpeando: bool = false
 
 @onready var camera: Camera2D = $"../Camera2D"
 @onready var area_checagem: Area2D = $AreaChecagem
@@ -31,10 +32,12 @@ func _ready() -> void:
 			filho.z_index = 10
 	_recriar_indicador(Vector2i(1, 1))
 	_audio_ambiente.finished.connect(_audio_ambiente.play)
+	$Sprite2D.visible = false  # OS cursor substitui visual
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventMouseMotion:
+	if event is InputEventMouseMotion and not _warpeando:
 		_mouse_moveu = true
+	_warpeando = false
 
 func _recriar_indicador(tamanho: Vector2i) -> void:
 	if _indicador_grid != null:
@@ -86,6 +89,8 @@ func _physics_process(delta: float) -> void:
 		var screen_size := get_viewport().get_visible_rect().size
 		var centro := camera.get_screen_center_position()
 		var world_pos := centro + (_cursor_controle - screen_size / 2.0) / camera.zoom
+		_warpeando = true
+		Input.warp_mouse(_cursor_controle)
 		_atualizar_cursor_e_grid(world_pos)
 	else:
 		_atualizar_cursor_e_grid()
