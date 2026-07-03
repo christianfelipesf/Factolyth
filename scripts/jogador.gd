@@ -21,6 +21,11 @@ signal item_selecionado(indice: int)
 @onready var camera: Camera2D = $Camera2D 
 @onready var marker: Marker2D = $Marker2D
 
+var _pontos_toque: Dictionary = {}
+var _pinça_iniciada: bool = false
+var _distancia_pinça_inicial: float = 0.0
+var _zoom_inicial_pinça: float = 0.0
+
 func _ready() -> void:
 	carregar_itens_construcao()
 	if not _itens_construcao.is_empty():
@@ -78,8 +83,35 @@ func _physics_process(delta: float) -> void:
 	var target_zoom = Vector2(target_zoom_value, target_zoom_value)
 	camera.zoom = camera.zoom.lerp(target_zoom, ZOOM_SPEED * delta)
 
+func _input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			_pontos_toque[event.index] = event.position
+		else:
+			_pontos_toque.erase(event.index)
+		_pinça_iniciada = false
+
+	if event is InputEventScreenDrag:
+		_pontos_toque[event.index] = event.position
+
+	if _pontos_toque.size() >= 2:
+		var keys = _pontos_toque.keys()
+		var pos1: Vector2 = _pontos_toque[keys[0]]
+		var pos2: Vector2 = _pontos_toque[keys[1]]
+		var dist_atual := pos1.distance_to(pos2)
+
+		if not _pinça_iniciada:
+			_pinça_iniciada = true
+			_distancia_pinça_inicial = dist_atual
+			_zoom_inicial_pinça = target_zoom_value
+		else:
+			var fator := dist_atual / _distancia_pinça_inicial
+			target_zoom_value = clamp(_zoom_inicial_pinça * fator, MIN_ZOOM, MAX_ZOOM)
+	else:
+		_pinça_iniciada = false
+
 func _unhandled_input(event: InputEvent) -> void:
-	# [Lógica do Zoom]
+	# [Lógica do Zoom com scroll]
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:
 			target_zoom_value += ZOOM_STEP
