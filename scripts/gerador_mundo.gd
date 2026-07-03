@@ -25,6 +25,11 @@ var _ultimo_chunk: Vector2i = Vector2i(999999, 999999)
 var _jogador: Node2D = null
 var _fila_geracao: Array[Vector2i] = []
 var _gerando: bool = false
+var _loading_ativa := false
+var _frames_loading := 0
+
+signal chunks_pronto
+signal chunks_iniciou
 
 @onready var solo: TileMapLayer = $solo
 @onready var minerios: TileMapLayer = $minerios
@@ -35,10 +40,24 @@ func _ready() -> void:
 		semente = randi()
 	_inicializar_noises()
 	_deslocamento = Vector2i(int(-largura / 2.0), int(-altura / 2.0))
+	# Mostra loading até os chunks iniciais terminarem
 	if SaveManager != null:
 		SaveManager.mostrar_carregando()
-		SaveManager.esconder_carregando()
+		_loading_ativa = true
 	print("Mapa pronto (semente: ", semente, ")")
+
+## Aguarda até que todos os chunks da fila tenham sido gerados.
+## Lida com o caso onde o _process() ainda não rodou (autoload processa antes).
+func await_chunks_pronto() -> void:
+	if _gerando:
+		# Já está gerando chunks — aguarda conclusão
+		await chunks_pronto
+	elif not is_instance_valid(_jogador):
+		# Jogador ainda não encontrado — aguarda iniciar e depois concluir
+		await chunks_iniciou
+		if _gerando:
+			await chunks_pronto
+	# Se não está gerando E jogador é válido, está tudo pronto (retorna)
 
 func _inicializar_noises() -> void:
 	_noise_altura = FastNoiseLite.new()
@@ -71,6 +90,17 @@ func gerar(_gerenciar_loading: bool = true) -> void:
 	_inicializar_noises()
 
 func _process(_delta: float) -> void:
+	# Failsafe: se o loading estiver ativo há tempo demais, força saída
+	if _loading_ativa:
+		_frames_loading += 1
+		if _frames_loading > 600:  # ~10 segundos a 60fps
+			_loading_ativa = false
+			_frames_loading = 0
+			if SaveManager != null:
+				SaveManager.esconder_carregando()
+			chunks_pronto.emit()
+			return
+
 	if not is_instance_valid(_jogador):
 		_jogador = get_tree().current_scene.get_node_or_null("Jogador")
 		if not is_instance_valid(_jogador):
@@ -82,6 +112,12 @@ func _process(_delta: float) -> void:
 		_processar_fila()
 	else:
 		_gerando = false
+		if _loading_ativa:
+			_loading_ativa = false
+			_frames_loading = 0
+			if SaveManager != null:
+				SaveManager.esconder_carregando()
+			chunks_pronto.emit()
 
 func _atualizar_chunks() -> void:
 	if not is_instance_valid(_jogador):
@@ -119,18 +155,21 @@ func _atualizar_chunks() -> void:
 			_descarregar_chunk(c)
 			_chunks_carregados.erase(c)
 
+	var chunks_novos := false
 	for c in chunks_manter.keys():
 		if not _chunks_carregados.has(c):
 			_fila_geracao.append(c)
 			_chunks_carregados[c] = true
 			_gerando = true
+			chunks_novos = true
+	if chunks_novos:
+		chunks_iniciou.emit()
 
 func _processar_fila() -> void:
 	var por_frame := 2
 	for _i in range(por_frame):
 		if _fila_geracao.is_empty():
-			_gerando = false
-			return
+			return  # _gerando será limpo no else do _process()
 		var chunk_pos: Vector2i = _fila_geracao.pop_front()
 		_gerar_chunk(chunk_pos)
 

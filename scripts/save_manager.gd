@@ -79,6 +79,11 @@ func carregar(slot: String) -> void:
 
 	await _aplicar_semente(dados.seed, dados.estruturas)
 
+	# Aguarda chunks terminarem antes de esconder o loading
+	var mapa := arvore.current_scene.get_node_or_null("Mapa")
+	if mapa != null and mapa.has_method("await_chunks_pronto"):
+		await mapa.await_chunks_pronto()
+
 	if dados.has("jogador"):
 		_restaurar_jogador(dados.jogador)
 
