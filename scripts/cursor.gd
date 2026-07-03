@@ -12,6 +12,9 @@ var _indicador_grid: Sprite2D = null
 var _tamanho_grid_atual: Vector2i = Vector2i(1, 1)
 
 var _joystick: Control = null
+var _botao_pausa: Control = null
+var _barra_ui_root: Control = null
+var _ui_root: Control = null
 var _cursor_controle: Vector2 = Vector2.ZERO
 var _modo_controle: bool = false
 var _mouse_moveu: bool = false
@@ -27,6 +30,9 @@ var _warpeando: bool = false
 
 func _ready() -> void:
 	_joystick = get_tree().root.find_child("Joystick", true, false)
+	_ui_root = get_tree().root.find_child("UI", true, false)
+	_botao_pausa = get_tree().root.find_child("BotaoPausa", true, false)
+	_barra_ui_root = get_tree().root.find_child("BarraConstrucao", true, false)
 	for filho in get_children():
 		if filho is CanvasItem:
 			filho.z_index = 10
@@ -187,10 +193,23 @@ func _em_pinça() -> bool:
 	return pai.has_method("is_pinçando") and pai.is_pinçando()
 
 func _cursor_em_ui() -> bool:
-	## Verifica se o cursor está sobre a área do joystick (incluindo margem).
-	if _joystick == null or not _joystick.has_method("is_na_area_de_ui"):
-		return false
-	return _joystick.is_na_area_de_ui(get_viewport().get_mouse_position())
+	## Verifica se o cursor está sobre QUALQUER elemento GUI
+	## (joystick, barra de construção, botão de pausa, etc.)
+	var mouse_pos := get_viewport().get_mouse_position()
+	
+	# 1. Joystick (incluindo margem)
+	if _joystick != null and _joystick.has_method("is_na_area_de_ui") and _joystick.is_na_area_de_ui(mouse_pos):
+		return true
+	
+	# 2. Botão de pausa (canto superior direito)
+	if _botao_pausa != null and _botao_pausa.get_global_rect().has_point(mouse_pos):
+		return true
+	
+	# 3. Barra de construção (fundo da tela)
+	if _barra_ui_root != null and _barra_ui_root.get_global_rect().has_point(mouse_pos):
+		return true
+	
+	return false
 
 func _unhandled_input(event: InputEvent) -> void:
 	# Quando pausado (menu aberto), ignora qualquer ação no mundo do jogo

@@ -28,7 +28,7 @@ func _input(event: InputEvent) -> void:
 				is_dragging = true
 				_arrastar(event.position)
 				get_viewport().set_input_as_handled()
-			elif not event.pressed:
+			elif not event.pressed and is_dragging:
 				_resetar()
 				get_viewport().set_input_as_handled()
 
@@ -42,7 +42,7 @@ func _input(event: InputEvent) -> void:
 			is_dragging = true
 			_arrastar(event.position)
 			get_viewport().set_input_as_handled()
-		elif not event.pressed:
+		elif not event.pressed and is_dragging:
 			_resetar()
 			get_viewport().set_input_as_handled()
 
