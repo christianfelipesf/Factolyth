@@ -4,6 +4,8 @@
 [ext_resource type="Texture2D" uid="uid://dbsg6x85rfcli" path="res://images/ui/joystick.png" id="3_xx5n8"]
 [ext_resource type="PackedScene" uid="uid://bfbwco8rr7fd1" path="res://scenes/barra_construcao.tscn" id="4_y1cqx"]
 [ext_resource type="Script" uid="uid://bs2gpg1jptmk1" path="res://scripts/inventario_hud.gd" id="5"]
+[ext_resource type="PackedScene" uid="uid://cl4m08wh2m2h6" path="res://scenes/pause_menu.tscn" id="6_6rf2q"]
+[ext_resource type="Script" path="res://scripts/save_notification.gd" id="7_so4q7"]
 
 [node name="CanvasLayer" type="CanvasLayer" unique_id=216092279]
 
@@ -40,6 +42,27 @@ offset_bottom = 120.0
 grow_horizontal = 0
 grow_vertical = 0
 script = ExtResource("5")
+
+[node name="PauseMenu" parent="." instance=ExtResource("6_6rf2q")]
+
+[node name="NotificacaoSave" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 13
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -44.0
+offset_left = -260.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 1, 1, 0.9)
+theme_override_font_sizes/font_size = 16
+theme_override_constants/outline_size = 4
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.8)
+horizontal_alignment = 2
+vertical_alignment = 1
+text = ""
+script = ExtResource("7_so4q7")
 
 [node name="Margem" type="MarginContainer" parent="InventarioHUD" unique_id=1582695389]
 layout_mode = 1

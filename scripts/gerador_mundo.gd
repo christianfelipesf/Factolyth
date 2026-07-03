@@ -34,7 +34,7 @@ func _ready() -> void:
 	if semente == 0:
 		semente = randi()
 	_inicializar_noises()
-	_deslocamento = Vector2i(-largura / 2, -altura / 2)
+	_deslocamento = Vector2i(int(-largura / 2.0), int(-altura / 2.0))
 	if SaveManager != null:
 		SaveManager.mostrar_carregando()
 		SaveManager.esconder_carregando()
@@ -97,8 +97,8 @@ func _atualizar_chunks() -> void:
 	var max_chunk_x := ceili(float(largura) / chunk_tamanho) - 1
 	var max_chunk_y := ceili(float(altura) / chunk_tamanho) - 1
 	var chunk_atual := Vector2i(
-		clampi(grid_x / chunk_tamanho, 0, max_chunk_x),
-		clampi(grid_y / chunk_tamanho, 0, max_chunk_y)
+		clampi(int(grid_x / float(chunk_tamanho)), 0, max_chunk_x),
+		clampi(int(grid_y / float(chunk_tamanho)), 0, max_chunk_y)
 	)
 
 	if chunk_atual == _ultimo_chunk:
@@ -168,7 +168,6 @@ func _gerar_chunk(chunk_pos: Vector2i) -> void:
 				solo.set_cell(tile_pos, FONTE_TILE, GRAMA)
 
 			if absf(n.minerio) > 0.65:
-				var tile_topo := GRAMA if n.altura <= 0.2 and n.detalhe >= 0.0 else PEDRA
 				if n.minerio > -0.7:
 					minerios.set_cell(tile_pos, FONTE_TILE, BRONZE)
 				else:

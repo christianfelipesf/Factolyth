@@ -1,8 +1,11 @@
 extends Node
 
+signal save_concluido(slot: String)
+
 const DIR_SAVES := "user://saves/"
 var _carregando := false
 var _loading: Node = null
+var save_pendente: String = ""
 
 const CENA_CARREGANDO := preload("res://scenes/carregando.tscn")
 
@@ -12,6 +15,19 @@ func _ready() -> void:
 	print("SaveManager pronto — F5=salvar, F9=carregar, F12=deletar saves")
 
 func _process(_delta: float) -> void:
+	var arvore := get_tree()
+	if arvore == null:
+		return
+
+	# Carrega save pendente assim que uma cena de jogo estiver ativa
+	if save_pendente != "":
+		var cena := arvore.current_scene
+		if cena != null and cena.name != "Main":
+			var slot := save_pendente
+			save_pendente = ""
+			carregar(slot)
+			return
+
 	if Input.is_action_just_pressed("salvar_jogo"):
 		salvar("slot_1")
 	elif Input.is_action_just_pressed("carregar_jogo"):
@@ -33,9 +49,13 @@ func salvar(slot: String) -> void:
 		return
 	file.store_string(json_str)
 	print("Salvo em ", path)
+	save_concluido.emit(slot)
 
 func carregar(slot: String) -> void:
 	if _carregando:
+		return
+	var arvore := get_tree()
+	if arvore == null or arvore.current_scene == null:
 		return
 	_carregando = true
 	mostrar_carregando()
@@ -55,9 +75,7 @@ func carregar(slot: String) -> void:
 		esconder_carregando()
 		return
 
-	var cena: Node = get_tree().current_scene
-
-	_limpar_estruturas(cena)
+	_limpar_estruturas(arvore.current_scene)
 
 	await _aplicar_semente(dados.seed, dados.estruturas)
 
@@ -83,6 +101,9 @@ func deletar_todos_saves() -> void:
 func mostrar_carregando() -> void:
 	if _loading != null:
 		return
+	var arvore := get_tree()
+	if arvore == null:
+		return
 	var layer := CanvasLayer.new()
 	layer.layer = 128
 	layer.process_mode = PROCESS_MODE_ALWAYS
@@ -94,20 +115,28 @@ func mostrar_carregando() -> void:
 	layer.add_child(tela)
 	_loading = layer
 	add_child(_loading)
-	get_tree().paused = true
+	arvore.paused = true
 
 func esconder_carregando() -> void:
 	if _loading != null:
 		_loading.queue_free()
 		_loading = null
-	get_tree().paused = false
+	var arvore := get_tree()
+	if arvore != null:
+		arvore.paused = false
 
 func _obter_semente() -> int:
-	var mapa := get_tree().current_scene.get_node_or_null("Mapa")
+	var arvore := get_tree()
+	if arvore == null or arvore.current_scene == null:
+		return 0
+	var mapa := arvore.current_scene.get_node_or_null("Mapa")
 	return mapa.semente if mapa else 0
 
 func _aplicar_semente(semente: int, estruturas: Array) -> void:
-	var mapa := get_tree().current_scene.get_node_or_null("Mapa")
+	var arvore := get_tree()
+	if arvore == null or arvore.current_scene == null:
+		return
+	var mapa := arvore.current_scene.get_node_or_null("Mapa")
 	if mapa == null:
 		return
 	mapa.semente = semente
@@ -116,17 +145,29 @@ func _aplicar_semente(semente: int, estruturas: Array) -> void:
 	for i in range(estruturas.size()):
 		_instanciar_estrutura(estruturas[i])
 		if i % 10 == 0:
-			await get_tree().process_frame
+			arvore = get_tree()
+			if arvore != null:
+				await arvore.process_frame
 
 func _coletar_jogador() -> Dictionary:
-	var cena = get_tree().current_scene
+	var arvore := get_tree()
+	if arvore == null:
+		return {}
+	var cena = arvore.current_scene
+	if cena == null:
+		return {}
 	var jogador := cena.get_node_or_null("Jogador")
 	if jogador == null or not jogador.has_method("get_save_data"):
 		return {}
 	return jogador.get_save_data()
 
 func _restaurar_jogador(dados: Dictionary) -> void:
-	var cena = get_tree().current_scene
+	var arvore := get_tree()
+	if arvore == null:
+		return
+	var cena = arvore.current_scene
+	if cena == null:
+		return
 	var jogador := cena.get_node_or_null("Jogador")
 	if jogador == null or not jogador.has_method("set_save_data"):
 		return
@@ -134,7 +175,10 @@ func _restaurar_jogador(dados: Dictionary) -> void:
 
 func _coletar_estruturas() -> Array:
 	var lista: Array = []
-	for node in get_tree().get_nodes_in_group("estrutura"):
+	var arvore := get_tree()
+	if arvore == null:
+		return lista
+	for node in arvore.get_nodes_in_group("estrutura"):
 		var entry: Dictionary = {
 			cena = node.scene_file_path,
 			posicao = [node.global_position.x, node.global_position.y],
@@ -145,11 +189,16 @@ func _coletar_estruturas() -> Array:
 		lista.append(entry)
 	return lista
 
-func _limpar_estruturas(cena: Node) -> void:
-	for node in get_tree().get_nodes_in_group("estrutura"):
+func _limpar_estruturas(_cena: Node) -> void:
+	var arvore := get_tree()
+	if arvore == null:
+		return
+	for node in arvore.get_nodes_in_group("estrutura"):
 		if is_instance_valid(node):
 			node.queue_free()
-	await get_tree().physics_frame
+	arvore = get_tree()
+	if arvore != null:
+		await arvore.physics_frame
 
 func _instanciar_estrutura(dados: Dictionary) -> void:
 	var cena_obj := load(dados.cena) as PackedScene
@@ -162,5 +211,9 @@ func _instanciar_estrutura(dados: Dictionary) -> void:
 	inst.global_rotation = deg_to_rad(dados.rotacao)
 	if inst.has_method("set_save_data") and dados.has("dados"):
 		inst.set_save_data(dados.dados)
-	get_tree().current_scene.add_child(inst)
+	var arvore := get_tree()
+	if arvore == null or arvore.current_scene == null:
+		inst.queue_free()
+		return
+	arvore.current_scene.add_child(inst)
 	inst.add_to_group("estrutura")

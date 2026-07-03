@@ -24,10 +24,10 @@ func _on_novo_jogo_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/mundo.tscn")
 
 func _on_carregar_pressed() -> void:
+	# Salva o slot pendente antes de trocar de cena.
+	# O SaveManager carregará automaticamente quando a nova cena estiver pronta.
+	SaveManager.save_pendente = "slot_1"
 	get_tree().change_scene_to_file("res://scenes/mundo.tscn")
-	await get_tree().process_frame
-	await get_tree().process_frame
-	SaveManager.carregar("slot_1")
 
 func _on_deletar_saves_pressed() -> void:
 	SaveManager.deletar_todos_saves()
