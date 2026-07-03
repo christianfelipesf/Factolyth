@@ -6,13 +6,15 @@ extends Node2D
 @export var chunk_tamanho: int = 32
 @export var distancia_visual: int = 5
 
-const FONTE_TILE: int = 0
+const FONTE_SOLO: int = 0
+const FONTE_CRISTAIS: int = 1
 const GRAMA: Vector2i = Vector2i(0, 0)
-const PEDRA: Vector2i = Vector2i(1, 0)
-const AGUA: Vector2i = Vector2i(2, 1)
-const LAVA: Vector2i = Vector2i(0, 2)
-const FERRO: Vector2i = Vector2i(0, 1)
-const BRONZE: Vector2i = Vector2i(1, 1)
+const PEDRA: Vector2i = Vector2i(0, 2)
+const AGUA: Vector2i = Vector2i(1, 2)
+const LAVA: Vector2i = Vector2i(2, 2)
+const QUARTZO: Vector2i = Vector2i(1, 0)
+const RUBELITA: Vector2i = Vector2i(0, 1)
+const TURMALINA_CIANO: Vector2i = Vector2i(0, 2)
 
 var _noise_altura: FastNoiseLite
 var _noise_vale: FastNoiseLite
@@ -35,7 +37,7 @@ func esta_gerando() -> bool:
 	return _gerando
 
 @onready var solo: TileMapLayer = $solo
-@onready var minerios: TileMapLayer = $minerios
+@onready var cristais: TileMapLayer = $cristais
 
 func _ready() -> void:
 	process_mode = PROCESS_MODE_ALWAYS
@@ -191,29 +193,31 @@ func _gerar_chunk(chunk_pos: Vector2i) -> void:
 			var n := _get_noise(gx, gy)
 
 			if n.altura < -0.3:
-				solo.set_cell(tile_pos, FONTE_TILE, AGUA)
+				solo.set_cell(tile_pos, FONTE_SOLO, AGUA)
 				cel_agua.append(tile_pos)
 			elif n.vale > 0.88 and n.altura < 0.0:
-				solo.set_cell(tile_pos, FONTE_TILE, AGUA)
+				solo.set_cell(tile_pos, FONTE_SOLO, AGUA)
 				cel_agua.append(tile_pos)
 			elif n.vale > 0.88 and n.altura > 0.35:
-				solo.set_cell(tile_pos, FONTE_TILE, LAVA)
+				solo.set_cell(tile_pos, FONTE_SOLO, LAVA)
 				cel_lava.append(tile_pos)
 			elif n.altura > 0.5:
-				solo.set_cell(tile_pos, FONTE_TILE, LAVA)
+				solo.set_cell(tile_pos, FONTE_SOLO, LAVA)
 				cel_lava.append(tile_pos)
 			elif n.altura > 0.2:
-				solo.set_cell(tile_pos, FONTE_TILE, PEDRA)
+				solo.set_cell(tile_pos, FONTE_SOLO, PEDRA)
 			elif n.detalhe < 0.0:
-				solo.set_cell(tile_pos, FONTE_TILE, PEDRA)
+				solo.set_cell(tile_pos, FONTE_SOLO, PEDRA)
 			else:
-				solo.set_cell(tile_pos, FONTE_TILE, GRAMA)
+				solo.set_cell(tile_pos, FONTE_SOLO, GRAMA)
 
 			if absf(n.minerio) > 0.65:
-				if n.minerio > -0.7:
-					minerios.set_cell(tile_pos, FONTE_TILE, BRONZE)
+				if n.minerio > 0.85:
+					cristais.set_cell(tile_pos, FONTE_CRISTAIS, TURMALINA_CIANO)
+				elif n.minerio > -0.7:
+					cristais.set_cell(tile_pos, FONTE_CRISTAIS, QUARTZO)
 				else:
-					minerios.set_cell(tile_pos, FONTE_TILE, FERRO)
+					cristais.set_cell(tile_pos, FONTE_CRISTAIS, RUBELITA)
 
 	_limpar_ilhas_no_chunk(cel_lava, LAVA, PEDRA)
 	_limpar_ilhas_no_chunk(cel_agua, AGUA, GRAMA)
@@ -246,7 +250,7 @@ func _limpar_ilhas_no_chunk(celulas: Array[Vector2i], tile_tipo: Vector2i, tile_
 			if vizinhos >= 2:
 				break
 		if vizinhos < 2:
-			solo.set_cell(pos, FONTE_TILE, tile_substituto)
+			solo.set_cell(pos, FONTE_SOLO, tile_substituto)
 
 func _descarregar_chunk(chunk_pos: Vector2i) -> void:
 	var start_x := chunk_pos.x * chunk_tamanho
@@ -257,4 +261,4 @@ func _descarregar_chunk(chunk_pos: Vector2i) -> void:
 		for gy in range(start_y, end_y):
 			var tile_pos := Vector2i(gx + _deslocamento.x, gy + _deslocamento.y)
 			solo.set_cell(tile_pos, -1)
-			minerios.set_cell(tile_pos, -1)
+			cristais.set_cell(tile_pos, -1)

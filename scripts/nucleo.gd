@@ -6,7 +6,7 @@ var is_preview := false
 
 # 📊 Dicionário para guardar o tipo de item e a quantidade armazenada
 var inventario := {
-	"bronze": 0,
+	"quartzo": 0,
 }
 
 signal inventario_atualizado(inv: Dictionary)
@@ -31,7 +31,7 @@ func _on_coletor_body_entered(body: Node2D) -> void:
 		# 💡 Identifica qual é o minério. 
 		# Se você não tiver uma variável 'nome_do_item' no item, podemos usar o nome do nó ou grupo.
 		# Exemplo assumindo que o script do item possui uma variável identificadora ou usando o nome do objeto:
-		var tipo_item = "bronze" 
+		var tipo_item = "quartzo" 
 		
 		# Se o seu script do item tiver uma variável para diferenciar (ex: var tipo = "bronze")
 		if body.get("tipo") != null:

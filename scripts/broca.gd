@@ -1,6 +1,6 @@
 extends StaticBody2D
 
-const BRONZE = preload("res://scenes/itens/itens.tscn")
+const QUARTZO = preload("res://scenes/itens/itens.tscn")
 
 # 💡 Velocidade de produção configurável pelo Inspetor (em segundos)
 @export var tempo_producao : float = 2.0
@@ -72,16 +72,16 @@ func _on_timer_producao_timeout() -> void:
 			break
 	
 	if not espaco_ocupado:
-		_spawnar_bronze(esteira_atual)
+		_spawnar_quartzo(esteira_atual)
 	else:
 		print("⏳ Saída da broca bloqueada por um minério! Aguardando mover.")
 
 
-func _spawnar_bronze(esteira: Node2D) -> void:
-	var bronze = BRONZE.instantiate()
-	bronze.global_position = esteira.global_position
-	get_parent().call_deferred(&"add_child", bronze)
-	print("🏭 [PRODUÇÃO] Bronze extraído com sucesso para a esteira!")
+func _spawnar_quartzo(esteira: Node2D) -> void:
+	var quartzo = QUARTZO.instantiate()
+	quartzo.global_position = esteira.global_position
+	get_parent().call_deferred(&"add_child", quartzo)
+	print("🏭 [PRODUÇÃO] Quartzo extraído com sucesso para a esteira!")
 
 func _on_detector_body_entered(body: Node2D) -> void:
 	var esteira = _extrair_esteira(body)

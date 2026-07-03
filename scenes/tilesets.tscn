@@ -1,26 +1,31 @@
 [gd_scene format=3 uid="uid://cp6y5ftt0rtb"]
 
-[ext_resource type="Texture2D" uid="uid://bqfo8moyoxfwj" path="res://images/tilemap.png" id="1_bro14"]
-[ext_resource type="Script" uid="uid://cfaj048www7rx" path="res://scripts/gerador_mundo.gd" id="2_hijgr"]
+[ext_resource type="Texture2D" uid="uid://cx0nyf1paonyv" path="res://images/tilemap/solo.png" id="1_4q2ab"]
+[ext_resource type="Texture2D" uid="uid://baommyldmwj8v" path="res://images/tilemap/cristais.png" id="2_tg0cf"]
+[ext_resource type="Script" uid="uid://cfaj048www7rx" path="res://scripts/gerador_mundo.gd" id="3_hijgr"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lkbod"]
-texture = ExtResource("1_bro14")
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_solo"]
+texture = ExtResource("1_4q2ab")
 texture_region_size = Vector2i(32, 32)
 0:0/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cristais"]
+texture = ExtResource("2_tg0cf")
+texture_region_size = Vector2i(32, 32)
 1:0/0 = 0
 0:1/0 = 0
-1:1/0 = 0
 0:2/0 = 0
-0:2/0/modulate = Color(1.0845727, 1.0803368, 1.0803368, 1)
-2:0/0 = 0
-2:1/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_xc42v"]
 tile_size = Vector2i(32, 32)
-sources/0 = SubResource("TileSetAtlasSource_lkbod")
+sources/0 = SubResource("TileSetAtlasSource_solo")
+sources/1 = SubResource("TileSetAtlasSource_cristais")
 
 [node name="Mapa" type="Node2D" unique_id=1582223863]
-script = ExtResource("2_hijgr")
+script = ExtResource("3_hijgr")
 
 [node name="solo" type="TileMapLayer" parent="." unique_id=308112617]
 tile_set = SubResource("TileSet_xc42v")
