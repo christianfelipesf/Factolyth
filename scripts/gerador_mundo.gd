@@ -19,10 +19,12 @@ const BRONZE: Vector2i = Vector2i(1, 1)
 func _ready() -> void:
 	if semente == 0:
 		semente = randi()
+	if SaveManager != null:
+		SaveManager.mostrar_carregando()
 	call_deferred(&"gerar")
 
-func gerar() -> void:
-	if SaveManager != null:
+func gerar(gerenciar_loading: bool = true) -> void:
+	if gerenciar_loading and SaveManager != null:
 		SaveManager.mostrar_carregando()
 	await get_tree().process_frame
 
@@ -72,7 +74,7 @@ func gerar() -> void:
 			cache_vale[idx] = 1.0 - abs(noise_vale.get_noise_2d(px, py))
 			cache_minerio[idx] = noise_minerios.get_noise_2d(x, y)
 			idx += 1
-		if x % 50 == 0:
+		if x % 5 == 0:
 			await get_tree().process_frame
 
 	var deslocamento := Vector2i(-largura / 2, -altura / 2)
@@ -84,6 +86,8 @@ func gerar() -> void:
 	idx = 0
 	for x in largura:
 		for y in altura:
+			if x % 5 == 0 and y == 0:
+				await get_tree().process_frame
 			var pos := Vector2i(x + deslocamento.x, y + deslocamento.y)
 			var altura_valor := cache_altura[idx]
 			var detalhe := cache_detalhe[idx]
@@ -126,7 +130,9 @@ func gerar() -> void:
 	_limpar_ilhas(cel_lava, LAVA, PEDRA)
 	_limpar_ilhas(cel_agua, AGUA, GRAMA)
 
-	if SaveManager != null:
+	await get_tree().process_frame
+
+	if gerenciar_loading and SaveManager != null:
 		SaveManager.esconder_carregando()
 	print("Mapa gerado (semente: ", semente, ")")
 
@@ -134,7 +140,10 @@ func _limpar_ilhas(celulas: Array[Vector2i], tile_tipo: Vector2i, tile_substitut
 	if celulas.is_empty():
 		return
 	var conjunto := PackedVector2Array(celulas)
-	for pos in celulas:
+	for i in range(celulas.size()):
+		var pos := celulas[i]
+		if i % 200 == 0:
+			await get_tree().process_frame
 		if solo.get_cell_atlas_coords(pos) != tile_tipo:
 			continue
 		var vizinhos := 0

@@ -42,7 +42,6 @@ vframes = 2
 shape = SubResource("CircleShape2D_uahlj")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1239451589]
-position_smoothing_enabled = true
 position_smoothing_speed = 8.0
 
 [node name="Marker2D" type="Marker2D" parent="." unique_id=1326570300]

@@ -18,7 +18,7 @@ offset_left = -22.0
 offset_top = -11.0
 offset_right = 18.0
 offset_bottom = 29.0
-scale = Vector2(30.502522, 16.820074)
+scale = Vector2(33.296097, 18.926086)
 theme_override_styles/panel = SubResource("StyleBoxFlat_22due")
 
 [node name="Label" type="Label" parent="." unique_id=1053491120]
@@ -30,6 +30,18 @@ offset_right = 19.0
 offset_bottom = 4.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_font_sizes/font_size = 23
 text = "Carregando..."
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="ProgressBar" type="ProgressBar" parent="." unique_id=8727595]
+layout_mode = 0
+offset_left = 546.0
+offset_top = 392.0
+offset_right = 746.0
+offset_bottom = 417.0
+step = 1.0
+show_percentage = false
+indeterminate = true
+editor_preview_indeterminate = false

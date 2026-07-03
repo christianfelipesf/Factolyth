@@ -85,8 +85,9 @@ func mostrar_carregando() -> void:
 		return
 	var layer := CanvasLayer.new()
 	layer.layer = 128
+	layer.process_mode = PROCESS_MODE_ALWAYS
 	var fundo := ColorRect.new()
-	fundo.color = Color(0, 0, 0, 0.9)
+	fundo.color = Color(0, 0, 0, 1.0)
 	fundo.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	layer.add_child(fundo)
 	var tela := CENA_CARREGANDO.instantiate()
@@ -110,19 +111,23 @@ func _aplicar_semente(semente: int, estruturas: Array) -> void:
 	if mapa == null:
 		return
 	mapa.semente = semente
-	await mapa.gerar()
+	await mapa.gerar(false)
 
-	for est in estruturas:
-		_instanciar_estrutura(est)
+	for i in range(estruturas.size()):
+		_instanciar_estrutura(estruturas[i])
+		if i % 10 == 0:
+			await get_tree().process_frame
 
 func _coletar_jogador() -> Dictionary:
-	var jogador := get_tree().current_scene.get_node_or_null("Jogador/player")
+	var cena = get_tree().current_scene
+	var jogador := cena.get_node_or_null("Jogador")
 	if jogador == null or not jogador.has_method("get_save_data"):
 		return {}
 	return jogador.get_save_data()
 
 func _restaurar_jogador(dados: Dictionary) -> void:
-	var jogador := get_tree().current_scene.get_node_or_null("Jogador/player")
+	var cena = get_tree().current_scene
+	var jogador := cena.get_node_or_null("Jogador")
 	if jogador == null or not jogador.has_method("set_save_data"):
 		return
 	jogador.set_save_data(dados)

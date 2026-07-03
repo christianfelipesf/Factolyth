@@ -110,6 +110,7 @@ func get_save_data() -> Dictionary:
 
 func set_save_data(dados: Dictionary) -> void:
 	velocity = Vector2.ZERO
+	camera.position_smoothing_enabled = false
 	if dados.has("posicao"):
 		var p: Array = dados.posicao
 		global_position = Vector2(p[0], p[1])
@@ -121,3 +122,4 @@ func set_save_data(dados: Dictionary) -> void:
 		_indice_item_atual = dados.item_atual
 		if _indice_item_atual >= 0 and _indice_item_atual < _itens_construcao.size():
 			marker.equipar_item(_itens_construcao[_indice_item_atual])
+	camera.position_smoothing_enabled = true
