@@ -15,12 +15,16 @@ const ROTATION_SPEED = 10.0
 var _itens_construcao: Array[ItemConstrucao] = []
 var _indice_item_atual: int = -1
 
+signal item_selecionado(indice: int)
+
 @onready var target_zoom_value: float = (MIN_ZOOM + MAX_ZOOM) / 2.0
 @onready var camera: Camera2D = $Camera2D 
 @onready var marker: Marker2D = $Marker2D
 
 func _ready() -> void:
 	carregar_itens_construcao()
+	if not _itens_construcao.is_empty():
+		selecionar_item_por_indice(0)
 
 func carregar_itens_construcao() -> void:
 	_adicionar_item_com_cena("Broca", _BROCA)
@@ -83,14 +87,31 @@ func _unhandled_input(event: InputEvent) -> void:
 			target_zoom_value -= ZOOM_STEP
 		target_zoom_value = clamp(target_zoom_value, MIN_ZOOM, MAX_ZOOM)
 
-	# [🌟 CICLO DE ITENS COM E]
+	# [🌟 CICLO DE ITENS COM E / TECLAS 1-4]
 	if event.is_action_pressed("interact"):
 		if _itens_construcao.is_empty():
 			return
-		_indice_item_atual = (_indice_item_atual + 1) % _itens_construcao.size()
-		var item = _itens_construcao[_indice_item_atual]
-		marker.equipar_item(item)
-		print("🔧 Item selecionado: ", item.nome)
+		var novo = (_indice_item_atual + 1) % _itens_construcao.size()
+		selecionar_item_por_indice(novo)
+	if event is InputEventKey and event.pressed and not event.echo:
+		match event.keycode:
+			KEY_1: selecionar_item_por_indice(0)
+			KEY_2: selecionar_item_por_indice(1)
+			KEY_3: selecionar_item_por_indice(2)
+			KEY_4: selecionar_item_por_indice(3)
+
+func get_itens_construcao() -> Array:
+	return _itens_construcao
+
+func get_indice_item_atual() -> int:
+	return _indice_item_atual
+
+func selecionar_item_por_indice(indice: int) -> void:
+	if indice < 0 or indice >= _itens_construcao.size():
+		return
+	_indice_item_atual = indice
+	marker.equipar_item(_itens_construcao[_indice_item_atual])
+	item_selecionado.emit(indice)
 
 func _extrair_tamanho_grid(cena: PackedScene) -> Vector2i:
 	var inst = cena.instantiate()
@@ -119,7 +140,5 @@ func set_save_data(dados: Dictionary) -> void:
 	if dados.has("zoom"):
 		target_zoom_value = dados.zoom
 	if dados.has("item_atual"):
-		_indice_item_atual = dados.item_atual
-		if _indice_item_atual >= 0 and _indice_item_atual < _itens_construcao.size():
-			marker.equipar_item(_itens_construcao[_indice_item_atual])
+		selecionar_item_por_indice(dados.item_atual)
 	camera.position_smoothing_enabled = true

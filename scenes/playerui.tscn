@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b6p0mqvla7410" path="res://scripts/joygstick.gd" id="1_5vk06"]
 [ext_resource type="Texture2D" uid="uid://dbsg6x85rfcli" path="res://images/ui/joystick.png" id="3_xx5n8"]
+[ext_resource type="PackedScene" path="res://scenes/barra_construcao.tscn" id="4_y1cqx"]
 
 [node name="CanvasLayer" type="CanvasLayer" unique_id=216092279]
 
@@ -20,3 +21,5 @@ script = ExtResource("1_5vk06")
 position = Vector2(162.99998, 488.99997)
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("3_xx5n8")
+
+[node name="BarraConstrucao" parent="." instance=ExtResource("4_y1cqx")]
