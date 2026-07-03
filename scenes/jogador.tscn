@@ -6,6 +6,9 @@
 [ext_resource type="Shader" uid="uid://cxfqaxiy367r1" path="res://scripts/cursor.gdshader" id="4_s760d"]
 [ext_resource type="Script" uid="uid://dbpjo4ncb31jf" path="res://scripts/cursor.gd" id="5_lj65x"]
 [ext_resource type="Texture2D" uid="uid://dhv6tsd0e8rfj" path="res://images/cursornew.png" id="6_32758"]
+[ext_resource type="AudioStream" uid="uid://mle271p70js" path="res://sound/ambient.mp3" id="7"]
+[ext_resource type="AudioStream" uid="uid://c15v67xt3o3nq" path="res://sound/colocar.mp3" id="8"]
+[ext_resource type="AudioStream" uid="uid://cqnb0typ3qx53" path="res://sound/destruir.mp3" id="9"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lj65x"]
 shader = ExtResource("2_32758")
@@ -22,6 +25,12 @@ shader_parameter/brilho_borda = 1.5
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_lj65x"]
 radius = 13.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8gwte"]
+shader = ExtResource("4_s760d")
+shader_parameter/velocidade_pulsar = 3.0
+shader_parameter/intensidade_pulso = 0.05
+shader_parameter/brilho_borda = 1.5
 
 [node name="player" type="CharacterBody2D" unique_id=1088754334]
 z_index = 10
@@ -57,3 +66,21 @@ texture = ExtResource("6_32758")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Marker2D/AreaChecagem" unique_id=274808384]
 shape = SubResource("CircleShape2D_lj65x")
+
+[node name="AudioAmbiente" type="AudioStreamPlayer" parent="Marker2D" unique_id=810058844]
+stream = ExtResource("7")
+volume_db = -15.805
+autoplay = true
+
+[node name="AudioColocar" type="AudioStreamPlayer" parent="Marker2D" unique_id=1543396848]
+stream = ExtResource("8")
+
+[node name="AudioDestruir" type="AudioStreamPlayer" parent="Marker2D" unique_id=1797249583]
+stream = ExtResource("9")
+
+[node name="SetaDirecao" type="Polygon2D" parent="Marker2D" unique_id=98434007]
+material = SubResource("ShaderMaterial_8gwte")
+position = Vector2(0, -23)
+scale = Vector2(0.5, 0.5)
+color = Color(0.9647059, 0.9529412, 0.9607843, 0.3137255)
+polygon = PackedVector2Array(0, -16, -10, 10, 10, 10)

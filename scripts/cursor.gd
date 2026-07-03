@@ -19,6 +19,10 @@ var _mouse_moveu: bool = false
 @onready var camera: Camera2D = $"../Camera2D"
 @onready var area_checagem: Area2D = $AreaChecagem
 @onready var shape_checagem: CollisionShape2D = $AreaChecagem/CollisionShape2D
+@onready var _audio_ambiente: AudioStreamPlayer = $AudioAmbiente
+@onready var _audio_colocar: AudioStreamPlayer = $AudioColocar
+@onready var _audio_destruir: AudioStreamPlayer = $AudioDestruir
+@onready var _seta_direcao: Polygon2D = $SetaDirecao
 
 func _ready() -> void:
 	_joystick = get_tree().root.find_child("Joystick", true, false)
@@ -26,6 +30,7 @@ func _ready() -> void:
 		if filho is CanvasItem:
 			filho.z_index = 10
 	_recriar_indicador(Vector2i(1, 1))
+	_audio_ambiente.finished.connect(_audio_ambiente.play)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
@@ -108,6 +113,7 @@ func desequipar_item() -> void:
 	_tamanho_grid_atual = Vector2i(1, 1)
 	_recriar_indicador(Vector2i(1, 1))
 	_ultima_posicao_colocacao = Vector2.INF
+	_seta_direcao.visible = false
 	_atualizar_preview_visual()
 
 func _atualizar_cursor_e_grid(pos_alternativa: Vector2 = Vector2.INF) -> void:
@@ -143,6 +149,9 @@ func _atualizar_cursor_e_grid(pos_alternativa: Vector2 = Vector2.INF) -> void:
 	for child in get_children():
 		if child.has_meta("is_construction_preview"):
 			child.global_position = _posicao_grid + ofs
+
+	if _seta_direcao.visible:
+		_seta_direcao.global_position = _posicao_grid + ofs
 
 	_gerenciar_cor_do_preview()
 
@@ -199,7 +208,11 @@ func _atualizar_preview_visual() -> void:
 			child.queue_free()
 
 	if item_atual == null or item_atual.cena_objeto == null:
+		_seta_direcao.visible = false
 		return
+
+	_seta_direcao.visible = true
+	_seta_direcao.rotation = deg_to_rad(rotation_atual)
 
 	var obj_temp = item_atual.cena_objeto.instantiate()
 	if "is_preview" in obj_temp:
@@ -239,6 +252,7 @@ func _criar_objeto_posicionavel() -> void:
 	get_tree().current_scene.add_child(novo_objeto)
 	novo_objeto.add_to_group("estrutura")
 	_spawnar_particula(novo_objeto.global_position)
+	_audio_colocar.play()
 
 	_ultima_posicao_colocacao = _posicao_grid
 
@@ -258,4 +272,5 @@ func _remover_objeto_na_posicao() -> void:
 	for corpo in area_checagem.get_overlapping_bodies():
 		if corpo != $"..":
 			_spawnar_particula(corpo.global_position)
+			_audio_destruir.play()
 			corpo.queue_free()
