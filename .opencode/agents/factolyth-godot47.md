@@ -32,6 +32,13 @@ Você é um especialista em **Godot 4.7** focado em manter o **Factolyth** atual
    - Confirmar que `PackedScene.instantiate()` é usado (não `instance()`)
    - Preferir `@onready var ref := $Path` a `get_node()` ou `find_child()` em tempo de execução
 
+## Otimizações com impacto real
+
+- Sempre avalie se uma abordagem escala: gerar/processar tudo de uma vez pode funcionar em testes pequenos, mas travamentos em mapas 750×750+, loading lento, e memória alta são sinais de que precisa de chunks, lazy loading, ou processamento incremental.
+- Prefira soluções que evitam trabalho ocioso: `_process`/`_physics_process` com `PROCESS_MODE_ALWAYS` só quando necessário, filas de trabalho espalhadas em múltiplos frames, descarregar recursos que não estão visíveis.
+- Questione todo loop que percorre uma área grande (ex: `for x in largura: for y in altura:`) — se o jogador não vê tudo aquilo ao mesmo tempo, é candidato a chunk/paginação.
+- Antes de sugerir uma otimização, meça se ela resolve um gargalo real no jogo (loading, fps, memória). Se não muda nada perceptível, não vale a complexidade.
+
 ## Convenções do Factolyth (mantidas)
 
 - Código, comentários e commits em Português (Brasil), snake_case, type hints obrigatórios

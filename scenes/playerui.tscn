@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" uid="uid://b6p0mqvla7410" path="res://scripts/joygstick.gd" id="1_5vk06"]
 [ext_resource type="Texture2D" uid="uid://dbsg6x85rfcli" path="res://images/ui/joystick.png" id="3_xx5n8"]
-[ext_resource type="PackedScene" path="res://scenes/barra_construcao.tscn" id="4_y1cqx"]
-[ext_resource type="Script" path="res://scripts/inventario_hud.gd" id="5"]
+[ext_resource type="PackedScene" uid="uid://bfbwco8rr7fd1" path="res://scenes/barra_construcao.tscn" id="4_y1cqx"]
+[ext_resource type="Script" uid="uid://bs2gpg1jptmk1" path="res://scripts/inventario_hud.gd" id="5"]
 
 [node name="CanvasLayer" type="CanvasLayer" unique_id=216092279]
 
@@ -15,6 +15,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_5vk06")
+raio_maximo = 100.0
 
 [node name="TouchScreenButton" type="TouchScreenButton" parent="Joystick" unique_id=828656199]
 
@@ -23,21 +24,24 @@ position = Vector2(162.99998, 488.99997)
 scale = Vector2(0.2, 0.2)
 texture = ExtResource("3_xx5n8")
 
-[node name="BarraConstrucao" parent="." instance=ExtResource("4_y1cqx")]
+[node name="BarraConstrucao" parent="." unique_id=1848745639 instance=ExtResource("4_y1cqx")]
 
-[node name="InventarioHUD" type="Control" parent="."]
+[node name="InventarioHUD" type="Control" parent="." unique_id=824166272]
 layout_mode = 3
-anchors_preset = 12
+anchors_preset = 3
 anchor_left = 1.0
+anchor_top = 1.0
 anchor_right = 1.0
+anchor_bottom = 1.0
 offset_left = -200.0
-offset_right = -8.0
 offset_top = 8.0
+offset_right = -8.0
 offset_bottom = 120.0
 grow_horizontal = 0
+grow_vertical = 0
 script = ExtResource("5")
 
-[node name="Margem" type="MarginContainer" parent="InventarioHUD"]
+[node name="Margem" type="MarginContainer" parent="InventarioHUD" unique_id=1582695389]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -49,7 +53,7 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 4
 
-[node name="Label" type="Label" parent="InventarioHUD/Margem"]
+[node name="Label" type="Label" parent="InventarioHUD/Margem" unique_id=933740335]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.9)

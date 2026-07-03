@@ -100,10 +100,11 @@ func _physics_process(delta: float) -> void:
 
 	if item_atual != null and not _arrastando_joystick():
 		if Input.is_action_pressed("instanciar_objeto"):
-			if _posicao_grid != _ultima_posicao_colocacao and not _area_esta_ocupada():
+			if _posicao_grid != _ultima_posicao_colocacao and not _area_esta_ocupada() and not _cursor_em_ui():
 				_criar_objeto_posicionavel()
 		elif Input.is_action_pressed("remover_objeto"):
-			_remover_objeto_na_posicao()
+			if not _cursor_em_ui():
+				_remover_objeto_na_posicao()
 
 func equipar_item(novo_item: ItemConstrucao) -> void:
 	item_atual = novo_item
@@ -177,6 +178,12 @@ func _gerenciar_cor_do_preview() -> void:
 func _arrastando_joystick() -> bool:
 	return _joystick != null and _joystick.has_method("esta_arrastando") and _joystick.esta_arrastando()
 
+func _cursor_em_ui() -> bool:
+	## Verifica se o cursor está sobre a área do joystick (incluindo margem).
+	if _joystick == null or not _joystick.has_method("is_na_area_de_ui"):
+		return false
+	return _joystick.is_na_area_de_ui(get_viewport().get_mouse_position())
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("cancelar_construcao"):
 		desequipar_item()
@@ -191,20 +198,22 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed and not _arrastando_joystick():
-			if not _area_esta_ocupada():
+			if not _area_esta_ocupada() and not _cursor_em_ui():
 				_criar_objeto_posicionavel()
 			get_viewport().set_input_as_handled()
 		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-			_remover_objeto_na_posicao()
+			if not _cursor_em_ui():
+				_remover_objeto_na_posicao()
 			get_viewport().set_input_as_handled()
 
 	if event is InputEventJoypadButton:
 		if event.button_index == JOY_BUTTON_A and event.pressed:
-			if not _area_esta_ocupada():
+			if not _area_esta_ocupada() and not _cursor_em_ui():
 				_criar_objeto_posicionavel()
 			get_viewport().set_input_as_handled()
 		elif event.button_index == JOY_BUTTON_B and event.pressed:
-			_remover_objeto_na_posicao()
+			if not _cursor_em_ui():
+				_remover_objeto_na_posicao()
 			get_viewport().set_input_as_handled()
 
 func _atualizar_preview_visual() -> void:
