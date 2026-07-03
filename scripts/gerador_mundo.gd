@@ -31,6 +31,9 @@ var _frames_loading := 0
 signal chunks_pronto
 signal chunks_iniciou
 
+func esta_gerando() -> bool:
+	return _gerando
+
 @onready var solo: TileMapLayer = $solo
 @onready var minerios: TileMapLayer = $minerios
 

@@ -82,3 +82,7 @@ func get_velocity() -> Vector2:
 ## (incluindo a margem de segurança). Útil para evitar colocar blocos em cima da UI.
 func is_na_area_de_ui(pos_tela: Vector2) -> bool:
 	return pos_tela.distance_to(_centro) <= raio_maximo + margem
+
+
+func _on_teste_pressed() -> void:
+	pass # Replace with function body.

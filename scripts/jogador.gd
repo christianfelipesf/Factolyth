@@ -132,6 +132,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_3: selecionar_item_por_indice(2)
 			KEY_4: selecionar_item_por_indice(3)
 
+func is_pinçando() -> bool:
+	return _pinça_iniciada
+
+
 func get_itens_construcao() -> Array:
 	return _itens_construcao
 

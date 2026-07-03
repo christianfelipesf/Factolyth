@@ -39,6 +39,85 @@ Você é um especialista em **Godot 4.7** focado em manter o **Factolyth** atual
 - Questione todo loop que percorre uma área grande (ex: `for x in largura: for y in altura:`) — se o jogador não vê tudo aquilo ao mesmo tempo, é candidato a chunk/paginação.
 - Antes de sugerir uma otimização, meça se ela resolve um gargalo real no jogo (loading, fps, memória). Se não muda nada perceptível, não vale a complexidade.
 
+## Arquitetura & Modulação
+
+Cada sistema do jogo DEVE estar contido em seu próprio nó/cena com responsabilidade única. A comunicação entre sistemas é feita exclusivamente por **sinais** e **chamadas de método público** — nunca por acesso direto à árvore de cena (`get_node()`, `find_child()`) para atravessar limites de módulo.
+
+### 1. Separação de responsabilidades
+
+| Módulo | Responsabilidade | Comunica com |
+|---|---|---|
+| `Jogador` | Movimento, zoom, itens, save data (pos/rot/zoom) | `Cursor` via nó filho, `SaveManager` via sinal |
+| `Cursor` | Colocação/remoção de objetos, preview, grid | `Jogador` (pai) via método, `SaveManager` via sinal |
+| `GeradorMundo` | Chunks, noise, tiles | Ninguém — só emite `chunks_pronto`/`chunks_iniciou` |
+| `SaveManager` (autoload) | Salvar/carregar arquivos, loading screen | Qualquer módulo via sinal `save_concluido` |
+| `PauseMenu` | Pausar/despausar, botões de menu | `SaveManager`, `SceneTree` |
+| `InventarioHUD` | Exibir inventário visual | `Nucleo` via sinal `inventario_atualizado` |
+| `PlayerUI` | HUD, joystick, notificações | Apenas consome sinais de outros módulos |
+
+### 2. Regras de acesso entre módulos
+
+- **Filho → Pai**: só por método público (`pai.metodo()`) se o pai for conhecido por referência direta (`@onready var pai := $".."`)
+- **Pai → Filho**: só por `$NomeFilho` ou `@onready var filho := $NomeFilho` (nunca `get_node("caminho/longo")` em tempo real)
+- **Entre irmãos**: usar sinais ou referência injetada via `@export` no Inspector — nunca `get_node("../Irmao")`
+- **Entre módulos distantes**: SEMPRE via sinal conectado no editor (guia Nós) ou via autoload
+- **Autoloads**: são o ÚNICO ponto de acesso global — mas devem expor apenas métodos/sinais, nunca estado mutável público
+
+### 3. Injete dependências no editor, não em código
+
+- Use `@export var alguma_referencia: Node` quando um nó precisa acessar outro de outro módulo. Conecte manualmente no Inspector (arrastar nó) em vez de `get_node()` em `_ready()`.
+- Para cenas instanciadas (como `playerui` dentro de `mundo`), exponha `@export var` no script da cena pai e conecte no editor.
+- Exceção: referências a autoloads (ex: `SaveManager`) — estes são acessíveis globalmente por nome.
+
+### 4. Conexão de sinais
+
+- Conecte sinais no **editor** (guia Nós / conexões) sempre que possível — fica visível, persistente e não precisa de código.
+- Quando a conexão precisa ser feita em código (ex: nó criado dinamicamente), use `Callable` diretamente: `no.alvo.connect(_callback)` — nunca `no.connect("sinal", self, "_callback")` (string obsoleto no Godot 4).
+- Sinais de autoloads (ex: `SaveManager.save_concluido`) podem ser conectados de qualquer lugar, mas prefira conectar no `_ready()` com verificação de nulabilidade.
+
+### 5. Estrutura de diretórios
+
+```
+res://
+├── scenes/          → cenas principais do jogo
+│   ├── mundo.tscn           → entrypoint do jogo (instancia Jogador, Mapa, PlayerUI)
+│   ├── main.tscn            → menu principal
+│   ├── tilesets.tscn        → mapa + tilemaps + gerador_mundo.gd
+│   ├── player/              → tudo do jogador
+│   │   └── jogador.tscn     → CharacterBody2D (movimento, camera, cursor, áudio)
+│   ├── ui/                  → interfaces de usuário
+│   │   ├── playerui.tscn    → HUD completa (joystick, inventário, pause, notificações)
+│   │   ├── pause_menu.tscn  → menu de pausa (sobreposição)
+│   │   └── main_menu.tscn   → menu principal (se for separado de main.tscn)
+│   └── posicionaveis/       → objetos colocáveis no grid
+│       ├── broca.tscn
+│       ├── esteira.tscn
+│       ├── nucleo.tscn
+│       └── simplecanon.tscn
+├── scripts/         → scripts (.gd) organizados por módulo
+│   ├── jogador.gd
+│   ├── cursor.gd
+│   ├── gerador_mundo.gd
+│   ├── save_manager.gd      → autoload
+│   ├── pause_menu.gd
+│   ├── main_menu.gd
+│   ├── joygstick.gd
+│   ├── inventario_hud.gd
+│   ├── save_notification.gd
+│   └── loading_chunks_indicator.gd
+└── resources/       → recursos .tres
+    └── items/               → ItemConstrucao individuais (futuro)
+```
+
+### 6. Anti-padrões a evitar
+
+- ❌ `get_node("../../OutroModulo/No")` — acesso profundo e frágil
+- ❌ `find_child("Nome")` em tempo real — sujeito a ambiguidade e performance baixa
+- ❌ Variáveis globais em autoload que qualquer um modifica — prefira setters com validação
+- ❌ Colocar lógica de HUD/janela dentro do script do jogador — HUD vai na PlayerUI
+- ❌ Acessar o jogador via `get_tree().current_scene.get_node("Jogador")` de dentro de um nó de UI — use sinal do SaveManager ou referência exportada
+- ❌ Misturar responsabilidades: um script que controla movimento E gerencia inventário E desenha HUD
+
 ## Convenções do Factolyth (mantidas)
 
 - Código, comentários e commits em Português (Brasil), snake_case, type hints obrigatórios

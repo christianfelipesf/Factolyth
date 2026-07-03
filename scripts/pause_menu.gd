@@ -1,4 +1,4 @@
-extends CanvasLayer
+extends Node
 
 @onready var overlay: ColorRect = $Overlay
 @onready var painel: Panel = $Painel
@@ -17,7 +17,7 @@ func _ready() -> void:
 	painel.hide()
 
 
-func _input(event: InputEvent) -> void:
+func _unhandled_input(event: InputEvent) -> void:
 	if _acao_pausa(event):
 		if aberto:
 			fechar()
@@ -51,6 +51,12 @@ func fechar() -> void:
 	painel.hide()
 	get_tree().paused = false
 
+
+func _on_botao_pausa_pressed() -> void:
+	if aberto:
+		fechar()
+	else:
+		abrir()
 
 func _on_continuar_pressed() -> void:
 	fechar()
