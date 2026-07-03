@@ -1,7 +1,9 @@
 [gd_scene format=3 uid="uid://d3fhctwalthm4"]
 
+[ext_resource type="Texture2D" uid="uid://bw721bn2u6y37" path="res://scenes/factolyth_menu_bg_no_text.png" id="1_wq544"]
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_22due"]
-bg_color = Color(0.13333334, 0.13333334, 0.13333334, 0.6156863)
+bg_color = Color(0.032541297, 0.032541297, 0.032541297, 0.6156863)
 
 [node name="Control" type="Control" unique_id=54387847]
 layout_mode = 3
@@ -11,6 +13,11 @@ anchor_bottom = 1.0
 offset_bottom = 5.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="FactolythMenuBgNoText" type="Sprite2D" parent="." unique_id=1572100028]
+position = Vector2(636, 349)
+scale = Vector2(0.8, 0.8)
+texture = ExtResource("1_wq544")
 
 [node name="Panel" type="Panel" parent="." unique_id=1057981368]
 layout_mode = 0
