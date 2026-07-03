@@ -63,6 +63,12 @@ func _on_continuar_pressed() -> void:
 
 
 func _on_salvar_pressed() -> void:
+	if SaveManager.modo_procedural:
+		var texto_original := btn_salvar.text
+		btn_salvar.text = "Indisponível"
+		await get_tree().create_timer(0.8).timeout
+		btn_salvar.text = texto_original
+		return
 	SaveManager.salvar("slot_1")
 	# Feedback visual: muda texto temporariamente
 	var texto_original := btn_salvar.text

@@ -71,7 +71,41 @@ custom_minimum_size = Vector2(240, 40)
 layout_mode = 2
 text = "Sair"
 
+[node name="SubmenuNovoJogo" type="VBoxContainer" parent="." unique_id=72215134]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = -110.0
+offset_right = 120.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="Normal" type="Button" parent="SubmenuNovoJogo" unique_id=2097751794]
+custom_minimum_size = Vector2(240, 40)
+layout_mode = 2
+text = "Normal"
+
+[node name="Procedural" type="Button" parent="SubmenuNovoJogo" unique_id=443673200]
+custom_minimum_size = Vector2(240, 40)
+layout_mode = 2
+text = "Procedural (Alpha)"
+
+[node name="Voltar" type="Button" parent="SubmenuNovoJogo" unique_id=1255319876]
+custom_minimum_size = Vector2(240, 40)
+layout_mode = 2
+text = "Voltar"
+
 [connection signal="pressed" from="VBoxContainer/NovoJogo" to="." method="_on_novo_jogo_pressed"]
 [connection signal="pressed" from="VBoxContainer/Carregar" to="." method="_on_carregar_pressed"]
 [connection signal="pressed" from="VBoxContainer/DeletarSaves" to="." method="_on_deletar_saves_pressed"]
 [connection signal="pressed" from="VBoxContainer/Sair" to="." method="_on_sair_pressed"]
+[connection signal="pressed" from="SubmenuNovoJogo/Normal" to="." method="_on_normal_pressed"]
+[connection signal="pressed" from="SubmenuNovoJogo/Procedural" to="." method="_on_procedural_pressed"]
+[connection signal="pressed" from="SubmenuNovoJogo/Voltar" to="." method="_on_voltar_pressed"]

@@ -2,13 +2,18 @@ extends Label
 
 func _ready() -> void:
 	hide()
-	# Conecta ao sinal do SaveManager para notificar mesmo via F5
 	if SaveManager.has_signal("save_concluido"):
 		SaveManager.save_concluido.connect(_ao_salvar)
+	if SaveManager.has_signal("save_negado"):
+		SaveManager.save_negado.connect(_ao_save_negado)
 
 
 func _ao_salvar(_slot: String) -> void:
 	mostrar("Salvo!", 2.0)
+
+
+func _ao_save_negado(_reason: String) -> void:
+	mostrar("Modo procedural: sem salvamento", 2.0)
 
 
 func mostrar(mensagem: String, duracao: float = 2.0) -> void:

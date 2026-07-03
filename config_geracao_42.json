@@ -1,0 +1,19 @@
+{
+  "seed": 42,
+  "fAlt": 0.015,
+  "fBio": 0.02,
+  "fVale": 0.025,
+  "fDet": 0.08,
+  "fWarp": 0.004,
+  "fMin": 0.05,
+  "wMag": 30,
+  "bPedra": 0.31,
+  "bCogDet": 0.1,
+  "bCog": 0.25,
+  "lAgua1": -0.77,
+  "lAguaV": 0.88,
+  "lLavaA": 0.92,
+  "lLavaCog": 0.48,
+  "cMin": 0.53,
+  "cMinRaro": 0.7
+}

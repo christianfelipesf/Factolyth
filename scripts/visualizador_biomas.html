@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visualizador de Biomas - Factolyth</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:monospace;background:#111;color:#ccc;display:flex;flex-direction:column;align-items:center;padding:12px;font-size:13px}
+h1{color:#8f8;margin-bottom:2px;font-size:16px}
+h2{color:#888;font-size:11px;font-weight:normal;margin-bottom:8px}
+canvas{image-rendering:pixelated;border:2px solid #333;cursor:crosshair;width:700px;height:700px;max-width:100%}
+.section{background:#1a1a1a;border:1px solid #333;padding:10px 14px;margin:4px 0;width:100%;max-width:760px}
+.section-title{color:#8f8;font-size:12px;margin-bottom:6px}
+.row{display:flex;gap:20px;flex-wrap:wrap}
+.col{flex:1;min-width:240px}
+.param{display:flex;align-items:center;gap:6px;margin:3px 0;font-size:12px}
+.param label{width:100px;text-align:right;color:#aaa;flex-shrink:0;font-size:11px}
+.param input[type=range]{flex:1;min-width:60px;accent-color:#4a4;height:4px;cursor:pointer}
+.param input[type=number]{background:#222;color:#ccc;border:1px solid #555;padding:2px 4px;width:60px;font-family:monospace;font-size:11px;text-align:center}
+.actions{display:flex;gap:8px;flex-wrap:wrap;padding:4px 0}
+.btn{background:#2a2;color:#000;border:none;padding:5px 14px;font-family:monospace;font-weight:bold;cursor:pointer;font-size:12px}
+.btn:hover{background:#3c3}
+.btn-blue{background:#26a;color:#fff}.btn-blue:hover{background:#38c}
+.btn-gray{background:#444;color:#ccc}.btn-gray:hover{background:#666}
+.legend{display:flex;gap:12px;font-size:11px;flex-wrap:wrap;justify-content:center;padding:4px 0}
+.legend-item{display:flex;align-items:center;gap:3px}
+.legend-swatch{width:11px;height:11px;border:1px solid #555;display:inline-block}
+#info{font-size:11px;color:#888;text-align:center;max-width:760px;line-height:1.4}
+#coord{font-size:11px;color:#aa8;text-align:center;min-height:16px}
+hr{border:none;border-top:1px solid #333;margin:6px 0}
+</style>
+</head>
+<body>
+<h1>🧩 Visualizador de Biomas — Factolyth</h1>
+<h2>── arraste os sliders e exporte a config para o Godot ──</h2>
+
+<div class="section">
+	<div class="section-title">Semente & Ações</div>
+	<div class="actions">
+		<label style="display:flex;align-items:center;gap:4px">Semente <input type="number" id="seed" value="42" min="0" max="99999" style="width:70px"></label>
+		<button class="btn" onclick="gerar()">🔄 Regenerar</button>
+		<button class="btn-blue" onclick="exportarConfig()">📦 Exportar Config</button>
+		<button class="btn-gray" onclick="document.getElementById('fileInput').click()">📂 Importar</button>
+		<input type="file" id="fileInput" accept=".json" style="display:none" onchange="importarConfig(event)">
+	</div>
+</div>
+
+<div class="section">
+	<div class="section-title">Noises</div>
+	<div class="row" id="noisesRow"></div>
+</div>
+
+<div class="section">
+	<div class="section-title">Biomas</div>
+	<div class="row" id="biomasRow"></div>
+</div>
+
+<div class="section">
+	<div class="section-title">Líquidos</div>
+	<div class="row" id="liquidosRow"></div>
+</div>
+
+<div class="section">
+	<div class="section-title">Cristais</div>
+	<div class="row" id="cristaisRow"></div>
+</div>
+
+<div class="legend">
+	<span class="legend-item"><span class="legend-swatch" style="background:#4a5"></span> GRAMA</span>
+	<span class="legend-item"><span class="legend-swatch" style="background:#657"></span> COGUMELO</span>
+	<span class="legend-item"><span class="legend-swatch" style="background:#778"></span> PEDRA</span>
+	<span class="legend-item"><span class="legend-swatch" style="background:#26a"></span> ÁGUA</span>
+	<span class="legend-item"><span class="legend-swatch" style="background:#a42"></span> LAVA</span>
+	<span class="legend-item"><span class="legend-swatch" style="background:#fe8"></span> Quartzo</span>
+	<span class="legend-item"><span class="legend-swatch" style="background:#f6a"></span> Rubelita</span>
+	<span class="legend-item"><span class="legend-swatch" style="background:#8cf"></span> Turmalina</span>
+</div>
+
+<canvas id="canvas" width="750" height="750"></canvas>
+<div id="coord">Passe o mouse sobre o mapa</div>
+<div id="info"></div>
+
+<script>
+const PARAMS = [
+	{id:'fAlt', label:'Freq Altura', def:0.015, min:0.001, max:0.1, step:0.001, group:'noises'},
+	{id:'fBio', label:'Freq Bioma', def:0.02, min:0.001, max:0.1, step:0.001, group:'noises'},
+	{id:'fVale', label:'Freq Vale', def:0.025, min:0.001, max:0.1, step:0.001, group:'noises'},
+	{id:'fDet', label:'Freq Detalhe', def:0.08, min:0.001, max:0.2, step:0.001, group:'noises'},
+	{id:'fWarp', label:'Freq Warp', def:0.004, min:0.001, max:0.05, step:0.001, group:'noises'},
+	{id:'fMin', label:'Freq Minério', def:0.05, min:0.001, max:0.2, step:0.001, group:'noises'},
+	{id:'wMag', label:'Warp Magnitude', def:30, min:1, max:100, step:1, group:'noises'},
+	{id:'bPedra', label:'PEDRA alt >', def:0.35, min:0.0, max:0.8, step:0.01, group:'biomas'},
+	{id:'bCogDet', label:'COG ±det ×', def:0.3, min:0.0, max:1.0, step:0.05, group:'biomas'},
+	{id:'bCog', label:'COG <', def:-0.3, min:-1.0, max:1.0, step:0.01, group:'biomas'},
+	{id:'lAgua1', label:'ÁGUA alt <', def:-0.3, min:-0.8, max:0.0, step:0.01, group:'liquidos'},
+	{id:'lAguaV', label:'ÁGUA vale >', def:0.88, min:0.5, max:1.0, step:0.01, group:'liquidos'},
+	{id:'lLavaA', label:'LAVA alt >', def:0.5, min:0.0, max:1.0, step:0.01, group:'liquidos'},
+	{id:'lLavaCog', label:'LAVA cog alt >', def:0.2, min:-0.5, max:0.8, step:0.01, group:'liquidos'},
+	{id:'cMin', label:'min geral >', def:0.6, min:0.1, max:1.0, step:0.01, group:'cristais'},
+	{id:'cMinRaro', label:'min raro >', def:0.7, min:0.1, max:1.0, step:0.01, group:'cristais'},
+];
+
+function initUI() {
+	const groups = {noises:'noisesRow', biomas:'biomasRow', liquidos:'liquidosRow', cristais:'cristaisRow'};
+	for (const p of PARAMS) {
+		const container = document.getElementById(groups[p.group]);
+		const div = document.createElement('div');
+		div.className = 'param';
+		div.innerHTML = `<label>${p.label}</label>
+<input type="range" id="r_${p.id}" min="${p.min}" max="${p.max}" step="${p.step}" value="${p.def}">
+<input type="number" id="n_${p.id}" value="${p.def}" min="${p.min}" max="${p.max}" step="${p.step}">`;
+		container.appendChild(div);
+		const range = div.querySelector('input[type=range]');
+		const number = div.querySelector('input[type=number]');
+		range.addEventListener('input', () => { number.value = range.value; });
+		number.addEventListener('input', () => { range.value = number.value; });
+	}
+}
+initUI();
+
+function lerCampos() {
+	const o = {seed: parseInt(document.getElementById('seed').value)||0};
+	for (const p of PARAMS) o[p.id] = parseFloat(document.getElementById('n_'+p.id).value) || p.def;
+	return o;
+}
+
+function escreverCampos(o) {
+	document.getElementById('seed').value = o.seed;
+	for (const p of PARAMS) {
+		const v = (o[p.id] !== undefined) ? o[p.id] : p.def;
+		document.getElementById('r_'+p.id).value = v;
+		document.getElementById('n_'+p.id).value = v;
+	}
+}
+
+class SimplexNoise {
+	constructor(seed){
+		const p=[...Array(256).keys()];let s=seed||1;
+		for(let i=255;i>0;i--){s=(s*16807)%2147483647;const j=s%(i+1);[p[i],p[j]]=[p[j],p[i]];}
+		this.perm=new Uint8Array(512);for(let i=0;i<512;i++)this.perm[i]=p[i&255];
+	}
+	noise2D(x,y){
+		const F2=0.5*(Math.sqrt(3)-1),G2=(3-Math.sqrt(3))/6;
+		const s=(x+y)*F2,i=Math.floor(x+s),j=Math.floor(y+s);
+		const t=(i+j)*G2,X0=i-t,Y0=j-t,x0=x-X0,y0=y-Y0;
+		const i1=x0>y0?1:0,j1=x0>y0?0:1;
+		const x1=x0-i1+G2,y1=y0-j1+G2,x2=x0-1+2*G2,y2=y0-1+2*G2;
+		const gi0=this.perm[i+this.perm[j&255]&255]&3,gi1=this.perm[i+i1+this.perm[j+j1&255]&255]&3,gi2=this.perm[i+1+this.perm[j+1&255]&255]&3;
+		const g=[[1,1],[-1,1],[1,-1],[-1,-1]];let n0=0,n1=0,n2=0;
+		let t0=0.5-x0*x0-y0*y0;if(t0>0){t0*=t0;n0=t0*t0*(g[gi0][0]*x0+g[gi0][1]*y0);}
+		let t1=0.5-x1*x1-y1*y1;if(t1>0){t1*=t1;n1=t1*t1*(g[gi1][0]*x1+g[gi1][1]*y1);}
+		let t2=0.5-x2*x2-y2*y2;if(t2>0){t2*=t2;n2=t2*t2*(g[gi2][0]*x2+g[gi2][1]*y2);}
+		return 70*(n0+n1+n2);
+	}
+}
+class CellularNoise{
+	constructor(seed,jitter=0.6){this.seed=seed;this.jitter=jitter;}
+	noise2D(x,y){
+		const ix=Math.floor(x),iy=Math.floor(y);let m1=999,m2=999;
+		for(let dx=-1;dx<=1;dx++)for(let dy=-1;dy<=1;dy++){
+			const cx=ix+dx,cy=iy+dy;
+			let h=(cx*374761393+cy*668265263+this.seed*1274126177)|0;
+			h=((h^(h>>13))*1274126177)&0x7fffffff;const jx=(h&65535)/65536-0.5;
+			h=((h^(h>>13))*1274126177)&0x7fffffff;const jy=(h&65535)/65536-0.5;
+			const px=cx+jx*this.jitter,py=cy+jy*this.jitter;
+			const d=(px-x)*(px-x)+(py-y)*(py-y);
+			if(d<m1){m2=m1;m1=d;}else if(d<m2)m2=d;
+		}
+		return Math.sqrt(m2)-Math.sqrt(m1);
+	}
+}
+
+const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d'),L=750;
+function make(C,s,j){const n=new C(s,j);return(x,y)=>n.noise2D(x,y);}
+
+function gerar(){
+	const cfg=lerCampos(),s=cfg.seed;
+	const nAltRn=make(SimplexNoise,s),nValRn=make(CellularNoise,s+2,0.6);
+	const nDetRn=make(SimplexNoise,s+3),nBioRn=make(CellularNoise,s+5,0.6);
+	const nMinRn=make(SimplexNoise,s+1),nWarpRn=make(SimplexNoise,s+4);
+	const nAlt=(x,y)=>nAltRn(x*cfg.fAlt,y*cfg.fAlt);
+	const nVal=(x,y)=>{const v=nValRn(x*cfg.fVale,y*cfg.fVale);return 1-Math.abs(v);};
+	const nDet=(x,y)=>nDetRn(x*cfg.fDet,y*cfg.fDet);
+	const nBio=(x,y)=>nBioRn(x*cfg.fBio,y*cfg.fBio);
+	const nMin=(x,y)=>nMinRn(x*cfg.fMin,y*cfg.fMin);
+	const nWarp=(x,y)=>nWarpRn(x*cfg.fWarp,y*cfg.fWarp);
+	const img=ctx.createImageData(L,L);
+	const C={GRAMA:0,COGUMELO:0,PEDRA:0,AGUA:0,LAVA:0,Q:0,R:0,T:0};
+	const COL={GRAMA:[68,170,85],COGUMELO:[102,85,119],PEDRA:[119,119,136],AGUA:[34,102,170],LAVA:[170,68,34],Q:[255,238,136],R:[255,102,170],T:[136,204,255]};
+	for(let gy=0;gy<L;gy++)for(let gx=0;gx<L;gx++){
+		const warp=nWarp(gx,gy)*cfg.wMag,warp2=nWarp(gx+200,gy+200)*cfg.wMag;
+		const px=gx+warp,py=gy+warp2;
+		const altura=nAlt(px,py),vale=nVal(px,py),detalhe=nDet(gx,gy),biomaNoise=nBio(gx,gy),minerio=nMin(gx,gy);
+		let bioma;
+		if(altura>cfg.bPedra)bioma='PEDRA';
+		else if(biomaNoise+detalhe*cfg.bCogDet<cfg.bCog)bioma='COGUMELO';
+		else bioma='GRAMA';
+		let tile=bioma,liquido=false;
+		if(altura<cfg.lAgua1){tile='AGUA';liquido=true;}
+		else if(vale>cfg.lAguaV&&altura<0.0){tile='AGUA';liquido=true;}
+		else if(altura>cfg.lLavaA){tile='LAVA';liquido=true;}
+		else if(vale>cfg.lAguaV&&altura>0.35){tile='LAVA';liquido=true;}
+		else if(bioma==='COGUMELO'&&altura>cfg.lLavaCog){tile='LAVA';liquido=true;}
+		let cristal=null;
+		if(!liquido&&Math.abs(minerio)>cfg.cMin){
+			if(bioma==='GRAMA')cristal='Q';
+			else if(bioma==='COGUMELO'&&Math.abs(minerio)>cfg.cMinRaro)cristal='R';
+			else if(bioma==='PEDRA'&&Math.abs(minerio)>cfg.cMinRaro)cristal='T';
+		}
+		const cor=cristal?COL[cristal]:COL[tile];
+		if(cristal)C[cristal]++;else C[tile]++;
+		const off=(gy*L+gx)*4;img.data[off]=cor[0];img.data[off+1]=cor[1];img.data[off+2]=cor[2];img.data[off+3]=255;
+	}
+	ctx.putImageData(img,0,0);
+	const t=L*L;
+	document.getElementById('info').textContent=
+		`GRAMA ${(C.GRAMA/t*100).toFixed(1)}% | COGUMELO ${(C.COGUMELO/t*100).toFixed(1)}% | PEDRA ${(C.PEDRA/t*100).toFixed(1)}% | `+
+		`ÁGUA ${(C.AGUA/t*100).toFixed(1)}% | LAVA ${(C.LAVA/t*100).toFixed(1)}% | `+
+		`Quartzo ${C.Q} | Rubelita ${C.R} | Turmalina ${C.T}`;
+}
+
+canvas.addEventListener('mousemove',function(e){
+	const r=canvas.getBoundingClientRect();
+	const x=Math.floor((e.clientX-r.left)/r.width*L),y=Math.floor((e.clientY-r.top)/r.height*L);
+	if(x<0||x>=L||y<0||y>=L)return;
+	const cfg=lerCampos(),s=cfg.seed;
+	const nAltR=make(SimplexNoise,s),nDetR=make(SimplexNoise,s+3),nBioR=make(CellularNoise,s+5,0.6),nWarpR=make(SimplexNoise,s+4);
+	const warp=nWarpR(x*cfg.fWarp,y*cfg.fWarp)*cfg.wMag,warp2=nWarpR((x+200)*cfg.fWarp,(y+200)*cfg.fWarp)*cfg.wMag;
+	const altura=nAltR((x+warp)*cfg.fAlt,(y+warp2)*cfg.fAlt),detalhe=nDetR(x*cfg.fDet,y*cfg.fDet),bN=nBioR(x*cfg.fBio,y*cfg.fBio);
+	let bioma;
+	if(altura>cfg.bPedra)bioma='PEDRA';
+	else if(bN+detalhe*cfg.bCogDet<cfg.bCog)bioma='COGUMELO';
+	else bioma='GRAMA';
+	document.getElementById('coord').textContent=`(${x},${y})  altura=${altura.toFixed(3)}  bioma=${bN.toFixed(3)}  detalhe=${detalhe.toFixed(3)}  → ${bioma}`;
+});
+
+function exportarConfig(){
+	const cfg=lerCampos(),json=JSON.stringify(cfg,null,2);
+	const blob=new Blob([json],{type:'application/json'}),url=URL.createObjectURL(blob);
+	const a=document.createElement('a');a.href=url;a.download=`config_geracao_${cfg.seed}.json`;a.click();
+	URL.revokeObjectURL(url);
+}
+function importarConfig(event){
+	const file=event.target.files[0];if(!file)return;
+	const reader=new FileReader();
+	reader.onload=function(e){try{escreverCampos(JSON.parse(e.target.result));gerar();}catch(err){alert('Erro: '+err.message);}};
+	reader.readAsText(file);event.target.value='';
+}
+
+// regenera automático ao soltar slider
+document.addEventListener('input', function(e) {
+	if (e.target.matches('input[type=range], input[type=number]')) gerar();
+});
+
+gerar();
+</script>
+</body>
+</html>

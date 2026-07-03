@@ -35,7 +35,7 @@ shader_parameter/brilho_borda = 1.5
 [node name="player" type="CharacterBody2D" unique_id=1088754334]
 z_index = 10
 collision_layer = 2
-collision_mask = 0
+collision_mask = 8
 script = ExtResource("1_uahlj")
 MIN_ZOOM = 0.7
 MAX_ZOOM = 1.4

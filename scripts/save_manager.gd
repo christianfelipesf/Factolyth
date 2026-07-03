@@ -1,11 +1,13 @@
 extends Node
 
 signal save_concluido(slot: String)
+signal save_negado(reason: String)
 
 const DIR_SAVES := "user://saves/"
 var _carregando := false
 var _loading: Node = null
 var save_pendente: String = ""
+var modo_procedural: bool = false
 
 const CENA_CARREGANDO := preload("res://scenes/carregando.tscn")
 
@@ -36,6 +38,9 @@ func _process(_delta: float) -> void:
 		deletar_todos_saves()
 
 func salvar(slot: String) -> void:
+	if modo_procedural:
+		save_negado.emit("Modo procedural: salvamento bloqueado")
+		return
 	var path := DIR_SAVES + slot + ".json"
 	var dados: Dictionary = {
 		seed = _obter_semente(),
@@ -54,6 +59,7 @@ func salvar(slot: String) -> void:
 func carregar(slot: String) -> void:
 	if _carregando:
 		return
+	modo_procedural = false
 	var arvore := get_tree()
 	if arvore == null or arvore.current_scene == null:
 		return

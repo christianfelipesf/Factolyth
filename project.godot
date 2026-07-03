@@ -111,6 +111,13 @@ pausa={
 
 pointing/emulate_touch_from_mouse=true
 
+[layer_names]
+
+2d_physics/layer_1="Contrucoes"
+2d_physics/layer_2="Jogador"
+2d_physics/layer_3="Paredes"
+2d_physics/layer_5="Itens"
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

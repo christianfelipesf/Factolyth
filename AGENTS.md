@@ -27,7 +27,8 @@
 | Layer | Quem |
 |---|---|
 | 1 | construções (StaticBody2D), items (CharacterBody2D), todas Area2D |
-| 2 | jogador (`collision_mask = 0` → não colide com nada) |
+| 2 | jogador |
+| 3 | paredes (TileMapLayer `parede`, `collision_mask` do jogador inclui layer 3) |
 
 ## Grid
 
