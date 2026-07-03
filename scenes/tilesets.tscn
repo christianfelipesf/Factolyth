@@ -1,7 +1,7 @@
-[gd_scene format=4 uid="uid://cp6y5ftt0rtb"]
+[gd_scene format=3 uid="uid://cp6y5ftt0rtb"]
 
 [ext_resource type="Texture2D" uid="uid://bqfo8moyoxfwj" path="res://images/tilemap.png" id="1_bro14"]
-[ext_resource type="Script" path="res://scripts/gerador_mundo.gd" id="2_hijgr"]
+[ext_resource type="Script" uid="uid://cfaj048www7rx" path="res://scripts/gerador_mundo.gd" id="2_hijgr"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lkbod"]
 texture = ExtResource("1_bro14")
@@ -25,5 +25,5 @@ script = ExtResource("2_hijgr")
 [node name="solo" type="TileMapLayer" parent="." unique_id=308112617]
 tile_set = SubResource("TileSet_xc42v")
 
-[node name="minerios" type="TileMapLayer" parent="." unique_id=1528727183]
+[node name="cristais" type="TileMapLayer" parent="." unique_id=1528727183]
 tile_set = SubResource("TileSet_xc42v")

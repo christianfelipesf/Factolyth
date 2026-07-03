@@ -6,7 +6,7 @@
 
 ## Sobre o jogo
 
-Um mini robô orgânico usa um teleportador quântico que o leva para um planeta desconhecido. Agora você precisa minerar, automatizar e se defender para construir um novo teleportador e voltar para casa.
+Um mini robô orgânico usa um teleportador quântico que o leva para um planeta desconhecido. Agora você precisa minerar cristais energéticos, automatizar e se defender para construir um novo teleportador e voltar para casa.
 
 ---
 
@@ -44,11 +44,13 @@ Um mini robô orgânico usa um teleportador quântico que o leva para um planeta
 
 | Item | Descrição |
 |---|---|
-| Broca | Mina minério automaticamente |
-| Esteira | Transporta itens entre estruturas |
+| Broca | Extrai cristais automaticamente |
+| Esteira | Transporta itens e cristais entre estruturas |
 | Canhão | Torre de defesa automática |
-| Núcleo | Coleta itens e armazena |
-| Bronze | Recurso minerável |
+| Núcleo | Coleta cristais e armazena |
+| Quartzo Alvo | Cristal branco básico e abundante, essencial para estruturas iniciais |
+| Rubelita | Cristal rosa intermediário com propriedades de refração para tecnologias avançadas |
+| Turmalina-Ciano | Cristal ciano raro e altamente energético, usado para alimentar sistemas complexos |
 
 ---
 
@@ -76,7 +78,7 @@ Um mini robô orgânico usa um teleportador quântico que o leva para um planeta
 | `scripts/` | Código-fonte GDScript |
 | `scenes/` | Cenas Godot (.tscn) |
 | `scenes/posicionaveis/` | Estruturas construíveis |
-| `scenes/itens/` | Itens/recursos |
+| `scenes/itens/` | Cristais e recursos |
 | `scenes/particles/` | Efeitos de partícula |
 | `sound/` | Áudio (ambiente, SFX) |
 | `images/` | Sprites e tilesets |
