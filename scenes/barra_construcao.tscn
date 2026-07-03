@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bfbwco8rr7fd1"]
 
-[ext_resource type="Script" uid="uid://cxl3p67tscvku" path="res://scripts/barra_construcao.gd" id="1_orj5b"]
+[ext_resource type="Script" path="res://scripts/barra_construcao.gd" id="1_orj5b"]
 
 [node name="BarraConstrucao" type="Control" unique_id=941025085]
 layout_mode = 3
