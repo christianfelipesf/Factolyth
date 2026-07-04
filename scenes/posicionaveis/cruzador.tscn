@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://yxgs1r3wlw6e"]
+
+[ext_resource type="Texture2D" uid="uid://b4bvo7ic2lyts" path="res://images/cruzador.png" id="1_osxn2"]
+[ext_resource type="Script" path="res://scripts/cruzador.gd" id="2_qk3qy"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3ui6l"]
+size = Vector2(31, 31)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7x5ri"]
+size = Vector2(32, 32)
+
+[node name="Cruzador" type="StaticBody2D" unique_id=1926870512]
+script = ExtResource("2_qk3qy")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=182785791]
+texture = ExtResource("1_osxn2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2108895656]
+shape = SubResource("RectangleShape2D_3ui6l")
+
+[node name="Detector" type="Area2D" parent="." unique_id=48349028]
+collision_mask = 1
+position = Vector2(0, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Detector" unique_id=50493180]
+shape = SubResource("RectangleShape2D_7x5ri")

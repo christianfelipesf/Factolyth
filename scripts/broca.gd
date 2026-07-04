@@ -1,87 +1,63 @@
 extends StaticBody2D
 
-const QUARTZO = preload("res://scenes/itens/itens.tscn")
+const ITEM = preload("res://scenes/itens/itens.tscn")
+const PADRAO = preload("res://resources/itens/quartzo.tres")
 
-# 💡 Velocidade de produção configurável pelo Inspetor (em segundos)
-@export var tempo_producao : float = 2.0
+@export var tempo_producao: float = 2.0
+@export var item_data: ItemData
 
 var is_preview := false
 var esteira_atual: Node2D = null
 
 @onready var colisao: CollisionShape2D = $CollisionShape2D
 @onready var detector: Area2D = $Detector
-@onready var timer_producao: Timer = $TimerProducao 
+@onready var timer_producao: Timer = $TimerProducao
 
 func _ready() -> void:
 	if is_preview:
 		return
-
 	modulate.a = 1.0
 	colisao.disabled = false
-
-	# O timer vai rodar em loop constante cuidando da vida da broca
 	timer_producao.wait_time = tempo_producao
 	timer_producao.timeout.connect(_on_timer_producao_timeout)
-	
-	print("Broca criada!")
-
 	detector.body_entered.connect(_on_detector_body_entered)
 	detector.body_exited.connect(_on_detector_body_exited)
-
-	# Espera o mapa carregar e liga o ciclo autônomo
 	await get_tree().physics_frame
 	timer_producao.start()
 
-
-# 🌟 ESCÂNER REFORÇADO: Descobre se tem uma esteira debaixo da broca
 func _procurar_esteira_no_chao() -> Node2D:
-	# 1. Procura nos corpos físicos (StaticBody2D)
 	for corpo in detector.get_overlapping_bodies():
 		if corpo == self: continue
 		if corpo.is_in_group("esteira"):
 			return corpo
 		elif corpo.get_parent() and corpo.get_parent().is_in_group("esteira"):
 			return corpo.get_parent()
-			
-	# 2. Procura em nós de Área (Area2D)
 	for area_no in detector.get_overlapping_areas():
 		if area_no == self or area_no == detector: continue
 		if area_no.is_in_group("esteira"):
 			return area_no
 		elif area_no.get_parent() and area_no.get_parent().is_in_group("esteira"):
 			return area_no.get_parent()
-			
 	return null
 
-
-# 💡 Ciclo autônomo acionado a cada 'X' segundos pelo Timer
 func _on_timer_producao_timeout() -> void:
-	# 1. A broca pesquisa o chão ativamente neste exato milissegundo
 	esteira_atual = _procurar_esteira_no_chao()
-	
-	# 2. Se não achou nada, ela apenas avisa e espera o próximo ciclo do timer
 	if esteira_atual == null:
-		print("🛑 Broca em espera: Nenhuma esteira detectada sob o minerador.")
-		return 
-		
-	# 3. Se achou, ela tenta trabalhar! Checa se a saída está limpa
+		return
 	var espaco_ocupado := false
 	for corpo in detector.get_overlapping_bodies():
 		if corpo.is_in_group("item"):
 			espaco_ocupado = true
 			break
-	
 	if not espaco_ocupado:
-		_spawnar_quartzo(esteira_atual)
-	else:
-		print("⏳ Saída da broca bloqueada por um minério! Aguardando mover.")
+		_spawnar_item(esteira_atual)
 
-
-func _spawnar_quartzo(esteira: Node2D) -> void:
-	var quartzo = QUARTZO.instantiate()
-	quartzo.global_position = esteira.global_position
-	get_parent().call_deferred(&"add_child", quartzo)
-	print("🏭 [PRODUÇÃO] Quartzo extraído com sucesso para a esteira!")
+func _spawnar_item(esteira: Node2D) -> void:
+	var dados = item_data if item_data != null else PADRAO
+	var item = ITEM.instantiate()
+	item.inicializar(dados)
+	item.global_position = esteira.global_position
+	get_parent().call_deferred(&"add_child", item)
 
 func _on_detector_body_entered(body: Node2D) -> void:
 	var esteira = _extrair_esteira(body)
@@ -93,7 +69,6 @@ func _on_detector_body_exited(body: Node2D) -> void:
 	var esteira = _extrair_esteira(body)
 	if esteira != null and esteira == esteira_atual:
 		esteira_atual = null
-		print("🛑 Broca: Esteira removida. Aguardando nova esteira.")
 
 func _extrair_esteira(body: Node2D) -> Node2D:
 	if body == self:

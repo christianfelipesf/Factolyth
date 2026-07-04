@@ -1,12 +1,18 @@
 extends CharacterBody2D
 
+var dados: ItemData
 var velocidade := Vector2.ZERO
 var impulso := Vector2.ZERO
 var esteira_atual_pos := Vector2.INF
-var tipo := "quartzo"
+var tipo := ""
 var no_chao := false
 var tempo_fora_da_esteira := 0.0
 const TEMPO_PARA_DESAPARECER := 3.0
+
+func inicializar(data: ItemData) -> void:
+	dados = data
+	tipo = data.id
+	$Sprite2D.texture = data.textura
 
 func _ready() -> void:
 	add_to_group("item")
@@ -26,9 +32,9 @@ func _physics_process(delta: float) -> void:
 		if esteira_atual_pos != Vector2.INF:
 			var direcao_movimento = impulso.normalized()
 
-			if abs(direcao_movimento.x) > 0.5:
+			if absf(direcao_movimento.x) > 0.5:
 				global_position.y = lerp(global_position.y, esteira_atual_pos.y, 0.2)
-			elif abs(direcao_movimento.y) > 0.5:
+			elif absf(direcao_movimento.y) > 0.5:
 				global_position.x = lerp(global_position.x, esteira_atual_pos.x, 0.2)
 
 	else:

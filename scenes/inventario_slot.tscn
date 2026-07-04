@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://dnwvdhq8b6w73"]
+
+[node name="Slot" type="VBoxContainer"]
+custom_minimum_size = Vector2(40, 72)
+alignment = 1
+
+[node name="Icone" type="TextureRect" parent="."]
+custom_minimum_size = Vector2(32, 32)
+expand_mode = 2
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Nome" type="Label" parent="."]
+horizontal_alignment = 1
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.7)
+theme_override_font_sizes/font_size = 9
+
+[node name="Quantidade" type="Label" parent="."]
+horizontal_alignment = 1
+mouse_filter = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.9)
+theme_override_font_sizes/font_size = 12

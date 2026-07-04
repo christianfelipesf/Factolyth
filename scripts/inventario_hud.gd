@@ -1,15 +1,28 @@
 extends Control
 
-@onready var label: Label = %Label
+const SLOT = preload("res://scenes/inventario_slot.tscn")
+
+@onready var flow: HFlowContainer = $Margem/HFlowContainer
 
 func _ready() -> void:
-	var nucleo := get_tree().root.find_child("Nucleo", true, false)
-	if nucleo and nucleo.has_signal("inventario_atualizado"):
-		nucleo.inventario_atualizado.connect(_atualizar)
-		_atualizar(nucleo.inventario)
+	var jogador = get_node_or_null("/root/Mundo/Jogador")
+	if jogador and jogador.has_signal("inventario_atualizado"):
+		jogador.inventario_atualizado.connect(_atualizar)
+		_atualizar(jogador.inventario)
 
 func _atualizar(inv: Dictionary) -> void:
-	var textos: PackedStringArray = []
+	for filho in flow.get_children():
+		filho.queue_free()
+
 	for chave in inv:
-		textos.append(chave.capitalize() + ": " + str(inv[chave]))
-	label.text = "Inventário:\n" + "\n".join(textos) if textos else ""
+		var quant = inv[chave]
+		if quant <= 0:
+			continue
+
+		var dados = ItemDB.get_item(chave)
+
+		var slot = SLOT.instantiate()
+		slot.get_node("Icone").texture = dados.textura if dados else null
+		slot.get_node("Nome").text = dados.nome if dados else chave
+		slot.get_node("Quantidade").text = str(quant)
+		flow.add_child(slot)

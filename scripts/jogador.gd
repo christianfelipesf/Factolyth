@@ -25,6 +25,11 @@ var _pontos_toque: Dictionary = {}
 var _pinça_iniciada: bool = false
 var _distancia_pinça_inicial: float = 0.0
 var _zoom_inicial_pinça: float = 0.0
+var controles_travados := false
+var _cooldown_broca := 0.0
+var inventario: Dictionary = {}
+
+signal inventario_atualizado(inv: Dictionary)
 
 func _ready() -> void:
 	carregar_itens_construcao()
@@ -36,6 +41,9 @@ func carregar_itens_construcao() -> void:
 	_adicionar_item_com_cena("Esteira", _ESTEIRA)
 	_adicionar_item_com_cena("Nucleo", _NUCLEO)
 	_adicionar_item_com_cena("Canhao", _CANHAO)
+	_adicionar_item_com_cena("Distribuidor", _DISTRIBUIDOR)
+	_adicionar_item_com_cena("Cruzador", _CRUZADOR)
+	_adicionar_item_com_cena("BrocaManual", _BROCA_MANUAL)
 	if _itens_construcao.is_empty():
 		push_error("Nenhum item construível encontrado")
 
@@ -43,6 +51,9 @@ const _BROCA = preload("res://scenes/posicionaveis/broca.tscn")
 const _ESTEIRA = preload("res://scenes/posicionaveis/esteira.tscn")
 const _NUCLEO = preload("res://scenes/posicionaveis/nucleo.tscn")
 const _CANHAO = preload("res://scenes/posicionaveis/simplecanon.tscn")
+const _DISTRIBUIDOR = preload("res://scenes/posicionaveis/distribuidor.tscn")
+const _CRUZADOR = preload("res://scenes/posicionaveis/cruzador.tscn")
+const _BROCA_MANUAL = preload("res://scenes/posicionaveis/broca_manual.tscn")
 
 func _adicionar_item_com_cena(nome: String, cena: PackedScene) -> void:
 	var item = ItemConstrucao.new()
@@ -55,6 +66,12 @@ func _adicionar_item_com_cena(nome: String, cena: PackedScene) -> void:
 @onready var joystick: Control = get_tree().root.find_child("Joystick", true, false)
 
 func _physics_process(delta: float) -> void:
+	if controles_travados:
+		return
+
+	if _cooldown_broca > 0:
+		_cooldown_broca -= delta
+
 	# 1. Movimento e Direção da Nave
 	var input_direction := Vector2.ZERO
 	
@@ -131,6 +148,45 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_2: selecionar_item_por_indice(1)
 			KEY_3: selecionar_item_por_indice(2)
 			KEY_4: selecionar_item_por_indice(3)
+			KEY_5: selecionar_item_por_indice(4)
+			KEY_6: selecionar_item_por_indice(5)
+			KEY_7: selecionar_item_por_indice(6)
+
+func usar_broca_manual(pos: Vector2) -> void:
+	if _cooldown_broca > 0:
+		return
+	_cooldown_broca = 4.0
+	velocity = Vector2.ZERO
+	controles_travados = true
+
+	var dir = pos - global_position
+	var angulo_alvo = dir.angle()
+
+	var tween = create_tween()
+	tween.tween_property(self, "rotation", angulo_alvo, 0.3).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, "global_position", pos, 0.5).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_callback(_iniciar_giro_broca)
+
+func _iniciar_giro_broca() -> void:
+	$AudioBrocaManual.play()
+
+	var tween = create_tween()
+	tween.set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(self, "rotation", rotation + deg_to_rad(360.0 * 6), 3.0)
+	tween.tween_callback(func():
+		controles_travados = false
+		$AudioBrocaManual.stop()
+	)
+
+func esta_em_cooldown_broca() -> bool:
+	return _cooldown_broca > 0
+
+func adicionar_item(tipo_id: String, quantidade: int = 1) -> void:
+	if inventario.has(tipo_id):
+		inventario[tipo_id] += quantidade
+	else:
+		inventario[tipo_id] = quantidade
+	inventario_atualizado.emit(inventario)
 
 func is_pinçando() -> bool:
 	return _pinça_iniciada
@@ -162,7 +218,8 @@ func get_save_data() -> Dictionary:
 		posicao = [global_position.x, global_position.y],
 		rotacao = rotation,
 		zoom = target_zoom_value,
-		item_atual = _indice_item_atual
+		item_atual = _indice_item_atual,
+		inventario = inventario.duplicate()
 	}
 
 func set_save_data(dados: Dictionary) -> void:
@@ -177,4 +234,7 @@ func set_save_data(dados: Dictionary) -> void:
 		target_zoom_value = dados.zoom
 	if dados.has("item_atual"):
 		selecionar_item_por_indice(dados.item_atual)
+	if dados.has("inventario"):
+		inventario = dados.inventario.duplicate()
+		inventario_atualizado.emit(inventario)
 	camera.position_smoothing_enabled = true

@@ -110,11 +110,15 @@ func _physics_process(delta: float) -> void:
 
 	if item_atual != null and not _arrastando_joystick() and not _em_pinça():
 		if Input.is_action_pressed("instanciar_objeto"):
-			if _posicao_grid != _ultima_posicao_colocacao and not _area_esta_ocupada() and not _cursor_em_ui():
-				_criar_objeto_posicionavel()
+			if _posicao_grid != _ultima_posicao_colocacao and not _cursor_em_ui():
+				if _eh_broca_manual() or not _area_esta_ocupada():
+					_criar_objeto_posicionavel()
 		elif Input.is_action_pressed("remover_objeto"):
 			if not _cursor_em_ui():
 				_remover_objeto_na_posicao()
+
+func _eh_broca_manual() -> bool:
+	return item_atual != null and item_atual.nome == "BrocaManual"
 
 func equipar_item(novo_item: ItemConstrucao) -> void:
 	item_atual = novo_item
@@ -178,9 +182,13 @@ func _gerenciar_cor_do_preview() -> void:
 	if item_atual == null:
 		return
 	var ocupado := _area_esta_ocupada()
-	var cor := Color(1.0, 0.3, 0.3, 0.5) if ocupado else Color(1.0, 1.0, 1.0, 0.4)
+	var vermelho := false
+	if _eh_broca_manual():
+		var jogador = $".."
+		vermelho = jogador.has_method("esta_em_cooldown_broca") and jogador.esta_em_cooldown_broca()
+	var cor := Color(1.0, 0.3, 0.3, 0.5) if ocupado or vermelho else Color(1.0, 1.0, 1.0, 0.4)
 	if _indicador_grid != null:
-		_indicador_grid.modulate = Color(1.0, 0.0, 0.0, 0.18) if ocupado else Color(0.0, 1.0, 0.0, 0.18)
+		_indicador_grid.modulate = Color(1.0, 0.0, 0.0, 0.18) if ocupado or vermelho else Color(0.0, 1.0, 0.0, 0.18)
 	for filho in get_children():
 		if filho.has_meta("is_construction_preview"):
 			filho.modulate = cor
@@ -229,7 +237,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if event is InputEventMouseButton and not _em_pinça():
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed and not _arrastando_joystick():
-			if not _area_esta_ocupada() and not _cursor_em_ui():
+			if not _cursor_em_ui() and (_eh_broca_manual() or not _area_esta_ocupada()):
 				_criar_objeto_posicionavel()
 			get_viewport().set_input_as_handled()
 		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
@@ -239,7 +247,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if event is InputEventJoypadButton:
 		if event.button_index == JOY_BUTTON_A and event.pressed:
-			if not _area_esta_ocupada() and not _cursor_em_ui():
+			if not _cursor_em_ui() and (_eh_broca_manual() or not _area_esta_ocupada()):
 				_criar_objeto_posicionavel()
 			get_viewport().set_input_as_handled()
 		elif event.button_index == JOY_BUTTON_B and event.pressed:
@@ -284,6 +292,13 @@ func preview_no_set_rotation(preview: CanvasItem) -> void:
 	preview.rotation = deg_to_rad(rotation_atual + offset)
 
 func _criar_objeto_posicionavel() -> void:
+	if _eh_broca_manual():
+		var jogador = $".."
+		if jogador.has_method("usar_broca_manual"):
+			jogador.usar_broca_manual(_posicao_grid)
+		_ultima_posicao_colocacao = _posicao_grid
+		return
+
 	var novo_objeto = item_atual.cena_objeto.instantiate()
 	if "is_preview" in novo_objeto:
 		novo_objeto.is_preview = false

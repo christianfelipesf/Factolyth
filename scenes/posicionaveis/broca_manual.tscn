@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://b7mypjq0vuq2w"]
+
+[ext_resource type="Texture2D" uid="uid://c6vkn5aykx7ox" path="res://images/target_round_b.png" id="1_8nbfw"]
+
+[node name="BrocaManual" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_8nbfw")
+modulate = Color(0, 1, 1, 0.7)

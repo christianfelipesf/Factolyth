@@ -10,6 +10,8 @@
 [ext_resource type="AudioStream" uid="uid://c15v67xt3o3nq" path="res://sound/colocar.mp3" id="8"]
 [ext_resource type="AudioStream" uid="uid://cqnb0typ3qx53" path="res://sound/destruir.mp3" id="9"]
 
+[ext_resource type="AudioStream" uid="uid://ca2q712qalf3s" path="res://sound/spin.mp3" id="10"]
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lj65x"]
 shader = ExtResource("2_32758")
 shader_parameter/deslocamento = Vector2(1.8, -2.335)
@@ -84,3 +86,7 @@ position = Vector2(0, -23)
 scale = Vector2(0.5, 0.5)
 color = Color(0.9647059, 0.9529412, 0.9607843, 0.3137255)
 polygon = PackedVector2Array(0, -16, -10, 10, 10, 10)
+
+[node name="AudioBrocaManual" type="AudioStreamPlayer2D" parent="." unique_id=149283741]
+stream = ExtResource("10")
+volume_db = 0.0

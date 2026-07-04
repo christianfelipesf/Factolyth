@@ -52,7 +52,7 @@ anchor_bottom = 0.0
 offset_left = -200.0
 offset_top = 8.0
 offset_right = -8.0
-offset_bottom = 120.0
+offset_bottom = 200.0
 grow_horizontal = 0
 grow_vertical = 0
 script = ExtResource("5")
@@ -64,18 +64,13 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 8
+theme_override_constants/margin_left = 4
 theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 8
+theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
-[node name="Label" type="Label" parent="UI/InventarioHUD/Margem" unique_id=933740335]
-unique_name_in_owner = true
+[node name="HFlowContainer" type="HFlowContainer" parent="UI/InventarioHUD/Margem" unique_id=381950234]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 0.9)
-theme_override_font_sizes/font_size = 14
-text = "Inventário:"
-vertical_alignment = 1
 
 [node name="PauseMenu" parent="UI" unique_id=1306213941 instance=ExtResource("6_6rf2q")]
 
