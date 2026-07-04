@@ -5,13 +5,11 @@ const ACCELERATION = 1200.0
 const FRICTION = 600.0
 const ROTATION_SPEED = 10.0
 
-# --- CONFIGURAÇÕES DA CÂMERA ---
-@export var MIN_ZOOM := 0.5       
-@export var MAX_ZOOM := 1.5       
-@export var ZOOM_SPEED := 5.0     
-@export var ZOOM_STEP := 0.05     
+@export var MIN_ZOOM := 0.5
+@export var MAX_ZOOM := 1.5
+@export var ZOOM_SPEED := 5.0
+@export var ZOOM_STEP := 0.05
 
-# --- 🌟 ITENS CONSTRUÍVEIS (carregados automaticamente de res://scenes/posicionaveis/) ---
 var _itens_construcao: Array[ItemConstrucao] = []
 var _indice_item_atual: int = -1
 
@@ -19,7 +17,7 @@ signal item_selecionado(indice: int)
 signal itens_construcao_atualizados()
 
 @onready var target_zoom_value: float = (MIN_ZOOM + MAX_ZOOM) / 2.0
-@onready var camera: Camera2D = $Camera2D 
+@onready var camera: Camera2D = $Camera2D
 @onready var marker: Marker2D = $Marker2D
 
 var _pontos_toque: Dictionary = {}
@@ -27,82 +25,57 @@ var _pinça_iniciada: bool = false
 var _distancia_pinça_inicial: float = 0.0
 var _zoom_inicial_pinça: float = 0.0
 var controles_travados := false
-var _cooldown_broca := 0.0
 var inventario: Dictionary = {}
 
 signal inventario_atualizado(inv: Dictionary)
 
+var _broca_module: JogadorBrocaModule
+var _inv_module: JogadorInventarioModule
+
+
 func _ready() -> void:
-	carregar_itens_construcao()
+	_broca_module = JogadorBrocaModule.new()
+	_broca_module.setup(self)
+	_inv_module = JogadorInventarioModule.new()
+	_inv_module.setup(self)
+
+	_inv_module.carregar_itens_construcao()
 	if not _itens_construcao.is_empty():
 		selecionar_item_por_indice(0)
 
-func carregar_itens_construcao() -> void:
-	if SaveManager.modo_jogo == "sobrevivencia":
-		_adicionar_item_com_cena("BrocaManual", _BROCA_MANUAL)
-	else:
-		_adicionar_item_com_cena("Broca", _BROCA)
-		_adicionar_item_com_cena("Esteira", _ESTEIRA)
-		_adicionar_item_com_cena("Nucleo", _NUCLEO)
-		_adicionar_item_com_cena("Canhao", _CANHAO)
-		_adicionar_item_com_cena("Distribuidor", _DISTRIBUIDOR)
-		_adicionar_item_com_cena("Cruzador", _CRUZADOR)
-		_adicionar_item_com_cena("BrocaManual", _BROCA_MANUAL)
-	if _itens_construcao.is_empty():
-		push_error("Nenhum item construível encontrado")
-
-const _BROCA = preload("res://scenes/posicionaveis/broca.tscn")
-const _ESTEIRA = preload("res://scenes/posicionaveis/esteira.tscn")
-const _NUCLEO = preload("res://scenes/posicionaveis/nucleo.tscn")
-const _CANHAO = preload("res://scenes/posicionaveis/simplecanon.tscn")
-const _DISTRIBUIDOR = preload("res://scenes/posicionaveis/distribuidor.tscn")
-const _CRUZADOR = preload("res://scenes/posicionaveis/cruzador.tscn")
-const _BROCA_MANUAL = preload("res://scenes/posicionaveis/broca_manual.tscn")
-
-func _adicionar_item_com_cena(nome: String, cena: PackedScene) -> void:
-	var item = ItemConstrucao.new()
-	item.nome = nome
-	item.cena_objeto = cena
-	item.compensar_rotacao_90 = false
-	item.tamanho_grid = _extrair_tamanho_grid(cena)
-	_itens_construcao.append(item)
 
 @onready var joystick: Control = get_tree().root.find_child("Joystick", true, false)
+
 
 func _physics_process(delta: float) -> void:
 	if controles_travados:
 		return
 
-	if _cooldown_broca > 0:
-		_cooldown_broca -= delta
+	_broca_module.process(delta)
 
-	# 1. Movimento e Direção da Nave
 	var input_direction := Vector2.ZERO
-	
-	# Primeiro tenta ler o teclado com base no seu Input Map (WASD)
 	input_direction.x = Input.get_axis("move_left", "move_right")
 	input_direction.y = Input.get_axis("move_up", "move_down")
-	
-	# Se nenhuma tecla for apertada e o joystick existir, lê o Joystick virtual
+
 	if input_direction == Vector2.ZERO and joystick:
 		input_direction = joystick.get_velocity()
-		
+
 	input_direction = input_direction.normalized()
-	
+
 	if input_direction != Vector2.ZERO:
 		velocity = velocity.move_toward(input_direction * MAX_SPEED, ACCELERATION * delta)
 	else:
 		velocity = velocity.move_toward(Vector2.ZERO, FRICTION * delta)
-	
+
 	move_and_slide()
 
 	if velocity.length() > 10.0:
 		var target_angle = velocity.angle()
 		rotation = rotate_toward(rotation, target_angle, ROTATION_SPEED * delta)
 
-	# 2. Suavização do Zoom (Sua lógica original mantida)
 	var target_zoom = Vector2(target_zoom_value, target_zoom_value)
 	camera.zoom = camera.zoom.lerp(target_zoom, ZOOM_SPEED * delta)
+
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
@@ -131,8 +104,8 @@ func _input(event: InputEvent) -> void:
 	else:
 		_pinça_iniciada = false
 
+
 func _unhandled_input(event: InputEvent) -> void:
-	# [Lógica do Zoom com scroll]
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:
 			target_zoom_value += ZOOM_STEP
@@ -140,7 +113,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			target_zoom_value -= ZOOM_STEP
 		target_zoom_value = clamp(target_zoom_value, MIN_ZOOM, MAX_ZOOM)
 
-	# [🛠 CRAFTING COM TAB / ESC]
 	var hud = get_node_or_null("/root/Mundo/Playerui/UI/CraftingHUD")
 	if event.is_action_pressed("craft"):
 		if hud:
@@ -152,7 +124,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 		return
 
-	# [🌟 CICLO DE ITENS COM E / TECLAS 1-4]
 	if event.is_action_pressed("interact"):
 		if _itens_construcao.is_empty():
 			return
@@ -168,53 +139,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_6: selecionar_item_por_indice(5)
 			KEY_7: selecionar_item_por_indice(6)
 
-func usar_broca_manual(pos: Vector2) -> void:
-	if _cooldown_broca > 0:
-		return
-	_cooldown_broca = 4.0
-	velocity = Vector2.ZERO
-	controles_travados = true
-
-	var dir = pos - global_position
-	var angulo_alvo = dir.angle()
-
-	var tween = create_tween()
-	tween.tween_property(self, "rotation", angulo_alvo, 0.3).set_ease(Tween.EASE_OUT)
-	tween.tween_property(self, "global_position", pos, 0.5).set_ease(Tween.EASE_IN_OUT)
-	tween.tween_callback(_iniciar_giro_broca)
-
-func _iniciar_giro_broca() -> void:
-	$AudioBrocaManual.play()
-
-	var tween = create_tween()
-	tween.set_ease(Tween.EASE_IN_OUT)
-	tween.tween_property(self, "rotation", rotation + deg_to_rad(360.0 * 6), 3.0)
-	tween.tween_callback(func():
-		controles_travados = false
-		$AudioBrocaManual.stop()
-		if SaveManager.modo_jogo == "sobrevivencia":
-			adicionar_item("quartzo", 4)
-	)
-
-func esta_em_cooldown_broca() -> bool:
-	return _cooldown_broca > 0
-
-func adicionar_item(tipo_id: String, quantidade: int = 1) -> void:
-	if inventario.has(tipo_id):
-		inventario[tipo_id] += quantidade
-	else:
-		inventario[tipo_id] = quantidade
-	inventario_atualizado.emit(inventario)
-
-func is_pinçando() -> bool:
-	return _pinça_iniciada
-
 
 func get_itens_construcao() -> Array:
 	return _itens_construcao
 
+
 func get_indice_item_atual() -> int:
 	return _indice_item_atual
+
 
 func selecionar_item_por_indice(indice: int) -> void:
 	if indice < 0 or indice >= _itens_construcao.size():
@@ -223,17 +155,22 @@ func selecionar_item_por_indice(indice: int) -> void:
 	marker.equipar_item(_itens_construcao[_indice_item_atual])
 	item_selecionado.emit(indice)
 
-func _extrair_tamanho_grid(cena: PackedScene) -> Vector2i:
-	var inst = cena.instantiate()
-	if inst == null:
-		return Vector2i(1, 1)
-	var val = inst.get("TAMANHO_GRID")
-	inst.free()
-	return val if val != null else Vector2i(1, 1)
+
+func usar_broca_manual(pos: Vector2) -> void:
+	_broca_module.usar_broca_manual(pos)
+
+
+func esta_em_cooldown_broca() -> bool:
+	return _broca_module.esta_em_cooldown_broca()
+
+
+func adicionar_item(tipo_id: String, quantidade: int = 1) -> void:
+	_inv_module.adicionar_item(tipo_id, quantidade)
+
 
 func adicionar_item_construcao(item: ItemConstrucao) -> void:
-	_itens_construcao.append(item)
-	itens_construcao_atualizados.emit()
+	_inv_module.adicionar_item_construcao(item)
+
 
 func get_save_data() -> Dictionary:
 	return {
@@ -243,6 +180,7 @@ func get_save_data() -> Dictionary:
 		item_atual = _indice_item_atual,
 		inventario = inventario.duplicate()
 	}
+
 
 func set_save_data(dados: Dictionary) -> void:
 	velocity = Vector2.ZERO
@@ -262,3 +200,7 @@ func set_save_data(dados: Dictionary) -> void:
 			inventario[key] = int(dados.inventario[key])
 		inventario_atualizado.emit(inventario)
 	camera.position_smoothing_enabled = true
+
+
+func is_pinçando() -> bool:
+	return _pinça_iniciada

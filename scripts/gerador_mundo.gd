@@ -177,7 +177,10 @@ func _process(_delta: float) -> void:
 			return
 
 	if not is_instance_valid(_jogador):
-		_jogador = get_tree().current_scene.get_node_or_null("Jogador")
+		var cena_atual := get_tree().current_scene
+		if cena_atual == null:
+			return
+		_jogador = cena_atual.get_node_or_null("Jogador")
 		if not is_instance_valid(_jogador):
 			return
 

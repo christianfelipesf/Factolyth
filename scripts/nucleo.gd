@@ -19,7 +19,7 @@ func _ready() -> void:
 func _on_coletor_body_entered(body: Node2D) -> void:
 	if not body.is_in_group("item"):
 		return
-	var tipo_item = body.tipo if body.get("tipo") != null else "quartzo"
+	var tipo_item = body.get("tipo") if "tipo" in body else "quartzo"
 	var jogador = get_node_or_null("/root/Mundo/Jogador")
 	if jogador != null and jogador.has_method("adicionar_item"):
 		jogador.adicionar_item(tipo_item)

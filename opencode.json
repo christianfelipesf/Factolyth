@@ -1,0 +1,9 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "command": {
+    "godot-check": {
+      "description": "Valida scripts GDScript rodando Godot em headless mode",
+      "template": "& \"C:\\Users\\Christian Felipe\\Desktop\\Godot_v4.7-stable_win64.exe\" --headless --path . --import --quit --verbose 2>&1"
+    }
+  }
+}

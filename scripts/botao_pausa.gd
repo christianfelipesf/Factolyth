@@ -11,6 +11,6 @@ func _ready() -> void:
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		accept_event()
+		get_viewport().set_input_as_handled()
 		if _pause_menu != null and _pause_menu.has_method("_on_botao_pausa_pressed"):
 			_pause_menu._on_botao_pausa_pressed()

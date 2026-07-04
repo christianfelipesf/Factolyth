@@ -12,12 +12,14 @@ const TEMPO_PARA_DESAPARECER := 3.0
 func inicializar(data: ItemData) -> void:
 	dados = data
 	tipo = data.id
-	$Sprite2D.texture = data.textura
+	var sprite := $Sprite2D as Sprite2D
+	if sprite:
+		sprite.texture = data.textura
 
 func _ready() -> void:
 	add_to_group("item")
-	collision_layer = 5
-	collision_mask = 4
+	collision_layer = 1
+	collision_mask = 1
 	var shape = $CollisionShape2D.shape as CircleShape2D
 	if shape != null:
 		shape.radius = 6.0

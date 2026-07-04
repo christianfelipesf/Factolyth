@@ -5,6 +5,8 @@
 - **Abrir no Godot**: Editor Godot 4.7+, importar `project.godot`
 - **Exportar HTML5**: Preset "Web" em `export_presets.cfg` — testar local com `$ godot --headless --export-release Web`
 - **Único autoload**: `SaveManager` em `res://scripts/save_manager.gd` — F5 salva, F9 carrega, F12 deleta saves
+- **Validar compilação (após editar scripts)**: `& "C:\Users\Christian Felipe\Desktop\Godot_v4.7-stable_win64.exe" --headless --path . --import --quit --verbose 2>&1`
+  - Ou no terminal `/godot-check` se estiver usando opencode TUI
 
 ## Arquitetura
 

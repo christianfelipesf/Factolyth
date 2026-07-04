@@ -1,6 +1,5 @@
 extends Marker2D
 
-const PARTICULA = preload("res://scenes/particles/particula.tscn")
 const VELOCIDADE_CURSOR := 600.0
 const DEADZONE := 0.2
 
@@ -20,6 +19,10 @@ var _modo_controle: bool = false
 var _mouse_moveu: bool = false
 var _warpeando: bool = false
 
+var _grid_module: CursorGridModule
+var _preview_module: CursorPreviewModule
+var _placement_module: CursorPlacementModule
+
 @onready var camera: Camera2D = $"../Camera2D"
 @onready var area_checagem: Area2D = $AreaChecagem
 @onready var shape_checagem: CollisionShape2D = $AreaChecagem/CollisionShape2D
@@ -28,7 +31,15 @@ var _warpeando: bool = false
 @onready var _audio_destruir: AudioStreamPlayer = $AudioDestruir
 @onready var _seta_direcao: Polygon2D = $SetaDirecao
 
+
 func _ready() -> void:
+	_grid_module = CursorGridModule.new()
+	_preview_module = CursorPreviewModule.new()
+	_placement_module = CursorPlacementModule.new()
+	_grid_module.setup(self)
+	_preview_module.setup(self)
+	_placement_module.setup(self)
+
 	_joystick = get_tree().root.find_child("Joystick", true, false)
 	_ui_root = get_tree().root.find_child("UI", true, false)
 	_botao_pausa = get_tree().root.find_child("BotaoPausa", true, false)
@@ -36,40 +47,16 @@ func _ready() -> void:
 	for filho in get_children():
 		if filho is CanvasItem:
 			filho.z_index = 10
-	_recriar_indicador(Vector2i(1, 1))
+	_grid_module.recriar_indicador(Vector2i(1, 1))
 	_audio_ambiente.finished.connect(_audio_ambiente.play)
-	$Sprite2D.visible = false  # OS cursor substitui visual
+	$Sprite2D.visible = false
+
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and not _warpeando:
 		_mouse_moveu = true
 	_warpeando = false
 
-func _recriar_indicador(tamanho: Vector2i) -> void:
-	if _indicador_grid != null:
-		_indicador_grid.queue_free()
-		_indicador_grid = null
-
-	var px := tamanho.x * 32
-	var py := tamanho.y * 32
-	var img := Image.create(px, py, false, Image.FORMAT_RGBA8)
-	img.fill(Color(1, 1, 1))
-	var tex := ImageTexture.create_from_image(img)
-	_indicador_grid = Sprite2D.new()
-	_indicador_grid.texture = tex
-	_indicador_grid.modulate = Color(0, 1, 0, 0.18)
-	_indicador_grid.z_index = 11
-	add_child(_indicador_grid)
-
-	var rect := RectangleShape2D.new()
-	rect.size = Vector2(px - 8.0, py - 8.0)
-	shape_checagem.shape = rect
-
-func _offset_colocacao() -> Vector2:
-	return Vector2(
-		(_tamanho_grid_atual.x - 1) * 16.0,
-		(_tamanho_grid_atual.y - 1) * 16.0
-	)
 
 func _physics_process(delta: float) -> void:
 	global_rotation = 0.0
@@ -97,11 +84,10 @@ func _physics_process(delta: float) -> void:
 		var world_pos := centro + (_cursor_controle - screen_size / 2.0) / camera.zoom
 		_warpeando = true
 		Input.warp_mouse(_cursor_controle)
-		_atualizar_cursor_e_grid(world_pos)
+		_grid_module.atualizar_cursor_e_grid(world_pos)
 	else:
-		_atualizar_cursor_e_grid()
+		_grid_module.atualizar_cursor_e_grid()
 
-	# Se o jogo foi pausado neste frame (ex: clique no BotaoPausa), não coloca blocos
 	if get_tree().paused:
 		return
 
@@ -109,123 +95,69 @@ func _physics_process(delta: float) -> void:
 		_ultima_posicao_colocacao = Vector2.INF
 
 	if item_atual != null and not _arrastando_joystick() and not _em_pinça():
-		if Input.is_action_pressed("instanciar_objeto"):
-			if _posicao_grid != _ultima_posicao_colocacao and not _cursor_em_ui():
-				if _eh_broca_manual() or not _area_esta_ocupada():
-					_criar_objeto_posicionavel()
-		elif Input.is_action_pressed("remover_objeto"):
-			if not _cursor_em_ui():
-				_remover_objeto_na_posicao()
+		var quer_instanciar := Input.is_action_just_pressed("instanciar_objeto")
+		var quer_remover := Input.is_action_just_pressed("remover_objeto")
+
+		if not quer_instanciar and not quer_remover:
+			quer_instanciar = Input.is_action_pressed("instanciar_objeto") and _posicao_grid != _ultima_posicao_colocacao
+			quer_remover = Input.is_action_pressed("remover_objeto")
+
+		if quer_instanciar and not _cursor_em_ui():
+			if _eh_broca_manual() or not _grid_module.area_esta_ocupada():
+				_criar_objeto_posicionavel()
+		elif quer_remover and not _cursor_em_ui():
+			_placement_module.remover_objeto_na_posicao()
+
 
 func _eh_broca_manual() -> bool:
 	return item_atual != null and item_atual.nome == "BrocaManual"
 
+
 func equipar_item(novo_item: ItemConstrucao) -> void:
 	item_atual = novo_item
 	_tamanho_grid_atual = item_atual.tamanho_grid if item_atual != null else Vector2i(1, 1)
-	_recriar_indicador(_tamanho_grid_atual)
+	_grid_module.recriar_indicador(_tamanho_grid_atual)
 	rotation_atual = 0.0
 	_ultima_posicao_colocacao = Vector2.INF
-	_atualizar_preview_visual()
+	_preview_module.atualizar_preview_visual()
+
 
 func desequipar_item() -> void:
 	item_atual = null
 	_tamanho_grid_atual = Vector2i(1, 1)
-	_recriar_indicador(Vector2i(1, 1))
+	_grid_module.recriar_indicador(Vector2i(1, 1))
 	_ultima_posicao_colocacao = Vector2.INF
 	_seta_direcao.visible = false
-	_atualizar_preview_visual()
+	_preview_module.atualizar_preview_visual()
 
-func _atualizar_cursor_e_grid(pos_alternativa: Vector2 = Vector2.INF) -> void:
-	var alvo: Vector2
-	if pos_alternativa != Vector2.INF:
-		alvo = pos_alternativa
-	else:
-		alvo = get_global_mouse_position()
-
-	var tam_tela := get_viewport_rect().size
-	var area_visivel := tam_tela / camera.zoom
-	var centro := camera.get_screen_center_position()
-	var lim_min := centro - area_visivel / 2.0
-	var lim_max := centro + area_visivel / 2.0
-
-	global_position = Vector2(
-		clamp(alvo.x, lim_min.x, lim_max.x),
-		clamp(alvo.y, lim_min.y, lim_max.y)
-	)
-
-	_posicao_grid = Vector2(
-		floor(alvo.x / 32.0) * 32.0 + 16,
-		floor(alvo.y / 32.0) * 32.0 + 16
-	)
-
-	var ofs := _offset_colocacao()
-
-	if _indicador_grid != null:
-		_indicador_grid.global_position = _posicao_grid + ofs
-
-	area_checagem.global_position = _posicao_grid + ofs
-
-	for child in get_children():
-		if child.has_meta("is_construction_preview"):
-			child.global_position = _posicao_grid + ofs
-
-	if _seta_direcao.visible:
-		_seta_direcao.global_position = _posicao_grid + ofs
-
-	_gerenciar_cor_do_preview()
-
-func _area_esta_ocupada() -> bool:
-	return area_checagem.has_overlapping_bodies()
-
-func _gerenciar_cor_do_preview() -> void:
-	if item_atual == null:
-		return
-	var ocupado := _area_esta_ocupada()
-	var vermelho := false
-	if _eh_broca_manual():
-		var jogador = $".."
-		vermelho = jogador.has_method("esta_em_cooldown_broca") and jogador.esta_em_cooldown_broca()
-	var cor := Color(1.0, 0.3, 0.3, 0.5) if ocupado or vermelho else Color(1.0, 1.0, 1.0, 0.4)
-	if _indicador_grid != null:
-		_indicador_grid.modulate = Color(1.0, 0.0, 0.0, 0.18) if ocupado or vermelho else Color(0.0, 1.0, 0.0, 0.18)
-	for filho in get_children():
-		if filho.has_meta("is_construction_preview"):
-			filho.modulate = cor
 
 func _arrastando_joystick() -> bool:
 	return _joystick != null and _joystick.has_method("esta_arrastando") and _joystick.esta_arrastando()
+
 
 func _em_pinça() -> bool:
 	var pai: Node = $".."
 	return pai.has_method("is_pinçando") and pai.is_pinçando()
 
+
 func _cursor_em_ui() -> bool:
-	## Verifica se o cursor está sobre QUALQUER elemento GUI
-	## (joystick, barra de construção, botão de pausa, etc.)
 	var mouse_pos := get_viewport().get_mouse_position()
-	
-	# 1. Joystick (incluindo margem)
+
 	if _joystick != null and _joystick.has_method("is_na_area_de_ui") and _joystick.is_na_area_de_ui(mouse_pos):
 		return true
-	
-	# 2. Botão de pausa (canto superior direito)
 	if _botao_pausa != null and _botao_pausa.get_global_rect().has_point(mouse_pos):
 		return true
-	
-	# 3. Barra de construção (fundo da tela)
 	if _barra_ui_root != null and _barra_ui_root.get_global_rect().has_point(mouse_pos):
 		return true
-	
-	# 4. Crafting HUD (quando aberto)
+
 	var hud = get_node_or_null("/root/Mundo/Playerui/UI/CraftingHUD")
 	if hud != null and hud.visible:
 		return true
-	
+
 	return false
 
+
 func _unhandled_input(event: InputEvent) -> void:
-	# Quando pausado (menu aberto), ignora qualquer ação no mundo do jogo
 	if get_tree().paused:
 		return
 
@@ -234,128 +166,22 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("rotacionar_objeto") and item_atual != null:
 		rotation_atual = fmod(rotation_atual + 90.0, 360.0)
-		_atualizar_preview_visual()
+		_preview_module.atualizar_preview_visual()
 		get_viewport().set_input_as_handled()
 
 	if item_atual == null:
 		return
 
-	if event is InputEventMouseButton and not _em_pinça():
-		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed and not _arrastando_joystick():
-			if not _cursor_em_ui() and (_eh_broca_manual() or not _area_esta_ocupada()):
-				_criar_objeto_posicionavel()
-			get_viewport().set_input_as_handled()
-		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-			if not _cursor_em_ui():
-				_remover_objeto_na_posicao()
-			get_viewport().set_input_as_handled()
-
 	if event is InputEventJoypadButton:
 		if event.button_index == JOY_BUTTON_A and event.pressed:
-			if not _cursor_em_ui() and (_eh_broca_manual() or not _area_esta_ocupada()):
+			if not _cursor_em_ui() and (_eh_broca_manual() or not _grid_module.area_esta_ocupada()):
 				_criar_objeto_posicionavel()
 			get_viewport().set_input_as_handled()
 		elif event.button_index == JOY_BUTTON_B and event.pressed:
 			if not _cursor_em_ui():
-				_remover_objeto_na_posicao()
+				_placement_module.remover_objeto_na_posicao()
 			get_viewport().set_input_as_handled()
 
-func _atualizar_preview_visual() -> void:
-	for child in get_children():
-		if child.has_meta("is_construction_preview"):
-			child.queue_free()
-
-	if item_atual == null or item_atual.cena_objeto == null:
-		_seta_direcao.visible = false
-		return
-
-	_seta_direcao.visible = true
-	_seta_direcao.rotation = deg_to_rad(rotation_atual)
-
-	var obj_temp = item_atual.cena_objeto.instantiate()
-	if "is_preview" in obj_temp:
-		obj_temp.is_preview = true
-
-	var sprite = obj_temp.find_child("*AnimatedSprite2D*", true, false)
-	if sprite == null:
-		sprite = obj_temp.find_child("*Sprite2D*", true, false)
-
-	if sprite != null:
-		var preview = sprite.duplicate() as CanvasItem
-		preview.set_meta("is_construction_preview", true)
-		preview.modulate.a = 0.4
-		preview_no_set_rotation(preview)
-		preview.global_position = _posicao_grid + _offset_colocacao()
-		add_child(preview)
-		if preview.has_method("play"):
-			preview.play()
-
-	obj_temp.queue_free()
-
-func preview_no_set_rotation(preview: CanvasItem) -> void:
-	var offset = -90.0 if item_atual.compensar_rotacao_90 else 0.0
-	preview.rotation = deg_to_rad(rotation_atual + offset)
-
-func _get_custo_placa(nome: String) -> int:
-	match nome:
-		"Broca": return 2
-		"Esteira": return 1
-		"Nucleo": return 8
-		"Canhao": return 6
-		"Distribuidor": return 7
-		"Cruzador": return 10
-	return 0
 
 func _criar_objeto_posicionavel() -> void:
-	if _eh_broca_manual():
-		var jogador = $".."
-		if jogador.has_method("usar_broca_manual"):
-			jogador.usar_broca_manual(_posicao_grid)
-		_ultima_posicao_colocacao = _posicao_grid
-		return
-
-	if SaveManager.modo_jogo == "sobrevivencia":
-		var custo = _get_custo_placa(item_atual.nome)
-		if custo > 0:
-			var jogador: Node = $".."
-			var tem = int(jogador.inventario.get("placa_quartzo", 0))
-			if tem < custo:
-				return
-			jogador.inventario["placa_quartzo"] -= custo
-			jogador.inventario_atualizado.emit(jogador.inventario)
-
-	var novo_objeto = item_atual.cena_objeto.instantiate()
-	if "is_preview" in novo_objeto:
-		novo_objeto.is_preview = false
-	if "esta_posicionando" in novo_objeto:
-		novo_objeto.esta_posicionando = false
-
-	var offset = -90.0 if item_atual.compensar_rotacao_90 else 0.0
-	novo_objeto.global_rotation = deg_to_rad(rotation_atual + offset)
-
-	novo_objeto.global_position = _posicao_grid + _offset_colocacao()
-	get_tree().current_scene.add_child(novo_objeto)
-	novo_objeto.add_to_group("estrutura")
-	_spawnar_particula(novo_objeto.global_position)
-	_audio_colocar.play()
-
-	_ultima_posicao_colocacao = _posicao_grid
-
-	await get_tree().physics_frame
-
-	get_tree().call_group("broca", "verificar_extrutura_e_atualizar_estado")
-
-func _spawnar_particula(pos: Vector2) -> void:
-	var p = PARTICULA.instantiate()
-	p.global_position = pos
-	p.one_shot = true
-	get_tree().current_scene.add_child(p)
-	p.emitting = true
-	p.finished.connect(p.queue_free)
-
-func _remover_objeto_na_posicao() -> void:
-	for corpo in area_checagem.get_overlapping_bodies():
-		if corpo != $"..":
-			_spawnar_particula(corpo.global_position)
-			_audio_destruir.play()
-			corpo.queue_free()
+	_placement_module.criar_objeto_posicionavel()
