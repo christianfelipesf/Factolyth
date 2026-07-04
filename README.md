@@ -6,19 +6,35 @@
 
 ## Sobre o jogo
 
-Um mini robô orgânico usa um teleportador quântico que o leva para um planeta desconhecido. Agora você precisa minerar cristais energéticos, automatizar e se defender para construir um novo teleportador e voltar para casa.
+Um mini robô orgânico usa um teleportador quântico que o leva para um planeta desconhecido. Você começa sem nenhum recurso avançado e precisa minerar veios de quartzo manualmente, processar materiais, criar ligas purificadas e erguer uma linha de automação industrial e defesas para construir um novo teleportador e voltar para casa.
 
 ---
 
 ## Características
 
-- **Automação e Tower Defense** — Construa esteiras, britadeiras e torres automatizadas enquanto enfrenta inimigos.
-- **Geração procedural** — Mapas gerados proceduralmente com FastNoiseLite, cache em PackedFloat32Array
+- **Automação e Tower Defense** — Construa esteiras, extratores, fusores e torres automatizadas enquanto enfrenta inimigos.
+- **Cadeia de Refino Complexa** — Transforme matéria-prima bruta através de processos de crafting manual e fundição automatizada.
+- **Geração procedural** — Mapas gerados proceduralmente com FastNoiseLite, cache em PackedFloat32Array.
 - **Sistema de Save/Load** — Salva semente, estruturas, jogador (posição/rotação/zoom/item) com tela de loading.
-- **Barra de Seleção** — Interface inferior para selecionar itens com suporte a teclas 1-4, clique, e sincronizada via signals
-- **Controles** — Teclado, mouse, tela sensível ao toque (joystick virtual) e controle (analógico direito para cursor, A/B para ações)
-- **Som** — Som ambiente em loop, SFX de colocar/destruir estruturas, partículas ao interagir
-- **Preview de Construção** — Indicador visual com snap ao grid, rotação (R), preview semi-transparente, detecção de área ocupada
+- **Barra de Seleção** — Interface inferior para selecionar itens com suporte a teclas 1-4, clique, e sincronizada via signals.
+- **Controles** — Teclado, mouse, tela sensível ao toque (joystick virtual) e controle (analógico direito para cursor, A/B para ações).
+- **Som** — Som ambiente em loop, SFX de colocar/destruir estruturas, partículas ao interagir.
+- **Preview de Construção** — Indicador visual com snap ao grid, rotação (R), preview semi-transparente, detecção de área ocupada.
+
+---
+
+## Fluxo de Produção e Progressão
+
+A jornada do jogador é dividida em etapas de processamento e manufatura de componentes:
+[Veio de Quartzo (Manual)] ➔ Pó de Quartzo
+⬇ (Crafting Manual: 4 Pós = 1 Placa)
+[Placa de Quartzo] ➔ Componente de Estruturas (Extrator / Broca)
+⬇ (Construção: Requer 2 Placas)
+[Extrator de Areia] ➔ Areia Purificada
+⬇ + [Pó de Quartzo] (Alimentados no Fusor)
+[Fusor] ➔ Silício
+⬇ + [1 Placa de Quartzo] (Combinação para Construção)
+[Broca Avançada] ➔ Automatiza a extração de minérios em massa dos veios
 
 ---
 
@@ -40,17 +56,30 @@ Um mini robô orgânico usa um teleportador quântico que o leva para um planeta
 
 ---
 
-## Elementos do jogo
+## Elementos do Jogo
 
-| Item | Descrição |
-|---|---|
-| Broca | Extrai cristais automaticamente |
-| Esteira | Transporta itens e cristais entre estruturas |
-| Canhão | Torre de defesa automática |
-| Núcleo | Coleta cristais e armazena |
-| Quartzo Alvo | Cristal branco básico e abundante, essencial para estruturas iniciais |
-| Rubelita | Cristal rosa intermediário com propriedades de refração para tecnologias avançadas |
-| Turmalina-Ciano | Cristal ciano raro e altamente energético, usado para alimentar sistemas complexos |
+### Recursos e Itens (`scenes/itens/`)
+
+| Item | Origem | Descrição / Uso |
+|---|---|---|
+| **Pó de Quartzo** | Extração Manual | Coletado diretamente pelo jogador ao minerar veios de quartzo pelo mapa. Base de toda a cadeia. |
+| **Placa de Quartzo** | Crafting Manual | Fabricado pelo jogador combinando **4 Pós de Quartzo**. Usado para criar estruturas. |
+| **Areia Purificada** | Extrator de Areia | Gerada automaticamente pelo Extrator. Insumo essencial para fundição. |
+| **Silício** | Fusor | Produto final obtido da fundição de **1 Areia Purificada + 1 Pó de Quartzo**. Usado em tecnologias avançadas. |
+| **Quartzo Alvo** | Cristal | Cristal branco básico e abundante, essencial para estruturas de energia iniciais. |
+| **Rubelita** | Cristal | Cristal rosa intermediário com propriedades de refração para tecnologias avançadas. |
+| **Turmalina-Ciano** | Cristal | Cristal ciano raro e altamente energético, usado para alimentar sistemas complexos. |
+
+### Estruturas Construíveis (`scenes/posicionaveis/`)
+
+| Estrutura | Custo de Construção | Função |
+|---|---|---|
+| **Extrator de Areia** | 2x Placa de Quartzo | Extrai e injeta automaticamente Areia Purificada nas esteiras adjacentes. |
+| **Fusor** | Recursos de Quartzo / Silício | Recebe insumos por esteiras, processa misturas (Areia + Pó) e expele Silício purificado. |
+| **Esteira** | Recursos Básicos | Transporta mecanicamente itens e cristais entre estruturas e depósitos. |
+| **Broca Avançada** | 1x Silício + 1x Placa de Quartzo | Estrutura automatizada de mineração em massa para veios e cristais no solo. |
+| **Canhão** | Recursos Avançados | Torre defensiva de combate automático contra hordas de inimigos. |
+| **Núcleo** | Estrutura Inicial | Coleta os cristais e recursos finais que chegam por esteiras para o inventário central de vitória. |
 
 ---
 
@@ -65,9 +94,9 @@ Um mini robô orgânico usa um teleportador quântico que o leva para um planeta
 
 ## Como jogar
 
-1. Clone o repositório
-2. Abra o projeto na Godot Engine 4.7+
-3. Execute a cena principal (`scenes/mundo.tscn`)
+1. Clone o repositório.
+2. Abra o projeto na Godot Engine 4.7+.
+3. Execute a cena principal (`scenes/mundo.tscn`).
 
 ---
 
@@ -75,13 +104,14 @@ Um mini robô orgânico usa um teleportador quântico que o leva para um planeta
 
 | Diretório | Finalidade |
 |---|---|
-| `scripts/` | Código-fonte GDScript |
-| `scenes/` | Cenas Godot (.tscn) |
-| `scenes/posicionaveis/` | Estruturas construíveis |
-| `scenes/itens/` | Cristais e recursos |
-| `scenes/particles/` | Efeitos de partícula |
-| `sound/` | Áudio (ambiente, SFX) |
-| `images/` | Sprites e tilesets |
+| `scripts/` | Código-fonte GDScript e Shaders |
+| `scenes/` | Cenas Godot (.tscn) principais |
+| `scenes/posicionaveis/` | Estruturas construíveis (broca, esteira, extrator, fusor) |
+| `scenes/itens/` | Itens, pós, placas e cristais transportáveis |
+| `scenes/particles/` | Efeitos visuais e de partícula |
+| `recurso/` | Resources customizados (`ItemConstrucao.gd`) |
+| `sound/` | Áudio (música ambiente, efeitos de clique e destruição) |
+| `images/` | Sprites, texturas e tilesets visuais |
 
 ---
 
