@@ -8,6 +8,7 @@ var _carregando := false
 var _loading: Node = null
 var save_pendente: String = ""
 var modo_procedural: bool = false
+var modo_jogo: String = "criativo"
 
 const CENA_CARREGANDO := preload("res://scenes/carregando.tscn")
 

@@ -30,10 +30,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -300.0
-offset_top = -180.0
-offset_right = 300.0
-offset_bottom = 180.0
+offset_left = -400.0
+offset_top = -280.0
+offset_right = 400.0
+offset_bottom = 280.0
 
 [node name="VBox" type="VBoxContainer" parent="Painel"]
 layout_mode = 1
@@ -58,23 +58,46 @@ text = "Crafting"
 layout_mode = 2
 text = "X"
 
-[node name="Meio" type="HSplitContainer" parent="Painel/VBox"]
+[node name="Abas" type="HBoxContainer" parent="Painel/VBox"]
+layout_mode = 2
+alignment = 0
+
+[node name="BtnItens" type="Button" parent="Painel/VBox/Abas"]
+layout_mode = 2
+custom_minimum_size = Vector2(120, 28)
+text = "Itens"
+
+[node name="BtnEstruturas" type="Button" parent="Painel/VBox/Abas"]
+layout_mode = 2
+custom_minimum_size = Vector2(120, 28)
+text = "Estruturas"
+
+[node name="BtnInventario" type="Button" parent="Painel/VBox/Abas"]
+layout_mode = 2
+custom_minimum_size = Vector2(120, 28)
+text = "Inventário"
+
+[node name="ConteudoItens" type="VBoxContainer" parent="Painel/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Lista" type="ScrollContainer" parent="Painel/VBox/Meio"]
+[node name="Meio" type="HSplitContainer" parent="Painel/VBox/ConteudoItens"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Lista" type="ScrollContainer" parent="Painel/VBox/ConteudoItens/Meio"]
 layout_mode = 2
 custom_minimum_size = Vector2(200, 0)
 
-[node name="VBoxReceitas" type="VBoxContainer" parent="Painel/VBox/Meio/Lista"]
+[node name="VBoxReceitas" type="VBoxContainer" parent="Painel/VBox/ConteudoItens/Meio/Lista"]
 layout_mode = 2
 
-[node name="Detalhes" type="Panel" parent="Painel/VBox/Meio"]
+[node name="Detalhes" type="Panel" parent="Painel/VBox/ConteudoItens/Meio"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource(1)
 
-[node name="VBoxDetalhes" type="VBoxContainer" parent="Painel/VBox/Meio/Detalhes"]
+[node name="VBoxDetalhes" type="VBoxContainer" parent="Painel/VBox/ConteudoItens/Meio/Detalhes"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -82,31 +105,69 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Icone" type="TextureRect" parent="Painel/VBox/Meio/Detalhes/VBoxDetalhes"]
+[node name="Icone" type="TextureRect" parent="Painel/VBox/ConteudoItens/Meio/Detalhes/VBoxDetalhes"]
 layout_mode = 2
 custom_minimum_size = Vector2(64, 64)
 stretch_mode = 4
 
-[node name="Nome" type="Label" parent="Painel/VBox/Meio/Detalhes/VBoxDetalhes"]
+[node name="Nome" type="Label" parent="Painel/VBox/ConteudoItens/Meio/Detalhes/VBoxDetalhes"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.9)
 theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 
-[node name="ContainerIngredientes" type="VBoxContainer" parent="Painel/VBox/Meio/Detalhes/VBoxDetalhes"]
+[node name="ContainerIngredientes" type="VBoxContainer" parent="Painel/VBox/ConteudoItens/Meio/Detalhes/VBoxDetalhes"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Progresso" type="ProgressBar" parent="Painel/VBox/Meio/Detalhes/VBoxDetalhes"]
+[node name="Progresso" type="ProgressBar" parent="Painel/VBox/ConteudoItens/Meio/Detalhes/VBoxDetalhes"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 20)
 
-[node name="TempoLabel" type="Label" parent="Painel/VBox/Meio/Detalhes/VBoxDetalhes"]
+[node name="TempoLabel" type="Label" parent="Painel/VBox/ConteudoItens/Meio/Detalhes/VBoxDetalhes"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.7)
 theme_override_font_sizes/font_size = 12
 horizontal_alignment = 1
 
-[node name="Botao" type="Button" parent="Painel/VBox/Meio/Detalhes/VBoxDetalhes"]
+[node name="Botao" type="Button" parent="Painel/VBox/ConteudoItens/Meio/Detalhes/VBoxDetalhes"]
 layout_mode = 2
 text = "Craft"
+
+[node name="ConteudoEstruturas" type="VBoxContainer" parent="Painel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+visible = false
+
+[node name="GridSlots" type="GridContainer" parent="Painel/VBox/ConteudoEstruturas"]
+layout_mode = 2
+columns = 3
+custom_minimum_size = Vector2(0, 100)
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+
+[node name="ScrollEstruturas" type="ScrollContainer" parent="Painel/VBox/ConteudoEstruturas"]
+layout_mode = 2
+size_flags_vertical = 3
+custom_minimum_size = Vector2(0, 80)
+
+[node name="VBoxReceitasEstrutura" type="VBoxContainer" parent="Painel/VBox/ConteudoEstruturas/ScrollEstruturas"]
+layout_mode = 2
+
+[node name="Fabricar" type="Button" parent="Painel/VBox/ConteudoEstruturas"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 32)
+text = "Fabricar"
+
+[node name="ConteudoInventario" type="VBoxContainer" parent="Painel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+visible = false
+
+[node name="GridInventario" type="GridContainer" parent="Painel/VBox/ConteudoInventario"]
+layout_mode = 2
+columns = 3
+custom_minimum_size = Vector2(0, 200)
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+alignment = 1

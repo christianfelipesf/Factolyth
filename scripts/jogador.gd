@@ -16,6 +16,7 @@ var _itens_construcao: Array[ItemConstrucao] = []
 var _indice_item_atual: int = -1
 
 signal item_selecionado(indice: int)
+signal itens_construcao_atualizados()
 
 @onready var target_zoom_value: float = (MIN_ZOOM + MAX_ZOOM) / 2.0
 @onready var camera: Camera2D = $Camera2D 
@@ -37,13 +38,16 @@ func _ready() -> void:
 		selecionar_item_por_indice(0)
 
 func carregar_itens_construcao() -> void:
-	_adicionar_item_com_cena("Broca", _BROCA)
-	_adicionar_item_com_cena("Esteira", _ESTEIRA)
-	_adicionar_item_com_cena("Nucleo", _NUCLEO)
-	_adicionar_item_com_cena("Canhao", _CANHAO)
-	_adicionar_item_com_cena("Distribuidor", _DISTRIBUIDOR)
-	_adicionar_item_com_cena("Cruzador", _CRUZADOR)
-	_adicionar_item_com_cena("BrocaManual", _BROCA_MANUAL)
+	if SaveManager.modo_jogo == "sobrevivencia":
+		_adicionar_item_com_cena("BrocaManual", _BROCA_MANUAL)
+	else:
+		_adicionar_item_com_cena("Broca", _BROCA)
+		_adicionar_item_com_cena("Esteira", _ESTEIRA)
+		_adicionar_item_com_cena("Nucleo", _NUCLEO)
+		_adicionar_item_com_cena("Canhao", _CANHAO)
+		_adicionar_item_com_cena("Distribuidor", _DISTRIBUIDOR)
+		_adicionar_item_com_cena("Cruzador", _CRUZADOR)
+		_adicionar_item_com_cena("BrocaManual", _BROCA_MANUAL)
 	if _itens_construcao.is_empty():
 		push_error("Nenhum item construível encontrado")
 
@@ -188,6 +192,8 @@ func _iniciar_giro_broca() -> void:
 	tween.tween_callback(func():
 		controles_travados = false
 		$AudioBrocaManual.stop()
+		if SaveManager.modo_jogo == "sobrevivencia":
+			adicionar_item("quartzo", 4)
 	)
 
 func esta_em_cooldown_broca() -> bool:
@@ -224,6 +230,10 @@ func _extrair_tamanho_grid(cena: PackedScene) -> Vector2i:
 	var val = inst.get("TAMANHO_GRID")
 	inst.free()
 	return val if val != null else Vector2i(1, 1)
+
+func adicionar_item_construcao(item: ItemConstrucao) -> void:
+	_itens_construcao.append(item)
+	itens_construcao_atualizados.emit()
 
 func get_save_data() -> Dictionary:
 	return {

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="RecipeEstruturaData" format=3 uid="uid://d4ad7mrxdowf1"]
+
+[ext_resource type="Script" path="res://scripts/recipe_estrutura_data.gd" id="1_sls4k"]
+
+[resource]
+script = ExtResource("1_sls4k")
+nome = "Distribuidor"
+ingredientes = {
+"placa_quartzo": 7
+}
+cena_path = "res://scenes/posicionaveis/distribuidor.tscn"
+slot_destino = -1

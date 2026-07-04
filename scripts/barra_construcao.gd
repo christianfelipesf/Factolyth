@@ -14,6 +14,14 @@ func _ready() -> void:
 			_itens = _jogador.get_itens_construcao()
 		if _jogador.has_signal("item_selecionado"):
 			_jogador.item_selecionado.connect(_atualizar_destaque)
+		if _jogador.has_signal("itens_construcao_atualizados"):
+			_jogador.itens_construcao_atualizados.connect(_reconstruir)
+	_construir_slots()
+	if _jogador and _jogador.has_method("get_indice_item_atual"):
+		_atualizar_destaque(_jogador.get_indice_item_atual())
+
+func _reconstruir() -> void:
+	_itens = _jogador.get_itens_construcao()
 	_construir_slots()
 	if _jogador and _jogador.has_method("get_indice_item_atual"):
 		_atualizar_destaque(_jogador.get_indice_item_atual())
@@ -26,15 +34,39 @@ func _construir_slots() -> void:
 	for i in _itens.size():
 		var item = _itens[i]
 		var btn = Button.new()
-		btn.text = item.nome + "\n[" + str(i + 1) + "]"
-		btn.custom_minimum_size = Vector2(100, 56)
+		btn.custom_minimum_size = Vector2(110, 64)
 		btn.size_flags_horizontal = SIZE_SHRINK_CENTER
 		btn.toggle_mode = true
 		btn.pressed.connect(_on_slot_pressed.bind(i))
+
+		var icon = _extrair_icone(item.cena_objeto)
+		if icon:
+			btn.icon = icon
+			btn.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			btn.text = item.nome + "\n[" + str(i + 1) + "]"
+		else:
+			btn.text = item.nome + "\n[" + str(i + 1) + "]"
+
 		hbox.add_child(btn)
 		_slots.append(btn)
 
 	_indice_selecionado = -1
+
+func _extrair_icone(cena: PackedScene) -> Texture2D:
+	if cena == null:
+		return null
+	var temp = cena.instantiate()
+	var tex = _extrair_textura(temp)
+	temp.queue_free()
+	return tex
+
+func _extrair_textura(node: Node) -> Texture2D:
+	for child in node.find_children("*", "Sprite2D", true, false):
+		return child.texture
+	for child in node.find_children("*", "AnimatedSprite2D", true, false):
+		if child.sprite_frames and child.sprite_frames.get_frame_texture("default", 0):
+			return child.sprite_frames.get_frame_texture("default", 0)
+	return null
 
 func _atualizar_destaque(indice: int) -> void:
 	_indice_selecionado = indice

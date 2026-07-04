@@ -296,6 +296,16 @@ func preview_no_set_rotation(preview: CanvasItem) -> void:
 	var offset = -90.0 if item_atual.compensar_rotacao_90 else 0.0
 	preview.rotation = deg_to_rad(rotation_atual + offset)
 
+func _get_custo_placa(nome: String) -> int:
+	match nome:
+		"Broca": return 2
+		"Esteira": return 1
+		"Nucleo": return 8
+		"Canhao": return 6
+		"Distribuidor": return 7
+		"Cruzador": return 10
+	return 0
+
 func _criar_objeto_posicionavel() -> void:
 	if _eh_broca_manual():
 		var jogador = $".."
@@ -303,6 +313,16 @@ func _criar_objeto_posicionavel() -> void:
 			jogador.usar_broca_manual(_posicao_grid)
 		_ultima_posicao_colocacao = _posicao_grid
 		return
+
+	if SaveManager.modo_jogo == "sobrevivencia":
+		var custo = _get_custo_placa(item_atual.nome)
+		if custo > 0:
+			var jogador: Node = $".."
+			var tem = int(jogador.inventario.get("placa_quartzo", 0))
+			if tem < custo:
+				return
+			jogador.inventario["placa_quartzo"] -= custo
+			jogador.inventario_atualizado.emit(jogador.inventario)
 
 	var novo_objeto = item_atual.cena_objeto.instantiate()
 	if "is_preview" in novo_objeto:

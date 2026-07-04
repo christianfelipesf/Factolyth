@@ -40,10 +40,12 @@ func _on_novo_jogo_pressed() -> void:
 
 func _on_normal_pressed() -> void:
 	SaveManager.modo_procedural = false
+	SaveManager.modo_jogo = "criativo"
 	get_tree().change_scene_to_file("res://scenes/mundo.tscn")
 
 func _on_procedural_pressed() -> void:
 	SaveManager.modo_procedural = true
+	SaveManager.modo_jogo = "sobrevivencia"
 	get_tree().change_scene_to_file("res://scenes/mundo.tscn")
 
 func _on_voltar_pressed() -> void:

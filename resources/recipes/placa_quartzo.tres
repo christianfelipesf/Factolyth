@@ -6,7 +6,7 @@
 script = ExtResource("1_d5uo2")
 nome = "Placa de Quartzo"
 ingredientes = {
-"quartzo": 30
+"quartzo": 6
 }
 resultado = "placa_quartzo"
 resultado_quantidade = 1

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="RecipeEstruturaData" format=3 uid="uid://dp7xbqa1s3imq"]
+
+[ext_resource type="Script" path="res://scripts/recipe_estrutura_data.gd" id="1_b4scq"]
+
+[resource]
+script = ExtResource("1_b4scq")
+nome = "Broca"
+ingredientes = {
+"placa_quartzo": 2
+}
+cena_path = "res://scenes/posicionaveis/broca.tscn"
+slot_destino = -1

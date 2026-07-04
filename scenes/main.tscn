@@ -90,12 +90,12 @@ alignment = 1
 [node name="Normal" type="Button" parent="SubmenuNovoJogo" unique_id=2097751794]
 custom_minimum_size = Vector2(240, 40)
 layout_mode = 2
-text = "Normal"
+text = "Criativo"
 
 [node name="Procedural" type="Button" parent="SubmenuNovoJogo" unique_id=443673200]
 custom_minimum_size = Vector2(240, 40)
 layout_mode = 2
-text = "Procedural (Alpha)"
+text = "Sobrevivência"
 
 [node name="Voltar" type="Button" parent="SubmenuNovoJogo" unique_id=1255319876]
 custom_minimum_size = Vector2(240, 40)
