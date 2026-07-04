@@ -32,11 +32,12 @@ texture = ExtResource("2_0wfyh")
 metadata/_edit_use_anchors_ = true
 
 [node name="Panel" type="Panel" parent="." unique_id=1941149650]
-layout_mode = 0
-offset_left = -25.0
-offset_top = -14.0
-offset_right = 15.0
-offset_bottom = 26.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 scale = Vector2(33.296097, 18.926086)
 theme_override_styles/panel = SubResource("StyleBoxFlat_sugp2")
 

@@ -14,6 +14,7 @@ config/name="Factolyth"
 run/main_scene="uid://cdvo0srdwci2"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 boot_splash/bg_color=Color(0.7919991, 0.79199916, 0.7919991, 1)
+boot_splash/use_filter=false
 boot_splash/image="uid://bmdbdhjmemmo7"
 config/icon="uid://bfh566cmvlwra"
 config/windows_native_icon="res://images/player.ico"
