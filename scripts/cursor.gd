@@ -217,6 +217,11 @@ func _cursor_em_ui() -> bool:
 	if _barra_ui_root != null and _barra_ui_root.get_global_rect().has_point(mouse_pos):
 		return true
 	
+	# 4. Crafting HUD (quando aberto)
+	var hud = get_node_or_null("/root/Mundo/Playerui/UI/CraftingHUD")
+	if hud != null and hud.visible:
+		return true
+	
 	return false
 
 func _unhandled_input(event: InputEvent) -> void:

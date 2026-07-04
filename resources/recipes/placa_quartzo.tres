@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="RecipeData" format=3 uid="uid://cq0c0ab7hm0gg"]
+
+[ext_resource type="Script" path="res://scripts/recipe_data.gd" id="1_d5uo2"]
+
+[resource]
+script = ExtResource("1_d5uo2")
+nome = "Placa de Quartzo"
+ingredientes = {
+"quartzo": 30
+}
+resultado = "placa_quartzo"
+resultado_quantidade = 1
+tempo_craft = 3.0

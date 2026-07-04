@@ -136,6 +136,18 @@ func _unhandled_input(event: InputEvent) -> void:
 			target_zoom_value -= ZOOM_STEP
 		target_zoom_value = clamp(target_zoom_value, MIN_ZOOM, MAX_ZOOM)
 
+	# [🛠 CRAFTING COM TAB / ESC]
+	var hud = get_node_or_null("/root/Mundo/Playerui/UI/CraftingHUD")
+	if event.is_action_pressed("craft"):
+		if hud:
+			hud.toggle()
+			get_viewport().set_input_as_handled()
+			return
+	if hud != null and hud.visible and event.is_action_pressed("ui_cancel"):
+		hud.toggle()
+		get_viewport().set_input_as_handled()
+		return
+
 	# [🌟 CICLO DE ITENS COM E / TECLAS 1-4]
 	if event.is_action_pressed("interact"):
 		if _itens_construcao.is_empty():
@@ -235,6 +247,8 @@ func set_save_data(dados: Dictionary) -> void:
 	if dados.has("item_atual"):
 		selecionar_item_por_indice(dados.item_atual)
 	if dados.has("inventario"):
-		inventario = dados.inventario.duplicate()
+		inventario = {}
+		for key in dados.inventario:
+			inventario[key] = int(dados.inventario[key])
 		inventario_atualizado.emit(inventario)
 	camera.position_smoothing_enabled = true

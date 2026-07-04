@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://crb28nsennpkp" path="res://scripts/loading_chunks_indicator.gd" id="8_0q5bq"]
 [ext_resource type="Script" uid="uid://bvfd8ivlvxt3" path="res://scripts/botao_pausa.gd" id="9"]
 [ext_resource type="Texture2D" uid="uid://76cuynr2jl6s" path="res://images/ui/pause_press.png" id="10_dljgg"]
+[ext_resource type="PackedScene" uid="uid://ch25fqwjhvbyw" path="res://scenes/crafting_hud.tscn" id="11_g6y3g"]
 
 [node name="CanvasLayer" type="CanvasLayer" unique_id=216092279]
 
@@ -41,14 +42,16 @@ scale = Vector2(0.2, 0.2)
 texture = ExtResource("3_xx5n8")
 
 [node name="BarraConstrucao" parent="UI" unique_id=1848745639 instance=ExtResource("4_y1cqx")]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_bottom = 1.0
 
 [node name="InventarioHUD" type="Control" parent="UI" unique_id=824166272]
 layout_mode = 1
-anchors_preset = 3
+anchors_preset = 1
 anchor_left = 1.0
-anchor_top = 0.0
 anchor_right = 1.0
-anchor_bottom = 0.0
 offset_left = -200.0
 offset_top = 8.0
 offset_right = -8.0
@@ -76,7 +79,7 @@ layout_mode = 2
 
 [node name="NotificacaoSave" type="Label" parent="UI" unique_id=1342226807]
 layout_mode = 1
-anchors_preset = 4
+anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -118,11 +121,9 @@ script = ExtResource("8_0q5bq")
 
 [node name="BotaoPausa" type="TextureButton" parent="UI" unique_id=1669730007]
 layout_mode = 1
-anchors_preset = 3
+anchors_preset = 1
 anchor_left = 1.0
-anchor_top = 0.0
 anchor_right = 1.0
-anchor_bottom = 0.0
 offset_left = -91.0
 offset_top = 37.0
 offset_right = -59.0
@@ -133,3 +134,5 @@ scale = Vector2(1.7, 1.7)
 texture_normal = ExtResource("3_dljgg")
 texture_hover = ExtResource("10_dljgg")
 script = ExtResource("9")
+
+[node name="CraftingHUD" parent="UI" unique_id=172839456 instance=ExtResource("11_g6y3g")]

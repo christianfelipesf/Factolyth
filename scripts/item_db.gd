@@ -4,6 +4,7 @@ var _itens: Dictionary = {}
 
 func _ready() -> void:
 	_registrar(preload("res://resources/itens/quartzo.tres"))
+	_registrar(preload("res://resources/itens/placa_quartzo.tres"))
 
 func _registrar(data: ItemData) -> void:
 	if data != null:
