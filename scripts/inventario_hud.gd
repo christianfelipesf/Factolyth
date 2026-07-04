@@ -19,7 +19,7 @@ func _atualizar(inv: Dictionary) -> void:
 		if quant <= 0:
 			continue
 
-		var dados = ItemDB.get_item(chave)
+		var dados = ItemRegistry.get_item(chave)
 
 		var slot = SLOT.instantiate()
 		slot.get_node("Icone").texture = dados.textura if dados else null

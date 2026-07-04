@@ -1,14 +1,5 @@
 class_name CraftingEstruturaModule extends RefCounted
 
-const RECEITAS_ESTRUTURA = [
-	preload("res://resources/recipes_estrutura/broca.tres"),
-	preload("res://resources/recipes_estrutura/esteira.tres"),
-	preload("res://resources/recipes_estrutura/nucleo.tres"),
-	preload("res://resources/recipes_estrutura/canhao.tres"),
-	preload("res://resources/recipes_estrutura/distribuidor.tres"),
-	preload("res://resources/recipes_estrutura/cruzador.tres"),
-]
-
 var _receita_estrutura_selecionada: int = -1
 var _botoes_receita_estrutura: Array = []
 var _slots_estrutura: Array = []
@@ -69,8 +60,9 @@ func _construir_slots() -> void:
 
 
 func _construir_lista_estruturas() -> void:
-	for i in RECEITAS_ESTRUTURA.size():
-		var receita = RECEITAS_ESTRUTURA[i]
+	var receitas = ItemRegistry.receitas_estrutura
+	for i in receitas.size():
+		var receita = receitas[i]
 		var btn = Button.new()
 		btn.text = receita.nome
 		btn.custom_minimum_size = Vector2(0, 28)
@@ -80,7 +72,7 @@ func _construir_lista_estruturas() -> void:
 		_vbox_receitas_estrutura.add_child(btn)
 		_botoes_receita_estrutura.append(btn)
 
-	if not RECEITAS_ESTRUTURA.is_empty():
+	if not ItemRegistry.receitas_estrutura.is_empty():
 		_selecionar_receita(0)
 
 
@@ -144,9 +136,10 @@ func atualizar_botoes() -> void:
 	var pode_fabricar = _pode_fabricar_estrutura()
 	_btn_fabricar.disabled = not pode_fabricar
 
+	var receitas = ItemRegistry.receitas_estrutura
 	for i in _botoes_receita_estrutura.size():
 		var btn = _botoes_receita_estrutura[i]
-		var rec = RECEITAS_ESTRUTURA[i]
+		var rec = receitas[i]
 		var textos: Array = []
 		for ing in rec.ingredientes:
 			var quant = rec.ingredientes[ing]
@@ -161,9 +154,10 @@ func atualizar_botoes() -> void:
 
 
 func _pode_fabricar_estrutura() -> bool:
-	if _receita_estrutura_selecionada < 0 or _receita_estrutura_selecionada >= RECEITAS_ESTRUTURA.size():
+	var receitas = ItemRegistry.receitas_estrutura
+	if _receita_estrutura_selecionada < 0 or _receita_estrutura_selecionada >= receitas.size():
 		return false
-	var rec = RECEITAS_ESTRUTURA[_receita_estrutura_selecionada]
+	var rec = receitas[_receita_estrutura_selecionada]
 	for ing in rec.ingredientes:
 		if _jogador.inventario.get(ing, 0) < rec.ingredientes[ing]:
 			return false
@@ -176,7 +170,7 @@ func fabricar_estrutura() -> void:
 	if _jogador == null:
 		return
 
-	var rec = RECEITAS_ESTRUTURA[_receita_estrutura_selecionada]
+	var rec = ItemRegistry.receitas_estrutura[_receita_estrutura_selecionada]
 
 	for ing in rec.ingredientes:
 		_jogador.inventario[ing] -= rec.ingredientes[ing]

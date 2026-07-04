@@ -1,12 +1,6 @@
 class_name JogadorInventarioModule extends RefCounted
 
-const _BROCA = preload("res://scenes/posicionaveis/broca.tscn")
-const _ESTEIRA = preload("res://scenes/posicionaveis/esteira.tscn")
-const _NUCLEO = preload("res://scenes/posicionaveis/nucleo.tscn")
-const _CANHAO = preload("res://scenes/posicionaveis/simplecanon.tscn")
-const _DISTRIBUIDOR = preload("res://scenes/posicionaveis/distribuidor.tscn")
-const _CRUZADOR = preload("res://scenes/posicionaveis/cruzador.tscn")
-const _BROCA_MANUAL = preload("res://scenes/posicionaveis/broca_manual.tscn")
+const BROCA_MANUAL_CENA = preload("res://scenes/posicionaveis/broca_manual.tscn")
 
 var _jogador: Node
 
@@ -16,16 +10,11 @@ func setup(jogador: Node) -> void:
 
 
 func carregar_itens_construcao() -> void:
+	var lista = ItemRegistry.estruturas.duplicate()
 	if SaveManager.modo_jogo == "sobrevivencia":
-		_adicionar_item_com_cena("BrocaManual", _BROCA_MANUAL)
-	else:
-		_adicionar_item_com_cena("Broca", _BROCA)
-		_adicionar_item_com_cena("Esteira", _ESTEIRA)
-		_adicionar_item_com_cena("Nucleo", _NUCLEO)
-		_adicionar_item_com_cena("Canhao", _CANHAO)
-		_adicionar_item_com_cena("Distribuidor", _DISTRIBUIDOR)
-		_adicionar_item_com_cena("Cruzador", _CRUZADOR)
-		_adicionar_item_com_cena("BrocaManual", _BROCA_MANUAL)
+		lista = {"BrocaManual": {cena = BROCA_MANUAL_CENA}}
+	for nome in lista:
+		_adicionar_item_com_cena(nome, lista[nome].cena)
 	if _jogador._itens_construcao.is_empty():
 		push_error("Nenhum item construível encontrado")
 

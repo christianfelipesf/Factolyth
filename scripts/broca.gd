@@ -1,7 +1,6 @@
 extends StaticBody2D
 
 const ITEM = preload("res://scenes/itens/itens.tscn")
-const PADRAO = preload("res://resources/itens/quartzo.tres")
 
 @export var tempo_producao: float = 2.0
 @export var item_data: ItemData
@@ -53,7 +52,7 @@ func _on_timer_producao_timeout() -> void:
 		_spawnar_item(esteira_atual)
 
 func _spawnar_item(esteira: Node2D) -> void:
-	var dados = item_data if item_data != null else PADRAO
+	var dados = item_data if item_data != null else ItemRegistry.get_item("quartzo")
 	var item = ITEM.instantiate()
 	item.inicializar(dados)
 	item.global_position = esteira.global_position

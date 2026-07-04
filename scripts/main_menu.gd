@@ -1,5 +1,7 @@
 extends Control
 
+const CLIQUE = preload("res://sound/click.mp3")
+
 @onready var btn_carregar: Button = $VBoxContainer/Carregar
 @onready var btn_deletar: Button = $VBoxContainer/DeletarSaves
 @onready var btn_novo_jogo: Button = $VBoxContainer/NovoJogo
@@ -9,9 +11,17 @@ extends Control
 @onready var btn_procedural: Button = $SubmenuNovoJogo/Procedural
 @onready var btn_voltar: Button = $SubmenuNovoJogo/Voltar
 
+var _audio_click: AudioStreamPlayer
+
 func _ready() -> void:
+	_audio_click = AudioStreamPlayer.new()
+	_audio_click.stream = CLIQUE
+	add_child(_audio_click)
 	_verificar_saves()
 	submenu.hide()
+
+func _clicar() -> void:
+	_audio_click.play()
 
 func _verificar_saves() -> void:
 	var dir := DirAccess.open("user://saves/")
@@ -36,29 +46,36 @@ func _esconder_submenu() -> void:
 	$VBoxContainer.show()
 
 func _on_novo_jogo_pressed() -> void:
+	_clicar()
 	_mostrar_submenu()
 
 func _on_normal_pressed() -> void:
+	_clicar()
 	SaveManager.modo_procedural = false
 	SaveManager.modo_jogo = "criativo"
 	get_tree().change_scene_to_file("res://scenes/mundo.tscn")
 
 func _on_procedural_pressed() -> void:
+	_clicar()
 	SaveManager.modo_procedural = true
 	SaveManager.modo_jogo = "sobrevivencia"
 	get_tree().change_scene_to_file("res://scenes/mundo.tscn")
 
 func _on_voltar_pressed() -> void:
+	_clicar()
 	_esconder_submenu()
 
 func _on_carregar_pressed() -> void:
+	_clicar()
 	SaveManager.modo_procedural = false
 	SaveManager.save_pendente = "slot_1"
 	get_tree().change_scene_to_file("res://scenes/mundo.tscn")
 
 func _on_deletar_saves_pressed() -> void:
+	_clicar()
 	SaveManager.deletar_todos_saves()
 	_verificar_saves()
 
 func _on_sair_pressed() -> void:
+	_clicar()
 	get_tree().quit()

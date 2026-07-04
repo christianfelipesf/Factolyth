@@ -1,5 +1,7 @@
 extends Node
 
+const CLIQUE = preload("res://sound/click.mp3")
+
 @onready var overlay: ColorRect = $Overlay
 @onready var painel: Panel = $Painel
 @onready var btn_continuar: Button = $Painel/VBoxContainer/Continuar
@@ -9,12 +11,20 @@ extends Node
 @onready var confirmacao: ConfirmationDialog = $Confirmacao
 
 var aberto := false
+var _audio_click: AudioStreamPlayer
 
 
 func _ready() -> void:
 	process_mode = PROCESS_MODE_ALWAYS
 	overlay.hide()
 	painel.hide()
+	_audio_click = AudioStreamPlayer.new()
+	_audio_click.stream = CLIQUE
+	add_child(_audio_click)
+
+
+func _clicar() -> void:
+	_audio_click.play()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -59,10 +69,12 @@ func _on_botao_pausa_pressed() -> void:
 		abrir()
 
 func _on_continuar_pressed() -> void:
+	_clicar()
 	fechar()
 
 
 func _on_salvar_pressed() -> void:
+	_clicar()
 	if SaveManager.modo_procedural:
 		var texto_original := btn_salvar.text
 		btn_salvar.text = "Indisponível"
@@ -78,6 +90,7 @@ func _on_salvar_pressed() -> void:
 
 
 func _on_carregar_pressed() -> void:
+	_clicar()
 	# Fecha o menu antes de carregar (esconde overlay + painel, despausa)
 	fechar()
 	# O SaveManager mostrará a própria tela de carregamento
@@ -85,6 +98,7 @@ func _on_carregar_pressed() -> void:
 
 
 func _on_menu_principal_pressed() -> void:
+	_clicar()
 	# Mostra confirmação antes de sair
 	confirmacao.popup_centered()
 

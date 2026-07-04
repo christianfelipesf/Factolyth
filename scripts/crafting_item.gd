@@ -1,9 +1,5 @@
 class_name CraftingItemModule extends RefCounted
 
-const RECEITAS = [
-	preload("res://resources/recipes/placa_quartzo.tres"),
-]
-
 var _craftando := false
 var _receita_atual: RecipeData = null
 var _tempo_restante := 0.0
@@ -49,8 +45,9 @@ func setup(
 
 
 func _construir_lista_itens() -> void:
-	for i in RECEITAS.size():
-		var receita = RECEITAS[i]
+	var receitas = ItemRegistry.receitas_item
+	for i in receitas.size():
+		var receita = receitas[i]
 		var btn = Button.new()
 		btn.text = receita.nome
 		btn.custom_minimum_size = Vector2(0, 28)
@@ -60,12 +57,12 @@ func _construir_lista_itens() -> void:
 		_vbox_receitas.add_child(btn)
 		_botoes_receita.append(btn)
 
-	if not RECEITAS.is_empty():
+	if not ItemRegistry.receitas_item.is_empty():
 		_selecionar_receita(0)
 
 
 func _selecionar_receita(idx: int) -> void:
-	_receita_atual = RECEITAS[idx]
+	_receita_atual = ItemRegistry.receitas_item[idx]
 	atualizar_detalhes()
 
 
@@ -73,7 +70,7 @@ func atualizar_detalhes() -> void:
 	if _receita_atual == null:
 		return
 
-	var dados = ItemDB.get_item(_receita_atual.resultado)
+	var dados = ItemRegistry.get_item(_receita_atual.resultado)
 	if dados and dados.textura:
 		_icone.texture = dados.textura
 	_nome_label.text = str(_receita_atual.resultado_quantidade) + "x " + _receita_atual.nome
@@ -83,7 +80,7 @@ func atualizar_detalhes() -> void:
 
 	for ing in _receita_atual.ingredientes:
 		var quant = _receita_atual.ingredientes[ing]
-		var dados_ing = ItemDB.get_item(ing)
+		var dados_ing = ItemRegistry.get_item(ing)
 		var nome_ing = dados_ing.nome if dados_ing else ing
 		var tem = _jogador.inventario.get(ing, 0)
 
