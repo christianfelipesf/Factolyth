@@ -57,6 +57,30 @@ func _physics_process(delta: float) -> void:
 	input_direction.x = Input.get_axis("move_left", "move_right")
 	input_direction.y = Input.get_axis("move_up", "move_down")
 
+	if input_direction == Vector2.ZERO:
+		var stick := Vector2(
+			Input.get_joy_axis(0, JOY_AXIS_LEFT_X),
+			Input.get_joy_axis(0, JOY_AXIS_LEFT_Y)
+		)
+		if stick.length() > 0.2:
+			input_direction = stick
+
+	if input_direction == Vector2.ZERO:
+		var stick := Vector2(
+			Input.get_joy_axis(0, JOY_AXIS_LEFT_X),
+			Input.get_joy_axis(0, JOY_AXIS_LEFT_Y)
+		)
+		if stick.length() > 0.2:
+			input_direction = stick
+		elif Input.is_joy_button_pressed(0, JOY_BUTTON_DPAD_LEFT):
+			input_direction.x = -1
+		elif Input.is_joy_button_pressed(0, JOY_BUTTON_DPAD_RIGHT):
+			input_direction.x = 1
+		if Input.is_joy_button_pressed(0, JOY_BUTTON_DPAD_UP):
+			input_direction.y = -1
+		if Input.is_joy_button_pressed(0, JOY_BUTTON_DPAD_DOWN):
+			input_direction.y = 1
+
 	if input_direction == Vector2.ZERO and joystick:
 		input_direction = joystick.get_velocity()
 
@@ -117,18 +141,32 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("craft"):
 		if hud:
 			hud.toggle()
-			get_viewport().set_input_as_handled()
+			_input_handled()
 			return
 	if hud != null and hud.visible and event.is_action_pressed("ui_cancel"):
 		hud.toggle()
-		get_viewport().set_input_as_handled()
+		_input_handled()
 		return
 
-	if event.is_action_pressed("interact"):
+	if event.is_action_pressed("alterar"):
 		if _itens_construcao.is_empty():
 			return
 		var novo = (_indice_item_atual + 1) % _itens_construcao.size()
 		selecionar_item_por_indice(novo)
+		_input_handled()
+	if event is InputEventJoypadButton and event.pressed:
+		if event.button_index == JOY_BUTTON_RIGHT_SHOULDER:
+			if _itens_construcao.is_empty():
+				return
+			var novo = (_indice_item_atual + 1) % _itens_construcao.size()
+			selecionar_item_por_indice(novo)
+			_input_handled()
+		elif event.button_index == JOY_BUTTON_LEFT_SHOULDER:
+			if _itens_construcao.is_empty():
+				return
+			var novo = (_indice_item_atual - 1 + _itens_construcao.size()) % _itens_construcao.size()
+			selecionar_item_por_indice(novo)
+			_input_handled()
 	if event is InputEventKey and event.pressed and not event.echo:
 		match event.keycode:
 			KEY_1: selecionar_item_por_indice(0)
@@ -204,3 +242,9 @@ func set_save_data(dados: Dictionary) -> void:
 
 func is_pinçando() -> bool:
 	return _pinça_iniciada
+
+
+func _input_handled() -> void:
+	var vp := get_viewport()
+	if vp != null:
+		vp.set_input_as_handled()

@@ -60,6 +60,31 @@ func _ready() -> void:
 	_alternar_aba("itens")
 
 
+var _abas: Array[String] = ["itens", "estruturas", "inventario"]
+
+func _input(event: InputEvent) -> void:
+	if not visible:
+		return
+	if event.is_action_pressed("ui_cancel"):
+		_fechar()
+		get_viewport().set_input_as_handled()
+	if event is InputEventJoypadButton and event.pressed:
+		match event.button_index:
+			JOY_BUTTON_LEFT_SHOULDER:
+				var idx = _abas.find(_aba_atual)
+				idx = (idx - 1 + _abas.size()) % _abas.size()
+				_alternar_aba(_abas[idx])
+				get_viewport().set_input_as_handled()
+			JOY_BUTTON_RIGHT_SHOULDER:
+				var idx = _abas.find(_aba_atual)
+				idx = (idx + 1) % _abas.size()
+				_alternar_aba(_abas[idx])
+				get_viewport().set_input_as_handled()
+			JOY_BUTTON_B:
+				_fechar()
+				get_viewport().set_input_as_handled()
+
+
 func _process(delta: float) -> void:
 	_item_module.process(delta)
 

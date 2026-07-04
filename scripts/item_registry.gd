@@ -34,6 +34,7 @@ var receitas_estrutura: Array = []
 
 var _cena_para_nome: Dictionary = {}
 var _cena_para_receita: Dictionary = {}
+var _nome_para_receita: Dictionary = {}
 
 func _ready() -> void:
 	_registrar_estruturas()
@@ -49,6 +50,7 @@ func _registrar_estruturas() -> void:
 		_cena_para_nome[cena.resource_path] = nome
 		if cfg.has("receita"):
 			_cena_para_receita[cena.resource_path] = cfg.receita.duplicate()
+			_nome_para_receita[nome] = cfg.receita.duplicate()
 			var rec = RecipeEstruturaData.new()
 			rec.nome = nome
 			rec.cena_path = cfg.cena
@@ -90,3 +92,6 @@ func get_receita_por_cena(caminho_cena: String) -> Dictionary:
 
 func get_nome_por_cena(caminho_cena: String) -> String:
 	return _cena_para_nome.get(caminho_cena, "")
+
+func get_receita_por_nome(nome: String) -> Dictionary:
+	return _nome_para_receita.get(nome, {})

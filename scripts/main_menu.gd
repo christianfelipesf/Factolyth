@@ -19,6 +19,7 @@ func _ready() -> void:
 	add_child(_audio_click)
 	_verificar_saves()
 	submenu.hide()
+	btn_novo_jogo.grab_focus()
 
 func _clicar() -> void:
 	_audio_click.play()
@@ -40,10 +41,12 @@ func _verificar_saves() -> void:
 func _mostrar_submenu() -> void:
 	$VBoxContainer.hide()
 	submenu.show()
+	btn_normal.grab_focus()
 
 func _esconder_submenu() -> void:
 	submenu.hide()
 	$VBoxContainer.show()
+	btn_novo_jogo.grab_focus()
 
 func _on_novo_jogo_pressed() -> void:
 	_clicar()
@@ -79,3 +82,21 @@ func _on_deletar_saves_pressed() -> void:
 func _on_sair_pressed() -> void:
 	_clicar()
 	get_tree().quit()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel"):
+		if submenu.visible:
+			_on_voltar_pressed()
+			_input_handled()
+	if event is InputEventJoypadButton and event.pressed \
+		and event.button_index in [JOY_BUTTON_A, JOY_BUTTON_X]:
+		var focused = get_viewport().gui_get_focus_owner()
+		if focused is Button:
+			focused.pressed.emit()
+			_input_handled()
+
+
+func _input_handled() -> void:
+	var vp := get_viewport()
+	if vp != null:
+		vp.set_input_as_handled()

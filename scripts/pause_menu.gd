@@ -53,6 +53,7 @@ func abrir() -> void:
 	overlay.show()
 	painel.show()
 	get_tree().paused = true
+	btn_continuar.grab_focus()
 
 
 func fechar() -> void:

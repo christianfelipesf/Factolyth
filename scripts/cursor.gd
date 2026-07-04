@@ -91,22 +91,22 @@ func _physics_process(delta: float) -> void:
 	if get_tree().paused:
 		return
 
-	if not Input.is_action_pressed("instanciar_objeto") and not Input.is_action_pressed("remover_objeto"):
+	if not Input.is_action_pressed("confirmar") and not Input.is_action_pressed("cancelar"):
 		_ultima_posicao_colocacao = Vector2.INF
 
 	if item_atual != null and not _arrastando_joystick() and not _em_pinça():
-		var quer_instanciar := Input.is_action_just_pressed("instanciar_objeto")
-		var quer_remover := Input.is_action_just_pressed("remover_objeto")
+		var quer_instanciar := Input.is_action_just_pressed("confirmar")
+		var quer_remover := Input.is_action_just_pressed("cancelar")
 
 		if not quer_instanciar and not quer_remover:
-			quer_instanciar = Input.is_action_pressed("instanciar_objeto") and _posicao_grid != _ultima_posicao_colocacao
-			quer_remover = Input.is_action_pressed("remover_objeto")
+			quer_instanciar = Input.is_action_pressed("confirmar") and _posicao_grid != _ultima_posicao_colocacao
+			quer_remover = Input.is_action_pressed("cancelar")
 
 		if quer_instanciar and not _cursor_em_ui():
 			if _eh_broca_manual() or not _grid_module.area_esta_ocupada():
 				_criar_objeto_posicionavel()
 		elif quer_remover and not _cursor_em_ui():
-			_placement_module.remover_objeto_na_posicao()
+			_placement_module.remover_objeto_na_posicao(Input.is_action_just_pressed("cancelar"))
 
 
 func _eh_broca_manual() -> bool:
@@ -161,26 +161,63 @@ func _unhandled_input(event: InputEvent) -> void:
 	if get_tree().paused:
 		return
 
-	if event.is_action_pressed("cancelar_construcao"):
+	if event.is_action_pressed("cancelar"):
+		if item_atual != null and not _cursor_em_ui():
+			var tem_estrutura := false
+			for corpo in area_checagem.get_overlapping_bodies():
+				if corpo != get_parent():
+					tem_estrutura = true
+					break
+			if tem_estrutura:
+				_input_handled()
+				return
 		desequipar_item()
-		get_viewport().set_input_as_handled()
+		_input_handled()
+		return
 	elif event.is_action_pressed("rotacionar_objeto") and item_atual != null:
 		rotation_atual = fmod(rotation_atual + 90.0, 360.0)
 		_preview_module.atualizar_preview_visual()
-		get_viewport().set_input_as_handled()
+		_input_handled()
+		return
+
+	if event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_X:
+		if _cursor_em_ui():
+			var focused = get_viewport().gui_get_focus_owner()
+			if focused is Button:
+				focused.pressed.emit()
+				_input_handled()
+				return
 
 	if item_atual == null:
 		return
 
 	if event is InputEventJoypadButton:
-		if event.button_index == JOY_BUTTON_A and event.pressed:
-			if not _cursor_em_ui() and (_eh_broca_manual() or not _grid_module.area_esta_ocupada()):
-				_criar_objeto_posicionavel()
-			get_viewport().set_input_as_handled()
+		if event.button_index in [JOY_BUTTON_A, JOY_BUTTON_X] and event.pressed:
+			if not _cursor_em_ui():
+				if _eh_broca_manual() or not _grid_module.area_esta_ocupada():
+					_criar_objeto_posicionavel()
+				_input_handled()
 		elif event.button_index == JOY_BUTTON_B and event.pressed:
 			if not _cursor_em_ui():
-				_placement_module.remover_objeto_na_posicao()
-			get_viewport().set_input_as_handled()
+				_placement_module.remover_objeto_na_posicao(true)
+				_input_handled()
+
+	if event is InputEventScreenTouch and event.pressed and event.index == 0:
+		if not _cursor_em_ui() and not _arrastando_joystick() and not _em_pinça():
+			var screen_size: Vector2 = get_viewport().get_visible_rect().size
+			var centro: Vector2 = camera.get_screen_center_position()
+			var offset: Vector2 = (event.position - screen_size * 0.5) / Vector2(camera.zoom.x, camera.zoom.y)
+			var world_pos: Vector2 = centro + offset
+			_grid_module.atualizar_cursor_e_grid(world_pos)
+			if _eh_broca_manual() or not _grid_module.area_esta_ocupada():
+				_criar_objeto_posicionavel()
+			_input_handled()
+
+
+func _input_handled() -> void:
+	var vp := get_viewport()
+	if vp != null:
+		vp.set_input_as_handled()
 
 
 func _criar_objeto_posicionavel() -> void:
