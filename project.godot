@@ -28,6 +28,7 @@ ItemRegistry="*res://scripts/item_registry.gd"
 window/size/viewport_width=1280
 window/size/viewport_height=720
 window/stretch/mode="canvas_items"
+window/stretch/aspect="keep_height"
 mouse_cursor/custom_image="uid://l16so7vl8s0b"
 
 [input]
