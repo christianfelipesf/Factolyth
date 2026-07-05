@@ -86,10 +86,13 @@ func _input(event: InputEvent) -> void:
 
 
 func _process(delta: float) -> void:
-	_item_module.process(delta)
+	if _item_module != null:
+		_item_module.process(delta)
 
 
 func toggle() -> void:
+	if _item_module == null:
+		return
 	if _item_module.esta_craftando():
 		return
 	if visible:
@@ -99,6 +102,8 @@ func toggle() -> void:
 
 
 func _abrir() -> void:
+	if _item_module == null or _estruturas_module == null:
+		return
 	show()
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_item_module.atualizar_detalhes()
@@ -107,6 +112,8 @@ func _abrir() -> void:
 
 
 func _fechar() -> void:
+	if _item_module == null:
+		return
 	if _item_module.esta_craftando():
 		return
 	hide()
