@@ -27,6 +27,7 @@ var _touch_start_pos: Vector2 = Vector2.INF
 var _touch_prev_pos: Vector2 = Vector2.INF
 var _touch_start_tempo: float = 0.0
 var _touch_arrastando: bool = false
+var _touch_ativo: bool = false
 const TOUCH_DRAG_LIMIAR := 10.0
 var _pan_offset: Vector2 = Vector2.ZERO
 
@@ -72,13 +73,14 @@ func _input(event: InputEvent) -> void:
 
 	if event is InputEventScreenTouch:
 		if event.pressed and event.index == 0:
+			_touch_ativo = true
 			_touch_start_pos = event.position
 			_touch_prev_pos = event.position
 			_touch_start_tempo = Time.get_ticks_msec() / 1000.0
 			_touch_arrastando = false
 		elif not event.pressed and event.index == 0:
-			if _touch_arrastando:
-				_touch_arrastando = false
+			_touch_ativo = false
+			_touch_arrastando = false
 			_touch_start_pos = Vector2.INF
 			_touch_prev_pos = Vector2.INF
 
@@ -135,7 +137,7 @@ func _physics_process(delta: float) -> void:
 	if not Input.is_action_pressed("confirmar") and not Input.is_action_pressed("cancelar"):
 		_ultima_posicao_colocacao = Vector2.INF
 
-	if item_atual != null and not _arrastando_joystick() and not _em_pinça() and not _touch_arrastando:
+	if item_atual != null and not _arrastando_joystick() and not _em_pinça() and not _touch_ativo:
 		var quer_instanciar := Input.is_action_just_pressed("confirmar")
 
 		if not quer_instanciar:
