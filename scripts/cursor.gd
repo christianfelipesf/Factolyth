@@ -30,6 +30,7 @@ var _touch_arrastando: bool = false
 var _touch_foi_arrasto: bool = false
 var _touch_ativo: bool = false
 const TOUCH_DRAG_LIMIAR := 10.0
+const TOUCH_TAP_TEMPO_MINIMO := 0.15
 var _pan_offset: Vector2 = Vector2.ZERO
 
 var _grid_module: CursorGridModule
@@ -254,6 +255,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if event is InputEventScreenTouch and not event.pressed and event.index == 0:
 		if _touch_foi_arrasto:
+			_input_handled()
+			return
+		if Time.get_ticks_msec() / 1000.0 - _touch_start_tempo < TOUCH_TAP_TEMPO_MINIMO:
 			_input_handled()
 			return
 		if not _cursor_em_ui() and not _arrastando_joystick() and not _em_pinça():

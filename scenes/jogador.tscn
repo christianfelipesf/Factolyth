@@ -38,8 +38,8 @@ z_index = 10
 collision_layer = 2
 collision_mask = 8
 script = ExtResource("1_uahlj")
-MIN_ZOOM = 0.7
-MAX_ZOOM = 1.4
+MIN_ZOOM = 0.9
+MAX_ZOOM = 2.4
 ZOOM_STEP = 0.5
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=101199477]
