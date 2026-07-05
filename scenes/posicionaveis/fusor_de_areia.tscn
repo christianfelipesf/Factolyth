@@ -1,0 +1,65 @@
+[gd_scene format=3 uid="uid://c3epnc8t2iilo"]
+
+[ext_resource type="Script" path="res://scripts/fusor_de_areia.gd" id="1_di5x3"]
+[ext_resource type="Texture2D" path="res://images/estruturas/fusor_de_areia.png" id="2_5pf7q"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8ur1g"]
+atlas = ExtResource("2_5pf7q")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1w5nl"]
+atlas = ExtResource("2_5pf7q")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2lyxx"]
+atlas = ExtResource("2_5pf7q")
+region = Rect2(0, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3o58c"]
+atlas = ExtResource("2_5pf7q")
+region = Rect2(32, 32, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_58e6i"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8ur1g")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1w5nl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2lyxx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3o58c")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vje2h"]
+size = Vector2(22, 22)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8w4d2"]
+size = Vector2(64, 64)
+
+[node name="FusorDeAreia" type="StaticBody2D" groups=["estrutura"]]
+script = ExtResource("1_di5x3")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_58e6i")
+autoplay = "default"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_vje2h")
+
+[node name="Coletor" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Coletor"]
+shape = SubResource("RectangleShape2D_8w4d2")
+
+[node name="TimerProducao" type="Timer" parent="."]
+one_shot = true
+wait_time = 3.0

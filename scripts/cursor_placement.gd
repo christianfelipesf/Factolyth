@@ -162,22 +162,15 @@ func remover_objeto_na_posicao(nova_interacao: bool = true) -> void:
 
 
 func _buscar_alvos() -> Array[Node2D]:
-	var pos = _cursor.get_global_mouse_position()
+	var pos = _cursor._posicao_grid
 	var tree = _cursor.get_tree()
-	for grupo in ["item", "estrutura"]:
-		var encontrados: Array[Node2D] = []
-		var menor_dist = 36.0
+	var resultado: Array[Node2D] = []
+	for grupo in ["estrutura", "item"]:
 		for no in tree.get_nodes_in_group(grupo):
 			if is_instance_valid(no) and no is Node2D:
-				var dist = no.global_position.distance_to(pos)
-				if dist < menor_dist:
-					encontrados = [no]
-					menor_dist = dist
-				elif dist < menor_dist + 0.01:
-					encontrados.append(no)
-		if not encontrados.is_empty():
-			return encontrados
-	return []
+				if no.global_position.distance_to(pos) < 23.0:
+					resultado.append(no)
+	return resultado
 
 
 

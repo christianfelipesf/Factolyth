@@ -27,7 +27,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_t5gqv")
 }],
-"loop": true,
+"loop": 1,
 "name": &"default",
 "speed": 5.0
 }]
@@ -39,6 +39,7 @@ size = Vector2(22, 33)
 size = Vector2(20, 32)
 
 [node name="Esteira" type="StaticBody2D" unique_id=1059485709 groups=["esteira", "estrutura"]]
+collision_mask = 2
 script = ExtResource("1_moo3v")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=601443202]
@@ -66,4 +67,3 @@ target_position = Vector2(0, 32)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1940091423]
 shape = SubResource("RectangleShape2D_moo3v")
-

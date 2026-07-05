@@ -19,7 +19,7 @@ func inicializar(data: ItemData) -> void:
 func _ready() -> void:
 	add_to_group("item")
 	collision_layer = 1
-	collision_mask = 1
+	collision_mask = 4
 	var shape = $CollisionShape2D.shape as CircleShape2D
 	if shape != null:
 		shape.radius = 6.0

@@ -9,8 +9,7 @@
 [ext_resource type="AudioStream" uid="uid://mle271p70js" path="res://sound/ambient.mp3" id="7"]
 [ext_resource type="AudioStream" uid="uid://c15v67xt3o3nq" path="res://sound/colocar.mp3" id="8"]
 [ext_resource type="AudioStream" uid="uid://cqnb0typ3qx53" path="res://sound/destruir.mp3" id="9"]
-
-[ext_resource type="AudioStream" uid="uid://ca2q712qalf3s" path="res://sound/spin.mp3" id="10"]
+[ext_resource type="AudioStream" uid="uid://dwo4d45gf5r50" path="res://sound/spin.mp3" id="10"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lj65x"]
 shader = ExtResource("2_32758")
@@ -71,7 +70,7 @@ shape = SubResource("CircleShape2D_lj65x")
 
 [node name="AudioAmbiente" type="AudioStreamPlayer" parent="Marker2D" unique_id=810058844]
 stream = ExtResource("7")
-volume_db = -15.805
+volume_db = -19.61
 autoplay = true
 
 [node name="AudioColocar" type="AudioStreamPlayer" parent="Marker2D" unique_id=1543396848]
@@ -89,4 +88,3 @@ polygon = PackedVector2Array(0, -16, -10, 10, 10, 10)
 
 [node name="AudioBrocaManual" type="AudioStreamPlayer2D" parent="." unique_id=149283741]
 stream = ExtResource("10")
-volume_db = 0.0

@@ -1,0 +1,57 @@
+[gd_scene format=3 uid="uid://b0mtvqqg4aqfp"]
+
+[ext_resource type="PackedScene" uid="uid://cp36x28u6o7iv" path="res://scenes/posicionaveis/broca.tscn" id="1_po8sn"]
+[ext_resource type="PackedScene" uid="uid://d0v82jkqbhyw5" path="res://scenes/posicionaveis/esteira.tscn" id="2_b3s7i"]
+[ext_resource type="Script" uid="uid://b5tykuxub10vx" path="res://scenes/testes/test_debug.gd" id="3_q4gse"]
+[ext_resource type="PackedScene" uid="uid://yxgs1r3wlw6e" path="res://scenes/posicionaveis/cruzador.tscn" id="4_vgstb"]
+[ext_resource type="PackedScene" uid="uid://cjjuvbktx5yn1" path="res://scenes/posicionaveis/distribuidor.tscn" id="5_s1e6c"]
+[ext_resource type="PackedScene" uid="uid://btdc14n62x3hr" path="res://scenes/posicionaveis/extrator_de_areia.tscn" id="6_s1e6c"]
+
+[node name="Esteira" type="Node2D" unique_id=447895188]
+script = ExtResource("3_q4gse")
+
+[node name="Esteira7" parent="." unique_id=1059485709 instance=ExtResource("2_b3s7i")]
+position = Vector2(352, 224)
+
+[node name="StaticBody2D" parent="." unique_id=507273594 instance=ExtResource("1_po8sn")]
+position = Vector2(256, 256)
+
+[node name="Esteira" parent="." unique_id=499240900 instance=ExtResource("2_b3s7i")]
+position = Vector2(256, 224)
+
+[node name="Esteira2" parent="." unique_id=1699035780 instance=ExtResource("2_b3s7i")]
+position = Vector2(256, 192)
+
+[node name="Esteira3" parent="." unique_id=441507935 instance=ExtResource("2_b3s7i")]
+position = Vector2(256, 96)
+
+[node name="Cruzador" parent="." unique_id=1926870512 instance=ExtResource("4_vgstb")]
+position = Vector2(256, 128)
+
+[node name="Esteira4" parent="." unique_id=110179134 instance=ExtResource("2_b3s7i")]
+position = Vector2(256, 160)
+
+[node name="Distribuidor" parent="." unique_id=1784002374 instance=ExtResource("5_s1e6c")]
+position = Vector2(256, 64)
+
+[node name="Esteira5" parent="." unique_id=1112205895 instance=ExtResource("2_b3s7i")]
+position = Vector2(256, 32)
+
+[node name="Esteira6" parent="." unique_id=507168392 instance=ExtResource("2_b3s7i")]
+position = Vector2(224, 64)
+rotation = -1.5707964
+
+[node name="StaticBody2D2" parent="." unique_id=1413679845 instance=ExtResource("6_s1e6c")]
+position = Vector2(352, 256)
+
+[node name="Esteira8" parent="." unique_id=867532336 instance=ExtResource("2_b3s7i")]
+position = Vector2(352, 192)
+rotation = -1.5707964
+
+[node name="Esteira9" parent="." unique_id=483220697 instance=ExtResource("2_b3s7i")]
+position = Vector2(320, 192)
+rotation = -1.5707964
+
+[node name="Esteira10" parent="." unique_id=6159685 instance=ExtResource("2_b3s7i")]
+position = Vector2(288, 192)
+rotation = -1.5707964

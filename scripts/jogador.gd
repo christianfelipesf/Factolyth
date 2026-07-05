@@ -210,6 +210,10 @@ func adicionar_item_construcao(item: ItemConstrucao) -> void:
 	_inv_module.adicionar_item_construcao(item)
 
 
+func remover_item_construcao(nome: String) -> void:
+	_inv_module.remover_item_construcao(nome)
+
+
 func get_save_data() -> Dictionary:
 	return {
 		posicao = [global_position.x, global_position.y],

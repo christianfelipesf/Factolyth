@@ -10,6 +10,8 @@ func setup(jogador: Node) -> void:
 
 
 func carregar_itens_construcao() -> void:
+	if SaveManager.modo_jogo == "criativo":
+		return
 	var lista = ItemRegistry.estruturas.duplicate()
 	if SaveManager.modo_jogo == "sobrevivencia":
 		lista = {"BrocaManual": {cena = BROCA_MANUAL_CENA}}
@@ -26,6 +28,14 @@ func _adicionar_item_com_cena(nome: String, cena: PackedScene) -> void:
 	item.compensar_rotacao_90 = false
 	item.tamanho_grid = _extrair_tamanho_grid(cena)
 	_jogador._itens_construcao.append(item)
+
+
+func remover_item_construcao(nome: String) -> void:
+	for i in _jogador._itens_construcao.size():
+		if _jogador._itens_construcao[i].nome == nome:
+			_jogador._itens_construcao.remove_at(i)
+			_jogador.itens_construcao_atualizados.emit()
+			return
 
 
 func adicionar_item(tipo_id: String, quantidade: int = 1) -> void:

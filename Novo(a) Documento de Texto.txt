@@ -1,0 +1,8 @@
+Minha correção já está aplicada em item.gd:21-22:
+- collision_layer = 5 (layer 1 pra detecção por áreas + layer 4 pra colisão entre itens)
+- collision_mask = 4 (só colide com layer 4 = outros itens)
+
+dois itens sobrepostos
+
+ item.gd: collision_layer 5 → 1 (só layer Construções). Itens não colidem mais entre si, só com paredes
+- broca.tscn + extrator_de_areia.tscn: detector raio 23 → 48 pra alcançar o item na esteira adjacente e travar o spawn enquanto estiver ocupado

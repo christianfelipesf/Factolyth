@@ -14,11 +14,13 @@ const _CONFIG = {
 		Cruzador =     {cena = "res://scenes/posicionaveis/cruzador.tscn",    custo = 10, tempo = 0.5, receita = {placa_quartzo = 10}},
 		Fusor =        {cena = "res://scenes/posicionaveis/fusor.tscn",            custo = 0,  tempo = 0.5},
 		ExtratorDeAreia = {cena = "res://scenes/posicionaveis/extrator_de_areia.tscn", custo = 3,  tempo = 0.5, receita = {placa_quartzo = 3}},
+		FusorDeAreia = {cena = "res://scenes/posicionaveis/fusor_de_areia.tscn", custo = 5, tempo = 0.5, receita = {placa_quartzo = 5}},
 	},
 	itens = {
 		quartzo       = {nome = "Quartzo",         textura = "res://images/itens/po_quartzo.png"},
 		placa_quartzo = {nome = "Placa de Quartzo",textura = "res://images/itens/placa_de_quartzo.png"},
 		areia         = {nome = "Areia",           textura = "res://images/itens/areia.png"},
+		silicio       = {nome = "Silicio",         textura = "res://images/itens/silicio.png"},
 	},
 	receitas_item = [
 		{nome = "Placa de Quartzo", resultado = "placa_quartzo", quantidade = 1, tempo = 3.0, ingredientes = {quartzo = 4}},

@@ -99,14 +99,15 @@ func _physics_process(delta: float) -> void:
 
 		if not quer_instanciar:
 			quer_instanciar = Input.is_action_pressed("confirmar") and _posicao_grid != _ultima_posicao_colocacao
-			if Input.is_action_pressed("cancelar") and _posicao_grid != _ultima_posicao_colocacao:
-				_placement_module.remover_objeto_na_posicao(true)
-				_ultima_posicao_colocacao = _posicao_grid
 
 		if quer_instanciar and not _cursor_em_ui():
 			if _eh_broca_manual() or not _grid_module.area_esta_ocupada():
 				_criar_objeto_posicionavel()
 				_ultima_posicao_colocacao = _posicao_grid
+
+	if Input.is_action_pressed("cancelar") and _posicao_grid != _ultima_posicao_colocacao:
+		_placement_module.remover_objeto_na_posicao(true)
+		_ultima_posicao_colocacao = _posicao_grid
 
 
 func _eh_broca_manual() -> bool:
@@ -161,12 +162,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if get_tree().paused:
 		return
 
-	if event.is_action_pressed("cancelar"):
-		if not _cursor_em_ui():
-			_placement_module.remover_objeto_na_posicao(true)
-		_input_handled()
-		return
-	elif event.is_action_pressed("rotacionar_objeto") and item_atual != null:
+	if event.is_action_pressed("rotacionar_objeto") and item_atual != null:
 		rotation_atual = fmod(rotation_atual + 90.0, 360.0)
 		_preview_module.atualizar_preview_visual()
 		_input_handled()
