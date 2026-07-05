@@ -96,17 +96,17 @@ func _physics_process(delta: float) -> void:
 
 	if item_atual != null and not _arrastando_joystick() and not _em_pinça():
 		var quer_instanciar := Input.is_action_just_pressed("confirmar")
-		var quer_remover := Input.is_action_just_pressed("cancelar")
 
-		if not quer_instanciar and not quer_remover:
+		if not quer_instanciar:
 			quer_instanciar = Input.is_action_pressed("confirmar") and _posicao_grid != _ultima_posicao_colocacao
-			quer_remover = Input.is_action_pressed("cancelar")
+			if Input.is_action_pressed("cancelar") and _posicao_grid != _ultima_posicao_colocacao:
+				_placement_module.remover_objeto_na_posicao(true)
+				_ultima_posicao_colocacao = _posicao_grid
 
 		if quer_instanciar and not _cursor_em_ui():
 			if _eh_broca_manual() or not _grid_module.area_esta_ocupada():
 				_criar_objeto_posicionavel()
-		elif quer_remover and not _cursor_em_ui():
-			_placement_module.remover_objeto_na_posicao(Input.is_action_just_pressed("cancelar"))
+				_ultima_posicao_colocacao = _posicao_grid
 
 
 func _eh_broca_manual() -> bool:
@@ -162,16 +162,8 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 
 	if event.is_action_pressed("cancelar"):
-		if item_atual != null and not _cursor_em_ui():
-			var tem_estrutura := false
-			for corpo in area_checagem.get_overlapping_bodies():
-				if corpo != get_parent():
-					tem_estrutura = true
-					break
-			if tem_estrutura:
-				_input_handled()
-				return
-		desequipar_item()
+		if not _cursor_em_ui():
+			_placement_module.remover_objeto_na_posicao(true)
 		_input_handled()
 		return
 	elif event.is_action_pressed("rotacionar_objeto") and item_atual != null:

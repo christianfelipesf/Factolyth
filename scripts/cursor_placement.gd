@@ -5,6 +5,7 @@ const PARTICULA = preload("res://scenes/particles/particula.tscn")
 var _cursor: Node
 var _destruicoes_pendentes: Dictionary = {}
 var _construcoes_em_andamento: Dictionary = {}
+var _ultimo_tempo_remocao: float = -INF
 
 
 func setup(cursor: Node) -> void:
@@ -60,8 +61,12 @@ func criar_objeto_posicionavel() -> void:
 
 func _iniciar_construcao(objeto: Node, tempo: float) -> void:
 	objeto.add_to_group("estrutura")
-	_cursor.get_tree().current_scene.add_child(objeto)
+	var alvo = objeto.global_position
 
+	await ItemFlyModule.criar_e_levar(_cursor.get_tree(), objeto, alvo)
+
+	objeto.global_position = alvo
+	_cursor.get_tree().current_scene.add_child(objeto)
 	objeto.set_process(false)
 	objeto.set_physics_process(false)
 	objeto.modulate = Color(1, 1, 1, 0.5)
@@ -127,21 +132,26 @@ func remover_objeto_na_posicao(nova_interacao: bool = true) -> void:
 	if not nova_interacao:
 		return
 
-	for corpo in _cursor.area_checagem.get_overlapping_bodies():
-		if corpo == _cursor.get_parent():
-			continue
+	var agora = Time.get_ticks_msec() / 1000.0
+	if agora - _ultimo_tempo_remocao < 0.1:
+		return
+	_ultimo_tempo_remocao = agora
 
+	var corpos = _buscar_alvos()
+	if corpos.is_empty():
+		return
+
+	for corpo in corpos:
 		var id = corpo.get_instance_id()
 		if _destruicoes_pendentes.has(id):
-			_cancelar_destruicao(id)
-			return
+			continue
 
 		if _construcoes_em_andamento.has(id):
 			corpo.set_meta("construcao_cancelada", true)
 			_devolver_materiais(corpo)
 			_spawnar_particula(corpo.global_position)
 			_cursor._audio_destruir.play()
-			return
+			continue
 
 		var nome = ItemRegistry.get_nome_por_cena(corpo.scene_file_path)
 		var tempo = ItemRegistry.get_tempo_construcao(nome)
@@ -149,7 +159,28 @@ func remover_objeto_na_posicao(nova_interacao: bool = true) -> void:
 			_iniciar_destruicao(corpo, tempo)
 		else:
 			_finalizar_destruicao(corpo)
-		return
+
+
+func _buscar_alvos() -> Array[Node2D]:
+	var pos = _cursor.get_global_mouse_position()
+	var tree = _cursor.get_tree()
+	for grupo in ["item", "estrutura"]:
+		var encontrados: Array[Node2D] = []
+		var menor_dist = 36.0
+		for no in tree.get_nodes_in_group(grupo):
+			if is_instance_valid(no) and no is Node2D:
+				var dist = no.global_position.distance_to(pos)
+				if dist < menor_dist:
+					encontrados = [no]
+					menor_dist = dist
+				elif dist < menor_dist + 0.01:
+					encontrados.append(no)
+		if not encontrados.is_empty():
+			return encontrados
+	return []
+
+
+
 
 
 func _iniciar_destruicao(objeto: Node, tempo: float) -> void:
@@ -208,6 +239,7 @@ func _cancelar_destruicao(id: int) -> void:
 
 
 func _finalizar_destruicao(objeto: Node) -> void:
+	ItemFlyModule.criar_e_trazer(_cursor.get_tree(), objeto)
 	_devolver_materiais(objeto)
 	_spawnar_particula(objeto.global_position)
 	_cursor._audio_destruir.play()

@@ -38,7 +38,7 @@ size = Vector2(22, 33)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_moo3v"]
 size = Vector2(20, 32)
 
-[node name="Esteira" type="StaticBody2D" unique_id=1059485709 groups=["esteira"]]
+[node name="Esteira" type="StaticBody2D" unique_id=1059485709 groups=["esteira", "estrutura"]]
 script = ExtResource("1_moo3v")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=601443202]

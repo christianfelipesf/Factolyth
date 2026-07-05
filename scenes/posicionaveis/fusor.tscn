@@ -50,7 +50,7 @@ tangential_accel_min = -36.24
 tangential_accel_max = 58.539997
 scale_min = 0.0
 
-[node name="Fusor" type="StaticBody2D" unique_id=1803244428]
+[node name="Fusor" type="StaticBody2D" unique_id=1803244428 groups=["estrutura"]]
 script = ExtResource("1_3q2ee")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1221482848]

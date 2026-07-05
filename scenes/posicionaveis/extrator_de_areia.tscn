@@ -1,7 +1,7 @@
-[gd_scene format=3 uid="uid://cp36x28u6o7iv"]
+[gd_scene format=3 uid="uid://btdc14n62x3hr"]
 
-[ext_resource type="Script" uid="uid://cm1icmsbkfx1l" path="res://scripts/broca.gd" id="1_4o6is"]
-[ext_resource type="Texture2D" uid="uid://cgr8gho8nwgyy" path="res://images/britadeira.png" id="1_y5yqx"]
+[ext_resource type="Script" path="res://scripts/extrator_de_areia.gd" id="1_4o6is"]
+[ext_resource type="Texture2D" uid="uid://c6w5h78pv8bke" path="res://images/estruturas/extrator_de_areia.png" id="1_y5yqx"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_4o6is"]
 atlas = ExtResource("1_y5yqx")

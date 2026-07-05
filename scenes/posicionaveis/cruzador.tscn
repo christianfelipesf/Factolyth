@@ -9,7 +9,7 @@ size = Vector2(31, 31)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_7x5ri"]
 size = Vector2(32, 32)
 
-[node name="Cruzador" type="StaticBody2D" unique_id=1926870512]
+[node name="Cruzador" type="StaticBody2D" unique_id=1926870512 groups=["estrutura"]]
 script = ExtResource("2_qk3qy")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=182785791]
