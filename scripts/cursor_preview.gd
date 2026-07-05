@@ -30,7 +30,10 @@ func atualizar_preview_visual() -> void:
 	if sprite != null:
 		var preview = sprite.duplicate() as CanvasItem
 		preview.set_meta("is_construction_preview", true)
-		preview.modulate.a = 0.4
+		if _cursor.tem_modo_destruir():
+			preview.modulate = Color(1.0, 0.2, 0.2, 0.4)
+		else:
+			preview.modulate.a = 0.4
 		_preview_no_set_rotation(preview)
 		preview.global_position = _cursor._posicao_grid + _cursor._grid_module.offset_colocacao()
 		_cursor.add_child(preview)
