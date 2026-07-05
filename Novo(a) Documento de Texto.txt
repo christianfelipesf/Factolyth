@@ -2,7 +2,9 @@ Minha correção já está aplicada em item.gd:21-22:
 - collision_layer = 5 (layer 1 pra detecção por áreas + layer 4 pra colisão entre itens)
 - collision_mask = 4 (só colide com layer 4 = outros itens)
 
-dois itens sobrepostos
+dois itens sobrepostos no mesmo tile
 
  item.gd: collision_layer 5 → 1 (só layer Construções). Itens não colidem mais entre si, só com paredes
-- broca.tscn + extrator_de_areia.tscn: detector raio 23 → 48 pra alcançar o item na esteira adjacente e travar o spawn enquanto estiver ocupado
+- broca.tscn + extrator_de_areia.tscn: detector raio 23 → 48 pra alcançar o item na esteira adjacente e travar o spawn enquanto estiver ocupado 
+
+Agora _buscar_alvos usa a posição do grid (centro do tile), não a posição raw do mouse. Só a estrutura exatamente no tile do clique é encontrada (distância 16px = metade do tile, adjacente fica a 32px).
