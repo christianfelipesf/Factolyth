@@ -23,7 +23,6 @@ config/main_scene="res://scenes/main.tscn"
 [autoload]
 
 SaveManager="*res://scripts/save_manager.gd"
-ItemDB="*res://scripts/item_db.gd"
 ItemRegistry="*res://scripts/item_registry.gd"
 
 [display]
