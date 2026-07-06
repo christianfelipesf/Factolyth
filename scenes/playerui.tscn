@@ -64,12 +64,11 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -200.0
+offset_left = -485.0
 offset_top = 8.0
-offset_right = -8.0
+offset_right = -293.0
 offset_bottom = 200.0
 grow_horizontal = 0
-grow_vertical = 0
 script = ExtResource("5")
 
 [node name="Margem" type="MarginContainer" parent="UI/InventarioHUD" unique_id=1582695389]
@@ -84,8 +83,17 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
-[node name="HFlowContainer" type="HFlowContainer" parent="UI/InventarioHUD/Margem" unique_id=381950234]
+[node name="Scroll" type="ScrollContainer" parent="UI/InventarioHUD/Margem" unique_id=381950235]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="Grid" type="GridContainer" parent="UI/InventarioHUD/Margem/Scroll" unique_id=381950234]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+columns = 5
 
 [node name="PauseMenu" parent="UI" unique_id=1306213941 instance=ExtResource("6_6rf2q")]
 
@@ -229,3 +237,4 @@ texture_normal = ExtResource("22")
 script = ExtResource("19")
 
 [node name="CraftingHUD" parent="UI" unique_id=172839456 instance=ExtResource("11_g6y3g")]
+layout_mode = 1

@@ -41,10 +41,14 @@ var _cena_para_nome: Dictionary = {}
 var _cena_para_receita: Dictionary = {}
 var _nome_para_receita: Dictionary = {}
 
+@export var injetar_dados_teste := true
+
 func _ready() -> void:
 	_registrar_estruturas()
 	_registrar_itens()
 	_registrar_receitas()
+	if injetar_dados_teste:
+		_injetar_dados_teste()
 
 func _registrar_estruturas() -> void:
 	for nome in _CONFIG.estruturas:
@@ -80,6 +84,76 @@ func _registrar_receitas() -> void:
 		rec.tempo_craft = r.get("tempo", 3.0)
 		rec.ingredientes = r.ingredientes.duplicate()
 		receitas_item.append(rec)
+
+func _injetar_dados_teste() -> void:
+	if receitas_item.size() >= 10:
+		return
+
+	var items_teste = {
+		ferro =       "Ferro Bruto",
+		lingote_ferro = "Lingote de Ferro",
+		carvao =      "Carv\u00e3o",
+		aco =         "A\u00e7o",
+		cobre =       "Cobre Bruto",
+		lingote_cobre = "Lingote de Cobre",
+		ouro =        "Ouro Bruto",
+		lingote_ouro =  "Lingote de Ouro",
+		tijolo =      "Tijolo",
+		vidro =       "Vidro",
+		circuito =    "Circuito",
+		parafuso =    "Parafuso",
+		engrenagem =  "Engrenagem",
+		bobina =      "Bobina de Cobre",
+		lente =       "Lente de Quartzo",
+		bastao_aco =  "Bast\u00e3o de A\u00e7o",
+		mola =        "Mola",
+		placa_ferro = "Placa de Ferro",
+		tinta =       "Tinta de Sil\u00edcio",
+		combustivel = "Combust\u00edvel",
+		bateria =     "Bateria",
+		motor =       "Motor Simples",
+	}
+	for id in items_teste:
+		var data = ItemData.new()
+		data.id = id
+		data.nome = items_teste[id]
+		itens[id] = data
+
+	var receitas = [
+		{nome="Ferro Bruto",       resultado="ferro",       qtd=2, tempo=1.0, ing={quartzo=2}},
+		{nome="Lingote de Ferro",  resultado="lingote_ferro", qtd=1, tempo=3.0, ing={ferro=3, carvao=1}},
+		{nome="Placa de Ferro",    resultado="placa_ferro",   qtd=1, tempo=2.0, ing={lingote_ferro=2}},
+		{nome="Carv\u00e3o",      resultado="carvao",       qtd=3, tempo=1.0, ing={areia=2, quartzo=1}},
+		{nome="Cobre Bruto",       resultado="cobre",        qtd=2, tempo=1.0, ing={quartzo=3}},
+		{nome="Lingote de Cobre",  resultado="lingote_cobre", qtd=1, tempo=2.5, ing={cobre=3, carvao=1}},
+		{nome="Bobina de Cobre",   resultado="bobina",       qtd=2, tempo=2.0, ing={lingote_cobre=2}},
+		{nome="Ouro Bruto",        resultado="ouro",         qtd=1, tempo=2.0, ing={quartzo=4}},
+		{nome="Lingote de Ouro",   resultado="lingote_ouro",  qtd=1, tempo=4.0, ing={ouro=2, carvao=2}},
+		{nome="A\u00e7o",         resultado="aco",          qtd=1, tempo=5.0, ing={lingote_ferro=2, carvao=1}},
+		{nome="Bast\u00e3o de A\u00e7o", resultado="bastao_aco", qtd=2, tempo=2.0, ing={aco=1}},
+		{nome="Mola",              resultado="mola",          qtd=3, tempo=1.5, ing={lingote_ferro=1}},
+		{nome="Vidro",             resultado="vidro",        qtd=2, tempo=2.0, ing={areia=3, quartzo=1}},
+		{nome="Tijolo",            resultado="tijolo",       qtd=4, tempo=2.0, ing={areia=2}},
+		{nome="Circuito",          resultado="circuito",     qtd=1, tempo=4.0, ing={bobina=2, placa_ferro=1}},
+		{nome="Parafuso",          resultado="parafuso",     qtd=6, tempo=1.0, ing={lingote_ferro=1}},
+		{nome="Engrenagem",        resultado="engrenagem",   qtd=2, tempo=2.0, ing={lingote_ferro=2}},
+		{nome="Lente de Quartzo",  resultado="lente",       qtd=1, tempo=2.0, ing={vidro=1, quartzo=2}},
+		{nome="Combust\u00edvel", resultado="combustivel",   qtd=2, tempo=2.0, ing={areia=1, carvao=2}},
+		{nome="Bateria",           resultado="bateria",      qtd=1, tempo=3.0, ing={bobina=1, lingote_ferro=1}},
+		{nome="Tinta de Sil\u00edcio", resultado="tinta",    qtd=3, tempo=1.0, ing={silicio=1}},
+		{nome="Motor Simples",     resultado="motor",        qtd=1, tempo=6.0, ing={bobina=2, engrenagem=2, bastao_aco=1}},
+	]
+	for r in receitas:
+		var rec = RecipeData.new()
+		rec.nome = r.nome
+		rec.resultado = r.resultado
+		rec.resultado_quantidade = r.get("qtd", 1)
+		rec.tempo_craft = r.get("tempo", 3.0)
+		rec.ingredientes = r.ing.duplicate()
+		receitas_item.append(rec)
+
+	print("ItemRegistry: dados de teste injetados (", receitas_item.size(), " receitas)")
+
 
 func get_item(id: String) -> ItemData:
 	return itens.get(id)

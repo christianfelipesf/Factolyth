@@ -18,32 +18,35 @@ mouse_filter = 2
 
 [node name="Painel" type="Panel" parent="."]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -160.0
-offset_top = -180.0
-offset_right = 160.0
-offset_bottom = 180.0
-grow_horizontal = 2
-grow_vertical = 2
-size = Vector2(320, 360)
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Painel"]
-layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 8
+offset_left = 16
+offset_top = 16
+offset_right = -16
+offset_bottom = -16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Painel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160
+offset_top = -190
+offset_right = 160
+offset_bottom = 190
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
 
 [node name="Titulo" type="Label" parent="Painel/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.9)
-theme_override_font_sizes/font_size = 28
+theme_override_font_sizes/font_size = 32
 horizontal_alignment = 1
 vertical_alignment = 1
 text = "Menu"
@@ -51,30 +54,34 @@ text = "Menu"
 [node name="Espacador" type="Control" parent="Painel/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 0
-custom_minimum_size = Vector2(0, 24)
+custom_minimum_size = Vector2(0, 32)
 
 [node name="Continuar" type="Button" parent="Painel/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 18
+custom_minimum_size = Vector2(0, 52)
+theme_override_font_sizes/font_size = 22
 text = "Continuar"
 
 [node name="Salvar" type="Button" parent="Painel/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 18
+custom_minimum_size = Vector2(0, 52)
+theme_override_font_sizes/font_size = 22
 text = "Salvar Jogo"
 
 [node name="Carregar" type="Button" parent="Painel/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 18
+custom_minimum_size = Vector2(0, 52)
+theme_override_font_sizes/font_size = 22
 text = "Carregar Jogo"
 
 [node name="MenuPrincipal" type="Button" parent="Painel/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 18
+custom_minimum_size = Vector2(0, 52)
+theme_override_font_sizes/font_size = 22
 text = "Menu Principal"
 
 [node name="Confirmacao" type="ConfirmationDialog" parent="."]

@@ -86,6 +86,13 @@ func area_esta_ocupada() -> bool:
 func gerenciar_cor_do_preview() -> void:
 	var item_atual = _cursor.item_atual
 	if item_atual == null:
+		if _cursor._indicador_grid != null:
+			_cursor._indicador_grid.visible = false
+		if _cursor._seta_direcao.visible:
+			_cursor._seta_direcao.visible = false
+		for filho in _cursor.get_children():
+			if filho.has_meta("is_construction_preview"):
+				filho.visible = false
 		return
 	var sobre_ui: bool = _cursor._cursor_em_ui()
 	if _cursor._indicador_grid != null:

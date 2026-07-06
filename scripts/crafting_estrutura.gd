@@ -13,6 +13,7 @@ var _btn_fabricar: Button
 
 var _eh_criativo: bool
 var _nomes_estrutura: Array[String] = []
+var _tamanho_botao := Vector2(0, 56)
 
 
 func setup(
@@ -20,13 +21,15 @@ func setup(
 	vbox_receitas_estrutura: VBoxContainer,
 	btn_fabricar: Button,
 	jogador: Node,
-	util: CraftingUtil
+	util: CraftingUtil,
+	tamanho_botao: Vector2 = Vector2(0, 56)
 ) -> void:
 	_grid_slots = grid_slots
 	_vbox_receitas_estrutura = vbox_receitas_estrutura
 	_btn_fabricar = btn_fabricar
 	_jogador = jogador
 	_util = util
+	_tamanho_botao = tamanho_botao
 	_eh_criativo = SaveManager.modo_jogo == "criativo"
 
 	_construir_slots()
@@ -43,19 +46,26 @@ func _construir_slots() -> void:
 
 	for i in range(9):
 		var btn = Button.new()
-		btn.custom_minimum_size = Vector2(90, 90)
 		btn.size_flags_horizontal = 3
 		btn.size_flags_vertical = 3
 
+		var vbox_slot = VBoxContainer.new()
+		vbox_slot.size_flags_horizontal = 3
+		vbox_slot.size_flags_vertical = 3
+		vbox_slot.alignment = BoxContainer.ALIGNMENT_CENTER
+		btn.add_child(vbox_slot)
+
 		var icone_slot = TextureRect.new()
-		icone_slot.custom_minimum_size = Vector2(48, 48)
+		icone_slot.custom_minimum_size = Vector2(64, 64)
 		icone_slot.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		btn.add_child(icone_slot)
+		icone_slot.size_flags_horizontal = 4
+		vbox_slot.add_child(icone_slot)
 
 		var label_slot = Label.new()
 		label_slot.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		label_slot.add_theme_font_size_override("font_size", 11)
-		btn.add_child(label_slot)
+		label_slot.add_theme_font_size_override("font_size", 14)
+		label_slot.size_flags_horizontal = 4
+		vbox_slot.add_child(label_slot)
 
 		var idx = i
 		btn.pressed.connect(func(): _slot_pressed(idx))
@@ -72,7 +82,7 @@ func _construir_lista_estruturas() -> void:
 		var receita = receitas[i]
 		var btn = Button.new()
 		btn.text = receita.nome
-		btn.custom_minimum_size = Vector2(0, 28)
+		btn.custom_minimum_size = _tamanho_botao
 		btn.size_flags_horizontal = 3
 		var idx = i
 		btn.pressed.connect(func(): _selecionar_receita(idx))

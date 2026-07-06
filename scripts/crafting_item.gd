@@ -50,7 +50,7 @@ func _construir_lista_itens() -> void:
 		var receita = receitas[i]
 		var btn = Button.new()
 		btn.text = receita.nome
-		btn.custom_minimum_size = Vector2(0, 28)
+		btn.custom_minimum_size = Vector2(0, 56)
 		btn.size_flags_horizontal = 3
 		var idx = i
 		btn.pressed.connect(func(): _selecionar_receita(idx))

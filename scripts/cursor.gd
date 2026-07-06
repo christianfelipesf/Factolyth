@@ -209,7 +209,6 @@ func _cursor_em_ui(pos_tela: Vector2 = Vector2.INF) -> bool:
 		return true
 	if _botao_cancelar != null and _botao_cancelar.visible and _ponto_no_controle(_botao_cancelar, pos):
 		return true
-		return true
 	if _barra_ui_root != null and _ponto_no_controle(_barra_ui_root, pos):
 		return true
 

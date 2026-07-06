@@ -1,18 +1,17 @@
 [gd_scene format=3 uid="uid://ch25fqwjhvbyw"]
 
-[ext_resource type="Script" path="res://scripts/crafting_hud.gd" id="1_wyjpv"]
+[ext_resource type="Script" uid="uid://nosrlnpm0v3n" path="res://scripts/crafting_hud.gd" id="1_wyjpv"]
 
 [sub_resource type="StyleBoxEmpty" id="1"]
 
 [node name="CraftingHUD" type="Control" unique_id=129384756]
-script = ExtResource("1_wyjpv")
-visible = false
-layout_mode = 1
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_wyjpv")
 
 [node name="Fundo" type="ColorRect" parent="." unique_id=283940571]
 layout_mode = 1
@@ -25,149 +24,188 @@ color = Color(0, 0, 0, 0.6)
 
 [node name="Painel" type="Panel" parent="." unique_id=394857102]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -400.0
-offset_top = -280.0
-offset_right = 400.0
-offset_bottom = 280.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 12.0
+offset_right = -24.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="Painel"]
+[node name="VBox" type="VBoxContainer" parent="Painel" unique_id=364918320]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 6
 
-[node name="Topo" type="HBoxContainer" parent="Painel/VBox"]
+[node name="Topo" type="HBoxContainer" parent="Painel/VBox" unique_id=27164212]
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
 
-[node name="Titulo" type="Label" parent="Painel/VBox/Topo"]
+[node name="Titulo" type="Label" parent="Painel/VBox/Topo" unique_id=713221375]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(1, 1, 1, 0.9)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 20
 text = "Crafting"
 
-[node name="Fechar" type="Button" parent="Painel/VBox/Topo"]
+[node name="Fechar" type="Button" parent="Painel/VBox/Topo" unique_id=1461094137]
+custom_minimum_size = Vector2(44, 44)
 layout_mode = 2
 text = "X"
 
-[node name="Abas" type="HBoxContainer" parent="Painel/VBox"]
-layout_mode = 2
-alignment = 0
-
-[node name="BtnItens" type="Button" parent="Painel/VBox/Abas"]
-layout_mode = 2
-custom_minimum_size = Vector2(120, 28)
-text = "Itens"
-
-[node name="BtnEstruturas" type="Button" parent="Painel/VBox/Abas"]
-layout_mode = 2
-custom_minimum_size = Vector2(120, 28)
-text = "Estruturas"
-
-[node name="BtnInventario" type="Button" parent="Painel/VBox/Abas"]
-layout_mode = 2
-custom_minimum_size = Vector2(120, 28)
-text = "Inventário"
-
-[node name="ConteudoItens" type="VBoxContainer" parent="Painel/VBox"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="Meio" type="HSplitContainer" parent="Painel/VBox/ConteudoItens"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="Lista" type="ScrollContainer" parent="Painel/VBox/ConteudoItens/Meio"]
-layout_mode = 2
-custom_minimum_size = Vector2(200, 0)
-
-[node name="VBoxReceitas" type="VBoxContainer" parent="Painel/VBox/ConteudoItens/Meio/Lista"]
+[node name="Abas" type="HBoxContainer" parent="Painel/VBox" unique_id=13126470]
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
 
-[node name="Detalhes" type="Panel" parent="Painel/VBox/ConteudoItens/Meio"]
+[node name="BtnItens" type="Button" parent="Painel/VBox/Abas" unique_id=1883744973]
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource(1)
+theme_override_font_sizes/font_size = 15
+text = "Itens"
 
-[node name="VBoxDetalhes" type="VBoxContainer" parent="Painel/VBox/ConteudoItens/Meio/Detalhes"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Icone" type="TextureRect" parent="Painel/VBox/ConteudoItens/Meio/Detalhes/VBoxDetalhes"]
+[node name="BtnEstruturas" type="Button" parent="Painel/VBox/Abas" unique_id=1485002056]
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-custom_minimum_size = Vector2(64, 64)
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+text = "Estruturas"
+
+[node name="BtnInventario" type="Button" parent="Painel/VBox/Abas" unique_id=1319560345]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+text = "Inventário"
+
+[node name="ConteudoItens" type="VBoxContainer" parent="Painel/VBox" unique_id=162965009]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Meio" type="HSplitContainer" parent="Painel/VBox/ConteudoItens" unique_id=1108892392]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="Lista" type="ScrollContainer" parent="Painel/VBox/ConteudoItens/Meio" unique_id=952166923]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+horizontal_scroll_mode = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="Painel/VBox/ConteudoItens/Meio/Lista" unique_id=698540867]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxReceitas" type="VBoxContainer" parent="Painel/VBox/ConteudoItens/Meio/Lista/MarginContainer" unique_id=615781368]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Detalhes" type="Panel" parent="Painel/VBox/ConteudoItens/Meio" unique_id=1041624071]
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("1")
+
+[node name="MarginContainer" type="MarginContainer" parent="Painel/VBox/ConteudoItens/Meio/Detalhes" unique_id=369995490]
+layout_mode = 0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 6
+
+[node name="VBoxDetalhes" type="VBoxContainer" parent="Painel/VBox/ConteudoItens/Meio/Detalhes/MarginContainer" unique_id=23497434]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Icone" type="TextureRect" parent="Painel/VBox/ConteudoItens/Meio/Detalhes/MarginContainer/VBoxDetalhes" unique_id=1876960989]
+custom_minimum_size = Vector2(72, 72)
+layout_mode = 2
 stretch_mode = 4
 
-[node name="Nome" type="Label" parent="Painel/VBox/ConteudoItens/Meio/Detalhes/VBoxDetalhes"]
+[node name="Nome" type="Label" parent="Painel/VBox/ConteudoItens/Meio/Detalhes/MarginContainer/VBoxDetalhes" unique_id=712085633]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.9)
 theme_override_font_sizes/font_size = 16
 horizontal_alignment = 1
 
-[node name="ContainerIngredientes" type="VBoxContainer" parent="Painel/VBox/ConteudoItens/Meio/Detalhes/VBoxDetalhes"]
+[node name="ContainerIngredientes" type="VBoxContainer" parent="Painel/VBox/ConteudoItens/Meio/Detalhes/MarginContainer/VBoxDetalhes" unique_id=1624661349]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Progresso" type="ProgressBar" parent="Painel/VBox/ConteudoItens/Meio/Detalhes/VBoxDetalhes"]
-layout_mode = 2
+[node name="Progresso" type="ProgressBar" parent="Painel/VBox/ConteudoItens/Meio/Detalhes/MarginContainer/VBoxDetalhes" unique_id=639605104]
 custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
 
-[node name="TempoLabel" type="Label" parent="Painel/VBox/ConteudoItens/Meio/Detalhes/VBoxDetalhes"]
+[node name="TempoLabel" type="Label" parent="Painel/VBox/ConteudoItens/Meio/Detalhes/MarginContainer/VBoxDetalhes" unique_id=704292262]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 0.7)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 14
 horizontal_alignment = 1
 
-[node name="Botao" type="Button" parent="Painel/VBox/ConteudoItens/Meio/Detalhes/VBoxDetalhes"]
+[node name="Botao" type="Button" parent="Painel/VBox/ConteudoItens/Meio/Detalhes/MarginContainer/VBoxDetalhes" unique_id=1758526931]
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
+theme_override_font_sizes/font_size = 15
 text = "Craft"
 
-[node name="ConteudoEstruturas" type="VBoxContainer" parent="Painel/VBox"]
-layout_mode = 2
-size_flags_vertical = 3
+[node name="ConteudoEstruturas" type="VBoxContainer" parent="Painel/VBox" unique_id=1842511901]
 visible = false
-
-[node name="GridSlots" type="GridContainer" parent="Painel/VBox/ConteudoEstruturas"]
-layout_mode = 2
-columns = 3
-custom_minimum_size = Vector2(0, 100)
-theme_override_constants/h_separation = 4
-theme_override_constants/v_separation = 4
-
-[node name="ScrollEstruturas" type="ScrollContainer" parent="Painel/VBox/ConteudoEstruturas"]
 layout_mode = 2
 size_flags_vertical = 3
-custom_minimum_size = Vector2(0, 80)
 
-[node name="VBoxReceitasEstrutura" type="VBoxContainer" parent="Painel/VBox/ConteudoEstruturas/ScrollEstruturas"]
+[node name="GridSlots" type="GridContainer" parent="Painel/VBox/ConteudoEstruturas" unique_id=1897792683]
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
+columns = 3
+
+[node name="ScrollEstruturas" type="ScrollContainer" parent="Painel/VBox/ConteudoEstruturas" unique_id=2108960288]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxReceitasEstrutura" type="VBoxContainer" parent="Painel/VBox/ConteudoEstruturas/ScrollEstruturas" unique_id=1868194604]
 layout_mode = 2
 
-[node name="Fabricar" type="Button" parent="Painel/VBox/ConteudoEstruturas"]
+[node name="Fabricar" type="Button" parent="Painel/VBox/ConteudoEstruturas" unique_id=1391491455]
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-custom_minimum_size = Vector2(0, 32)
+theme_override_font_sizes/font_size = 15
 text = "Fabricar"
 
-[node name="ConteudoInventario" type="VBoxContainer" parent="Painel/VBox"]
+[node name="ConteudoInventario" type="VBoxContainer" parent="Painel/VBox" unique_id=781173655]
+visible = false
 layout_mode = 2
 size_flags_vertical = 3
-visible = false
 
-[node name="GridInventario" type="GridContainer" parent="Painel/VBox/ConteudoInventario"]
+[node name="LabelInventario" type="Label" parent="Painel/VBox/ConteudoInventario" unique_id=264182015]
 layout_mode = 2
-columns = 3
-custom_minimum_size = Vector2(0, 200)
-theme_override_constants/h_separation = 8
-theme_override_constants/v_separation = 8
-alignment = 1
+theme_override_colors/font_color = Color(1, 1, 1, 0.9)
+theme_override_font_sizes/font_size = 15
+text = "Seus Itens"
+
+[node name="ScrollInventario" type="ScrollContainer" parent="Painel/VBox/ConteudoInventario" unique_id=834019760]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="GridInventarioEstruturas" type="GridContainer" parent="Painel/VBox/ConteudoInventario/ScrollInventario" unique_id=1435548063]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+columns = 5

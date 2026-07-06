@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://cp6y5ftt0rtb" path="res://scenes/tilesets.tscn" id="1_wqn8j"]
 [ext_resource type="PackedScene" uid="uid://bemv5lqoxi88n" path="res://scenes/jogador.tscn" id="2_a2ps7"]
+[ext_resource type="Script" path="res://scripts/mundo.gd" id="4_esm7r"]
 [ext_resource type="PackedScene" uid="uid://bqtyhcvde0fi4" path="res://scenes/playerui.tscn" id="3_0vka0"]
 
 [sub_resource type="Environment" id="Environment_a2ps7"]
@@ -12,7 +13,8 @@ glow_hdr_threshold = 0.2
 glow_hdr_scale = 2.24
 glow_hdr_luminance_cap = 18.97
 
-[node name="Mundo" type="Node2D" unique_id=1419332585]
+[node name="Mundo" type="Node2D" unique_id=1419332585 node_paths=PackedStringArray()]
+script = ExtResource("4_esm7r")
 
 [node name="Mapa" parent="." unique_id=1582223863 instance=ExtResource("1_wqn8j")]
 
