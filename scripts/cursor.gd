@@ -85,10 +85,24 @@ func _unhandled_input(event: InputEvent) -> void:
 	_input_module.handle_unhandled(event)
 
 
+func _hud_craft_visivel() -> bool:
+	var hud = get_node_or_null("/root/Mundo/Playerui/UI/CraftingHUD")
+	return hud != null and hud.visible
+
+
 func _physics_process(delta: float) -> void:
 	global_rotation = 0.0
 
 	_input_module.process_physics(delta, item_atual != null, _posicao_grid, _ultima_posicao_colocacao)
+
+	if _hud_craft_visivel():
+		if _modo_controle:
+			_modo_controle = false
+		_mouse_moveu = false
+		_grid_module.atualizar_cursor_e_grid()
+		if get_tree().paused:
+			return
+		return
 
 	var stick := Vector2(
 		Input.get_joy_axis(0, JOY_AXIS_RIGHT_X),

@@ -1,29 +1,25 @@
 extends Control
 
-## Distância máxima que o knob pode se afastar do centro.
-## Também é o raio onde o clique inicia o arrasto.
 @export var raio_maximo := 50.0
-
-## Área extra ao redor do raio_maximo que BLOQUEIA a colocação de blocos,
-## mas NÃO ativa o arrasto do joystick. Funciona como zona de segurança.
 @export var margem := 50.0
-
-## Distância a partir do centro onde o movimento é ignorado (joystick_vector = zero).
 @export var zona_morta := 10.0
 
-@onready var knob: Sprite2D = $TouchScreenButton/Sprite2D
+@onready var knob: TextureButton = $TextureButton
 
 var joystick_vector := Vector2.ZERO
 var is_dragging := false
 var _centro := Vector2.ZERO
+var _pos_base := Vector2.ZERO
+var _tamanho_controle := Vector2.ZERO
 
 func _ready() -> void:
-	_centro = knob.global_position
+	_pos_base = knob.position
+	_tamanho_controle = knob.size if knob.size != Vector2.ZERO else knob.custom_minimum_size
+	_centro = _pos_base + _tamanho_controle * knob.scale * 0.5
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
-			# Arrasto só ativa DENTRO do raio_maximo (ignora a margem)
 			if event.pressed and event.position.distance_to(_centro) <= raio_maximo:
 				is_dragging = true
 				_arrastar(event.position)
@@ -37,7 +33,6 @@ func _input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 
 	elif event is InputEventScreenTouch:
-		# Arrasto só ativa DENTRO do raio_maximo (ignora a margem)
 		if event.pressed and event.position.distance_to(_centro) <= raio_maximo:
 			is_dragging = true
 			_arrastar(event.position)
@@ -56,9 +51,8 @@ func esta_arrastando() -> bool:
 func _arrastar(pos: Vector2) -> void:
 	var desloc := pos - _centro
 	var limitado := desloc.limit_length(raio_maximo)
-	knob.global_position = _centro + limitado
+	knob.position = _pos_base + limitado
 
-	# Zona morta: ignora deslocamentos pequenos no centro
 	var distancia := desloc.length()
 	if distancia <= zona_morta:
 		joystick_vector = Vector2.ZERO
@@ -73,16 +67,10 @@ func _arrastar(pos: Vector2) -> void:
 func _resetar() -> void:
 	is_dragging = false
 	joystick_vector = Vector2.ZERO
-	knob.global_position = _centro
+	knob.position = _pos_base
 
 func get_velocity() -> Vector2:
 	return joystick_vector
 
-## Verifica se uma posição na tela está dentro da área do joystick
-## (incluindo a margem de segurança). Útil para evitar colocar blocos em cima da UI.
 func is_na_area_de_ui(pos_tela: Vector2) -> bool:
 	return pos_tela.distance_to(_centro) <= raio_maximo + margem
-
-
-func _on_teste_pressed() -> void:
-	pass # Replace with function body.

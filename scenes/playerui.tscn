@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://b6p0mqvla7410" path="res://scripts/joygstick.gd" id="1_5vk06"]
 [ext_resource type="Texture2D" uid="uid://d2jor441ckv25" path="res://images/ui/pause.png" id="3_dljgg"]
+[ext_resource type="Texture2D" uid="uid://deqnh6dkj0nc5" path="res://images/ui/press/joystick.png" id="3_edc7n"]
+[ext_resource type="Texture2D" uid="uid://c81fbe474op00" path="res://images/ui/hover/joystick.png" id="3_vkll4"]
 [ext_resource type="Texture2D" uid="uid://dbsg6x85rfcli" path="res://images/ui/joystick.png" id="3_xx5n8"]
 [ext_resource type="PackedScene" uid="uid://bfbwco8rr7fd1" path="res://scenes/barra_construcao.tscn" id="4_y1cqx"]
 [ext_resource type="Script" uid="uid://bs2gpg1jptmk1" path="res://scripts/inventario_hud.gd" id="5"]
@@ -10,17 +12,28 @@
 [ext_resource type="Script" uid="uid://crb28nsennpkp" path="res://scripts/loading_chunks_indicator.gd" id="8_0q5bq"]
 [ext_resource type="Script" uid="uid://bvfd8ivlvxt3" path="res://scripts/botao_pausa.gd" id="9"]
 [ext_resource type="Texture2D" uid="uid://76cuynr2jl6s" path="res://images/ui/pause_press.png" id="10_dljgg"]
+[ext_resource type="Texture2D" uid="uid://bescq0fw0f3nq" path="res://images/ui/press/pause.png" id="11_askhd"]
 [ext_resource type="PackedScene" uid="uid://ch25fqwjhvbyw" path="res://scenes/crafting_hud.tscn" id="11_g6y3g"]
 [ext_resource type="Script" uid="uid://bufu5x4yyi60n" path="res://scripts/botao_craft.gd" id="12"]
+[ext_resource type="Texture2D" uid="uid://co4mxhyxgafo6" path="res://images/ui/hover/craft_button.png" id="12_1scfi"]
 [ext_resource type="Script" uid="uid://2eqewurg83k4" path="res://scripts/botao_alternar_modo.gd" id="13"]
 [ext_resource type="Texture2D" uid="uid://dqqxndd84rsxd" path="res://images/ui/craft_button.png" id="14"]
 [ext_resource type="Texture2D" uid="uid://tst3tgalyoad" path="res://images/ui/colocar_bloco.png" id="15"]
+[ext_resource type="Texture2D" uid="uid://cp2ggrc8cht0s" path="res://images/ui/press/craft_button.png" id="15_ja40u"]
+[ext_resource type="Texture2D" uid="uid://b6jysh7urtktt" path="res://images/ui/hover/colocar_bloco.png" id="15_vkll4"]
 [ext_resource type="Script" uid="uid://fb24j6xcbdka" path="res://scripts/botao_rotacionar.gd" id="17"]
 [ext_resource type="Script" uid="uid://b63rhyq82uxx0" path="res://scripts/botao_confirmar.gd" id="18"]
+[ext_resource type="Texture2D" uid="uid://du1n3re5b3868" path="res://images/ui/hover/rotacionar_bloco.png" id="18_ofaog"]
 [ext_resource type="Script" uid="uid://dylqejere1ai2" path="res://scripts/botao_cancelar.gd" id="19"]
+[ext_resource type="Texture2D" uid="uid://dh7805styvc0p" path="res://images/ui/press/colocar_bloco.png" id="19_0obgm"]
 [ext_resource type="Texture2D" uid="uid://dj8sqv6gb6k6w" path="res://images/ui/rotacionar_bloco.png" id="20"]
 [ext_resource type="Texture2D" uid="uid://teivolyk6b26" path="res://images/ui/confimar.png" id="21"]
+[ext_resource type="Texture2D" uid="uid://d4f55td2w8nup" path="res://images/ui/hover/confimar.png" id="21_a4h0j"]
 [ext_resource type="Texture2D" uid="uid://3bfovnvrpowd" path="res://images/ui/cancelar.png" id="22"]
+[ext_resource type="Texture2D" uid="uid://llunnbwpc5iu" path="res://images/ui/press/rotacionar_bloco.png" id="23_6m0y3"]
+[ext_resource type="Texture2D" uid="uid://0kiwouvweipr" path="res://images/ui/hover/cancelar.png" id="24_5uidv"]
+[ext_resource type="Texture2D" uid="uid://wt7uua5von3u" path="res://images/ui/press/confimar.png" id="27_340mm"]
+[ext_resource type="Texture2D" uid="uid://dbpg7emc2jue6" path="res://images/ui/press/cancelar.png" id="31_j7gdr"]
 
 [node name="CanvasLayer" type="CanvasLayer" unique_id=216092279]
 
@@ -44,12 +57,19 @@ mouse_filter = 2
 script = ExtResource("1_5vk06")
 raio_maximo = 100.0
 
-[node name="TouchScreenButton" type="TouchScreenButton" parent="UI/Joystick" unique_id=828656199]
-
-[node name="Sprite2D" type="Sprite2D" parent="UI/Joystick/TouchScreenButton" unique_id=378925084]
-position = Vector2(162.99998, 488.99997)
+[node name="TextureButton" type="TextureButton" parent="UI/Joystick" unique_id=828656199]
+custom_minimum_size = Vector2(48, 48)
+layout_mode = 0
+offset_left = 100.0
+offset_top = 440.0
+offset_right = 1124.0
+offset_bottom = 1464.0
 scale = Vector2(0.2, 0.2)
-texture = ExtResource("3_xx5n8")
+mouse_filter = 1
+texture_normal = ExtResource("3_xx5n8")
+texture_pressed = ExtResource("3_edc7n")
+texture_hover = ExtResource("3_vkll4")
+stretch_mode = 0
 
 [node name="BarraConstrucao" parent="UI" unique_id=1848745639 instance=ExtResource("4_y1cqx")]
 layout_mode = 1
@@ -151,6 +171,7 @@ offset_bottom = 65.0
 grow_horizontal = 0
 scale = Vector2(2.5, 2.5)
 texture_normal = ExtResource("3_dljgg")
+texture_pressed = ExtResource("11_askhd")
 texture_hover = ExtResource("10_dljgg")
 script = ExtResource("9")
 
@@ -166,6 +187,8 @@ offset_bottom = -78.0
 grow_vertical = 2
 scale = Vector2(2.5, 2.5)
 texture_normal = ExtResource("14")
+texture_pressed = ExtResource("15_ja40u")
+texture_hover = ExtResource("12_1scfi")
 script = ExtResource("12")
 
 [node name="BotaoModo" type="TextureButton" parent="UI" unique_id=-1747278295]
@@ -183,6 +206,8 @@ grow_horizontal = 0
 grow_vertical = 2
 scale = Vector2(2.5, 2.5)
 texture_normal = ExtResource("15")
+texture_pressed = ExtResource("19_0obgm")
+texture_hover = ExtResource("15_vkll4")
 script = ExtResource("13")
 
 [node name="BotaoRotacionar" type="TextureButton" parent="UI" unique_id=193847562]
@@ -200,6 +225,8 @@ grow_horizontal = 0
 grow_vertical = 2
 scale = Vector2(2.5, 2.5)
 texture_normal = ExtResource("20")
+texture_pressed = ExtResource("23_6m0y3")
+texture_hover = ExtResource("18_ofaog")
 script = ExtResource("17")
 
 [node name="BotaoConfirmar" type="TextureButton" parent="UI" unique_id=284756183]
@@ -217,6 +244,8 @@ grow_horizontal = 0
 grow_vertical = 0
 scale = Vector2(2.5, 2.5)
 texture_normal = ExtResource("21")
+texture_pressed = ExtResource("27_340mm")
+texture_hover = ExtResource("21_a4h0j")
 script = ExtResource("18")
 
 [node name="BotaoCancelar" type="TextureButton" parent="UI" unique_id=375849201]
@@ -234,6 +263,8 @@ grow_horizontal = 0
 grow_vertical = 0
 scale = Vector2(2.5, 2.5)
 texture_normal = ExtResource("22")
+texture_pressed = ExtResource("31_j7gdr")
+texture_hover = ExtResource("24_5uidv")
 script = ExtResource("19")
 
 [node name="CraftingHUD" parent="UI" unique_id=172839456 instance=ExtResource("11_g6y3g")]

@@ -47,8 +47,13 @@ func _ready() -> void:
 @onready var joystick: Control = get_tree().root.find_child("Joystick", true, false)
 
 
+func _hud_craft_visivel() -> bool:
+	var hud = get_node_or_null("/root/Mundo/Playerui/UI/CraftingHUD")
+	return hud != null and hud.visible
+
+
 func _physics_process(delta: float) -> void:
-	if controles_travados:
+	if controles_travados or _hud_craft_visivel():
 		return
 
 	_broca_module.process(delta)
