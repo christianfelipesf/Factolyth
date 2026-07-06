@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://coyr0xvbnbcvh"]
+
+[ext_resource type="Texture2D" uid="uid://m8w05hil3pgs" path="res://images/estruturas/torre_de_energia.png" id="1_rtobl"]
+[ext_resource type="Texture2D" uid="uid://bi1cbdqoih344" path="res://images/estruturas/torre_de_energia_top.png" id="2_ji7am"]
+[ext_resource type="Shader" uid="uid://dall2fggpbtl3" path="res://scenes/posicionaveis/torre_de_energia.gdshader" id="2_uvf3f"]
+[ext_resource type="Texture2D" uid="uid://dhapf36tq64fd" path="res://images/ui/circle.png" id="3_ji7am"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_lqecj"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_3ui6l"]
+shader = ExtResource("2_uvf3f")
+shader_parameter/textura_ruido = SubResource("NoiseTexture2D_lqecj")
+shader_parameter/raio_circulo_base = 0.4
+shader_parameter/esfumacado_borda = 0.06100000219898
+shader_parameter/forca_distorcao_max = 0.046000002185
+shader_parameter/forca_distorcao_centro = 0.002000000095
+shader_parameter/velocidade_ruido = 0.042000001995
+shader_parameter/cor_efeito = Color(0, 0.6, 1, 0.043137256)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3ui6l"]
+size = Vector2(27, 28)
+
+[node name="TorreDeEnergia" type="StaticBody2D" unique_id=2088216437]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=715072692]
+texture = ExtResource("1_rtobl")
+
+[node name="Sprite2D2" type="Sprite2D" parent="." unique_id=232342449]
+modulate = Color(1.5565991, 1.5565991, 1.5565991, 1)
+texture = ExtResource("2_ji7am")
+
+[node name="Distorcao" type="Sprite2D" parent="." unique_id=350567845]
+visibility_layer = 16
+z_index = 50
+z_as_relative = false
+material = SubResource("ShaderMaterial_3ui6l")
+scale = Vector2(2, 2)
+texture = ExtResource("3_ji7am")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=40253860]
+position = Vector2(0.5, 0)
+shape = SubResource("RectangleShape2D_3ui6l")

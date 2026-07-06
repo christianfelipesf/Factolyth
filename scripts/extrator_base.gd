@@ -29,19 +29,34 @@ func _get_item_id_default() -> String:
 	return "quartzo"
 
 func _procurar_esteira_no_chao() -> Node2D:
+	var mais_proximo: Node2D = null
+	var menor_distancia: float = INF
+	var origem: Vector2 = global_position
 	for corpo in detector.get_overlapping_bodies():
 		if corpo == self: continue
+		var esteira = null
 		if corpo.is_in_group("esteira"):
-			return corpo
+			esteira = corpo
 		elif corpo.get_parent() and corpo.get_parent().is_in_group("esteira"):
-			return corpo.get_parent()
+			esteira = corpo.get_parent()
+		if esteira != null:
+			var dist = esteira.global_position.distance_squared_to(origem)
+			if dist < menor_distancia:
+				menor_distancia = dist
+				mais_proximo = esteira
 	for area_no in detector.get_overlapping_areas():
 		if area_no == self or area_no == detector: continue
+		var esteira = null
 		if area_no.is_in_group("esteira"):
-			return area_no
+			esteira = area_no
 		elif area_no.get_parent() and area_no.get_parent().is_in_group("esteira"):
-			return area_no.get_parent()
-	return null
+			esteira = area_no.get_parent()
+		if esteira != null:
+			var dist = esteira.global_position.distance_squared_to(origem)
+			if dist < menor_distancia:
+				menor_distancia = dist
+				mais_proximo = esteira
+	return mais_proximo
 
 func _on_timer_producao_timeout() -> void:
 	esteira_atual = _procurar_esteira_no_chao()

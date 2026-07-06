@@ -44,7 +44,6 @@ ZOOM_STEP = 0.5
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=101199477]
 material = SubResource("ShaderMaterial_lj65x")
-rotation = 1.5707964
 texture = ExtResource("1_vwxko")
 vframes = 2
 

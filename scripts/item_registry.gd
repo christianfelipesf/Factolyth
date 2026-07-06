@@ -15,6 +15,7 @@ const _CONFIG = {
 		Fusor =        {cena = "res://scenes/posicionaveis/fusor.tscn",            custo = 0,  tempo = 0.5},
 		ExtratorDeAreia = {cena = "res://scenes/posicionaveis/extrator_de_areia.tscn", custo = 3,  tempo = 0.5, receita = {placa_quartzo = 3}},
 		FusorDeAreia = {cena = "res://scenes/posicionaveis/fusor_de_areia.tscn", custo = 5, tempo = 0.5, receita = {placa_quartzo = 5}},
+		TorreDeEnergia = {cena = "res://scenes/posicionaveis/torre_de_energia.tscn", custo = 12, tempo = 1.5, receita = {placa_quartzo = 12}},
 	},
 	itens = {
 		quartzo       = {nome = "Quartzo",         textura = "res://images/itens/po_quartzo.png"},
@@ -23,7 +24,7 @@ const _CONFIG = {
 		silicio       = {nome = "Silicio",         textura = "res://images/itens/silicio.png"},
 	},
 	receitas_item = [
-		{nome = "Placa de Quartzo", resultado = "placa_quartzo", quantidade = 1, tempo = 3.0, ingredientes = {quartzo = 4}},
+		{nome = "Placa de Quartzo", resultado = "placa_quartzo", quantidade = 1, tempo = 2.0, ingredientes = {quartzo = 4}},
 	],
 }
 

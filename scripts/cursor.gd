@@ -23,19 +23,10 @@ var _warpeando: bool = false
 
 var _modo_destruir: bool = false
 
-var _touch_start_pos: Vector2 = Vector2.INF
-var _touch_prev_pos: Vector2 = Vector2.INF
-var _touch_start_tempo: float = 0.0
-var _touch_arrastando: bool = false
-var _touch_foi_arrasto: bool = false
-var _touch_ativo: bool = false
-const TOUCH_DRAG_LIMIAR := 10.0
-const TOUCH_TAP_TEMPO_MINIMO := 0.15
-var _pan_offset: Vector2 = Vector2.ZERO
-
 var _grid_module: CursorGridModule
 var _preview_module: CursorPreviewModule
 var _placement_module: CursorPlacementModule
+var _input_module: CursorInputModule
 
 @onready var camera: Camera2D = $"../Camera2D"
 @onready var area_checagem: Area2D = $AreaChecagem
@@ -53,6 +44,12 @@ func _ready() -> void:
 	_grid_module.setup(self)
 	_preview_module.setup(self)
 	_placement_module.setup(self)
+
+	_input_module = CursorInputModule.new()
+	_input_module.setup(self)
+	_input_module.confirmou.connect(_on_input_confirmou)
+	_input_module.cancelou.connect(_on_input_cancelou)
+	_input_module.rotacionou.connect(_on_input_rotacionou)
 
 	_joystick = get_tree().root.find_child("Joystick", true, false)
 	_ui_root = get_tree().root.find_child("UI", true, false)
@@ -72,40 +69,17 @@ func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and not _warpeando:
 		_mouse_moveu = true
 	_warpeando = false
+	_input_module.handle_input(event)
 
-	if event is InputEventScreenTouch:
-		if event.pressed and event.index == 0:
-			_touch_ativo = true
-			_touch_start_pos = event.position
-			_touch_prev_pos = event.position
-			_touch_start_tempo = Time.get_ticks_msec() / 1000.0
-			_touch_arrastando = false
-		elif not event.pressed and event.index == 0:
-			_touch_foi_arrasto = _touch_arrastando
-			_touch_ativo = false
-			_touch_arrastando = false
-			_touch_start_pos = Vector2.INF
-			_touch_prev_pos = Vector2.INF
 
-	if event is InputEventScreenDrag and event.index == 0:
-		if _touch_start_pos != Vector2.INF:
-			if not _touch_arrastando and event.position.distance_to(_touch_start_pos) > TOUCH_DRAG_LIMIAR:
-				_touch_arrastando = true
-			if _touch_arrastando:
-				var delta_pan = (event.position - _touch_prev_pos) / camera.zoom
-				_pan_offset -= delta_pan
-				camera.offset = _pan_offset
-				_touch_prev_pos = event.position
+func _unhandled_input(event: InputEvent) -> void:
+	_input_module.handle_unhandled(event)
 
 
 func _physics_process(delta: float) -> void:
 	global_rotation = 0.0
 
-	if _pan_offset != Vector2.ZERO and not _touch_arrastando:
-		_pan_offset = _pan_offset.lerp(Vector2.ZERO, 5.0 * delta)
-		if _pan_offset.length() < 1.0:
-			_pan_offset = Vector2.ZERO
-		camera.offset = _pan_offset
+	_input_module.process_physics(delta, item_atual != null, _posicao_grid, _ultima_posicao_colocacao)
 
 	var stick := Vector2(
 		Input.get_joy_axis(0, JOY_AXIS_RIGHT_X),
@@ -140,22 +114,25 @@ func _physics_process(delta: float) -> void:
 	if not Input.is_action_pressed("confirmar") and not Input.is_action_pressed("cancelar"):
 		_ultima_posicao_colocacao = Vector2.INF
 
-	if item_atual != null and not _arrastando_joystick() and not _em_pinça() and not _touch_ativo:
-		var quer_instanciar := Input.is_action_just_pressed("confirmar")
 
-		if not quer_instanciar:
-			quer_instanciar = Input.is_action_pressed("confirmar") and _posicao_grid != _ultima_posicao_colocacao
-
-		if quer_instanciar and not _cursor_em_ui():
-			if _modo_destruir:
-				_placement_module.remover_objeto_na_posicao(true)
-			elif _eh_broca_manual() or not _grid_module.area_esta_ocupada():
-				_criar_objeto_posicionavel()
-				_ultima_posicao_colocacao = _posicao_grid
-
-	if Input.is_action_pressed("cancelar") and _posicao_grid != _ultima_posicao_colocacao and not _modo_destruir:
+func _on_input_confirmou(world_pos: Vector2) -> void:
+	_grid_module.atualizar_cursor_e_grid(world_pos)
+	if _modo_destruir:
 		_placement_module.remover_objeto_na_posicao(true)
+	elif _eh_broca_manual() or not _grid_module.area_esta_ocupada():
+		_criar_objeto_posicionavel()
 		_ultima_posicao_colocacao = _posicao_grid
+
+
+func _on_input_cancelou(world_pos: Vector2) -> void:
+	_grid_module.atualizar_cursor_e_grid(world_pos)
+	_placement_module.remover_objeto_na_posicao(true)
+	_ultima_posicao_colocacao = _posicao_grid
+
+
+func _on_input_rotacionou() -> void:
+	rotation_atual = fmod(rotation_atual + 90.0, 360.0)
+	_preview_module.atualizar_preview_visual()
 
 
 func _eh_broca_manual() -> bool:
@@ -217,66 +194,6 @@ func _cursor_em_ui() -> bool:
 		return true
 
 	return false
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if get_tree().paused:
-		return
-
-	if event.is_action_pressed("rotacionar_objeto") and item_atual != null:
-		rotation_atual = fmod(rotation_atual + 90.0, 360.0)
-		_preview_module.atualizar_preview_visual()
-		_input_handled()
-		return
-
-	if event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_X:
-		if _cursor_em_ui():
-			var focused = get_viewport().gui_get_focus_owner()
-			if focused is Button:
-				focused.pressed.emit()
-				_input_handled()
-				return
-
-	if item_atual == null:
-		return
-
-	if event is InputEventJoypadButton:
-		if event.button_index in [JOY_BUTTON_A, JOY_BUTTON_X] and event.pressed:
-			if not _cursor_em_ui():
-				if _modo_destruir:
-					_placement_module.remover_objeto_na_posicao(true)
-				elif _eh_broca_manual() or not _grid_module.area_esta_ocupada():
-					_criar_objeto_posicionavel()
-				_input_handled()
-		elif event.button_index == JOY_BUTTON_B and event.pressed:
-			if not _cursor_em_ui():
-				_placement_module.remover_objeto_na_posicao(true)
-				_input_handled()
-
-	if event is InputEventScreenTouch and not event.pressed and event.index == 0:
-		if _touch_foi_arrasto:
-			_input_handled()
-			return
-		if Time.get_ticks_msec() / 1000.0 - _touch_start_tempo < TOUCH_TAP_TEMPO_MINIMO:
-			_input_handled()
-			return
-		if not _cursor_em_ui() and not _arrastando_joystick() and not _em_pinça():
-			var screen_size: Vector2 = get_viewport().get_visible_rect().size
-			var centro: Vector2 = camera.get_screen_center_position()
-			var offset: Vector2 = (event.position - screen_size * 0.5) / Vector2(camera.zoom.x, camera.zoom.y)
-			var world_pos: Vector2 = centro + offset
-			_grid_module.atualizar_cursor_e_grid(world_pos)
-			if _modo_destruir:
-				_placement_module.remover_objeto_na_posicao(true)
-			elif _eh_broca_manual() or not _grid_module.area_esta_ocupada():
-				_criar_objeto_posicionavel()
-			_input_handled()
-
-
-func _input_handled() -> void:
-	var vp := get_viewport()
-	if vp != null:
-		vp.set_input_as_handled()
 
 
 func _criar_objeto_posicionavel() -> void:

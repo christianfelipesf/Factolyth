@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://baommyldmwj8v" path="res://images/tilemap/cristais.png" id="2_tg0cf"]
 [ext_resource type="Script" uid="uid://cfaj048www7rx" path="res://scripts/gerador_mundo.gd" id="3_hijgr"]
 [ext_resource type="PackedScene" uid="uid://b0mtvqqg4aqfp" path="res://scenes/testes/teste_esteira.tscn" id="4_4ug7i"]
+[ext_resource type="PackedScene" uid="uid://coyr0xvbnbcvh" path="res://scenes/posicionaveis/torre_de_energia.tscn" id="5_ejvk6"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_solo"]
 texture = ExtResource("1_4q2ab")
@@ -74,3 +75,6 @@ tile_set = SubResource("TileSet_ejvk6")
 [node name="Esteira" parent="." unique_id=447895188 instance=ExtResource("4_4ug7i")]
 position = Vector2(58, -64)
 script = null
+
+[node name="TorreDeEnergia" parent="." unique_id=2088216437 instance=ExtResource("5_ejvk6")]
+position = Vector2(131, 251)

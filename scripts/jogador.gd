@@ -94,7 +94,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 	if velocity.length() > 10.0:
-		var target_angle = velocity.angle()
+		var target_angle = velocity.angle() + PI / 2
 		rotation = rotate_toward(rotation, target_angle, ROTATION_SPEED * delta)
 
 	var target_zoom = Vector2(target_zoom_value, target_zoom_value)
