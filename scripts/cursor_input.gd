@@ -52,6 +52,8 @@ func process_physics(delta: float, tem_item: bool, pos_grid: Vector2, ultima_pos
 	if _input_mode != InputMode.TOUCH:
 		if Input.is_action_just_pressed("confirmar") and not _cursor._cursor_em_ui():
 			confirmou.emit(pos_grid)
+		elif Input.is_action_pressed("confirmar") and not _cursor._cursor_em_ui() and pos_grid != ultima_pos and ultima_pos != Vector2.INF:
+			confirmou.emit(pos_grid)
 
 	if Input.is_action_pressed("cancelar") and pos_grid != ultima_pos and not _cursor._modo_destruir:
 		cancelou.emit(pos_grid)

@@ -12,7 +12,7 @@ func setup(cursor: Node) -> void:
 	_cursor = cursor
 
 
-func criar_objeto_posicionavel() -> void:
+func criar_objeto_posicionavel(pending: bool = false) -> void:
 	if _cursor._eh_broca_manual():
 		var jogador = _cursor.get_parent()
 		if jogador.has_method("usar_broca_manual"):
@@ -21,26 +21,10 @@ func criar_objeto_posicionavel() -> void:
 		return
 
 	var nome = _cursor.item_atual.nome
-	if SaveManager.modo_jogo == "sobrevivencia":
-		var receita = ItemRegistry.get_receita_por_nome(nome)
-		if not receita.is_empty():
-			var jogador = _cursor.get_parent()
-			var faltando: Array[String] = []
-			for item_id in receita:
-				var necessario = receita[item_id]
-				var tem = int(jogador.inventario.get(item_id, 0))
-				if tem < necessario:
-					var item = ItemRegistry.get_item(item_id)
-					var nome_item = item.nome if item else item_id
-					faltando.append("%d %s" % [necessario - tem, nome_item])
-			if not faltando.is_empty():
-				_notificar("Faltam " + ", ".join(faltando) + "!")
-				_cursor._ultima_posicao_colocacao = _cursor._posicao_grid
-				return
-			for item_id in receita:
-				var necessario = receita[item_id]
-				jogador.inventario[item_id] = jogador.inventario.get(item_id, 0) - necessario
-			jogador.inventario_atualizado.emit(jogador.inventario)
+	if not pending and SaveManager.modo_jogo == "sobrevivencia":
+		if not _deduzir_custo(nome):
+			_cursor._ultima_posicao_colocacao = _cursor._posicao_grid
+			return
 
 	var novo_objeto = _cursor.item_atual.cena_objeto.instantiate()
 	if "is_preview" in novo_objeto:
@@ -52,11 +36,36 @@ func criar_objeto_posicionavel() -> void:
 	novo_objeto.global_rotation = deg_to_rad(_cursor.rotation_atual + offset)
 	novo_objeto.global_position = _cursor._posicao_grid + _cursor._grid_module.offset_colocacao()
 
-	var tempo = ItemRegistry.get_tempo_construcao(nome)
-	if tempo > 0:
-		_iniciar_construcao(novo_objeto, tempo)
+	if pending:
+		_cursor._pending_module.adicionar_pendente(novo_objeto)
 	else:
-		_finalizar_construcao(novo_objeto)
+		var tempo = ItemRegistry.get_tempo_construcao(nome)
+		if tempo > 0:
+			_iniciar_construcao(novo_objeto, tempo)
+		else:
+			_finalizar_construcao(novo_objeto)
+
+
+func _deduzir_custo(nome: String) -> bool:
+	var receita = ItemRegistry.get_receita_por_nome(nome)
+	if receita.is_empty():
+		return true
+	var jogador = _cursor.get_parent()
+	var faltando: Array[String] = []
+	for item_id in receita:
+		var necessario = receita[item_id]
+		var tem = int(jogador.inventario.get(item_id, 0))
+		if tem < necessario:
+			var item = ItemRegistry.get_item(item_id)
+			var nome_item = item.nome if item else item_id
+			faltando.append("%d %s" % [necessario - tem, nome_item])
+	if not faltando.is_empty():
+		_notificar("Faltam " + ", ".join(faltando) + "!")
+		return false
+	for item_id in receita:
+		jogador.inventario[item_id] = jogador.inventario.get(item_id, 0) - receita[item_id]
+	jogador.inventario_atualizado.emit(jogador.inventario)
+	return true
 
 
 func _iniciar_construcao(objeto: Node, tempo: float) -> void:
@@ -142,6 +151,10 @@ func remover_objeto_na_posicao(nova_interacao: bool = true) -> void:
 		return
 
 	for corpo in corpos:
+		if corpo.get_meta("is_pending_placement", false):
+			corpo.queue_free()
+			continue
+
 		var id = corpo.get_instance_id()
 		if _destruicoes_pendentes.has(id):
 			continue

@@ -15,7 +15,12 @@
 [ext_resource type="Script" uid="uid://2eqewurg83k4" path="res://scripts/botao_alternar_modo.gd" id="13"]
 [ext_resource type="Texture2D" uid="uid://dqqxndd84rsxd" path="res://images/ui/craft_button.png" id="14"]
 [ext_resource type="Texture2D" uid="uid://tst3tgalyoad" path="res://images/ui/colocar_bloco.png" id="15"]
-[ext_resource type="Texture2D" uid="uid://btigg34vp68yf" path="res://images/ui/retirar_bloco.png" id="16"]
+[ext_resource type="Script" uid="uid://fb24j6xcbdka" path="res://scripts/botao_rotacionar.gd" id="17"]
+[ext_resource type="Script" uid="uid://b63rhyq82uxx0" path="res://scripts/botao_confirmar.gd" id="18"]
+[ext_resource type="Script" uid="uid://dylqejere1ai2" path="res://scripts/botao_cancelar.gd" id="19"]
+[ext_resource type="Texture2D" uid="uid://dj8sqv6gb6k6w" path="res://images/ui/rotacionar_bloco.png" id="20"]
+[ext_resource type="Texture2D" uid="uid://teivolyk6b26" path="res://images/ui/confimar.png" id="21"]
+[ext_resource type="Texture2D" uid="uid://3bfovnvrpowd" path="res://images/ui/cancelar.png" id="22"]
 
 [node name="CanvasLayer" type="CanvasLayer" unique_id=216092279]
 
@@ -171,5 +176,56 @@ grow_vertical = 2
 scale = Vector2(2.5, 2.5)
 texture_normal = ExtResource("15")
 script = ExtResource("13")
+
+[node name="BotaoRotacionar" type="TextureButton" parent="UI" unique_id=193847562]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -140.0
+offset_top = -36.0
+offset_right = -108.0
+offset_bottom = -4.0
+grow_horizontal = 0
+grow_vertical = 2
+scale = Vector2(2.5, 2.5)
+texture_normal = ExtResource("20")
+script = ExtResource("17")
+
+[node name="BotaoConfirmar" type="TextureButton" parent="UI" unique_id=284756183]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -220.0
+offset_top = -200.0
+offset_right = -188.0
+offset_bottom = -168.0
+grow_horizontal = 0
+grow_vertical = 0
+scale = Vector2(2.5, 2.5)
+texture_normal = ExtResource("21")
+script = ExtResource("18")
+
+[node name="BotaoCancelar" type="TextureButton" parent="UI" unique_id=375849201]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -132.0
+offset_top = -200.0
+offset_right = -100.0
+offset_bottom = -168.0
+grow_horizontal = 0
+grow_vertical = 0
+scale = Vector2(2.5, 2.5)
+texture_normal = ExtResource("22")
+script = ExtResource("19")
 
 [node name="CraftingHUD" parent="UI" unique_id=172839456 instance=ExtResource("11_g6y3g")]

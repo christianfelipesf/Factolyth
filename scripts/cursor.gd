@@ -14,6 +14,9 @@ var _joystick: Control = null
 var _botao_pausa: Control = null
 var _botao_craft: Control = null
 var _botao_modo: Control = null
+var _botao_rotacionar: Control = null
+var _botao_confirmar: Control = null
+var _botao_cancelar: Control = null
 var _barra_ui_root: Control = null
 var _ui_root: Control = null
 var _cursor_controle: Vector2 = Vector2.ZERO
@@ -27,6 +30,7 @@ var _grid_module: CursorGridModule
 var _preview_module: CursorPreviewModule
 var _placement_module: CursorPlacementModule
 var _input_module: CursorInputModule
+var _pending_module: PendingPlacementModule
 
 @onready var camera: Camera2D = $"../Camera2D"
 @onready var area_checagem: Area2D = $AreaChecagem
@@ -41,9 +45,11 @@ func _ready() -> void:
 	_grid_module = CursorGridModule.new()
 	_preview_module = CursorPreviewModule.new()
 	_placement_module = CursorPlacementModule.new()
+	_pending_module = PendingPlacementModule.new()
 	_grid_module.setup(self)
 	_preview_module.setup(self)
 	_placement_module.setup(self)
+	_pending_module.setup(self)
 
 	_input_module = CursorInputModule.new()
 	_input_module.setup(self)
@@ -56,6 +62,9 @@ func _ready() -> void:
 	_botao_pausa = get_tree().root.find_child("BotaoPausa", true, false)
 	_botao_craft = get_tree().root.find_child("BotaoCraft", true, false)
 	_botao_modo = get_tree().root.find_child("BotaoModo", true, false)
+	_botao_rotacionar = get_tree().root.find_child("BotaoRotacionar", true, false)
+	_botao_confirmar = get_tree().root.find_child("BotaoConfirmar", true, false)
+	_botao_cancelar = get_tree().root.find_child("BotaoCancelar", true, false)
 	_barra_ui_root = get_tree().root.find_child("BarraConstrucao", true, false)
 	for filho in get_children():
 		if filho is CanvasItem:
@@ -194,6 +203,13 @@ func _cursor_em_ui(pos_tela: Vector2 = Vector2.INF) -> bool:
 		return true
 	if _botao_modo != null and _ponto_no_controle(_botao_modo, pos):
 		return true
+	if _botao_rotacionar != null and _botao_rotacionar.visible and _ponto_no_controle(_botao_rotacionar, pos):
+		return true
+	if _botao_confirmar != null and _botao_confirmar.visible and _ponto_no_controle(_botao_confirmar, pos):
+		return true
+	if _botao_cancelar != null and _botao_cancelar.visible and _ponto_no_controle(_botao_cancelar, pos):
+		return true
+		return true
 	if _barra_ui_root != null and _ponto_no_controle(_barra_ui_root, pos):
 		return true
 
@@ -216,4 +232,20 @@ func _ponto_no_controle(control: Control, ponto: Vector2) -> bool:
 
 
 func _criar_objeto_posicionavel() -> void:
-	_placement_module.criar_objeto_posicionavel()
+	_placement_module.criar_objeto_posicionavel(true)
+
+
+func confirmar_pendentes() -> void:
+	_pending_module.confirmar_pendentes()
+
+
+func cancelar_pendentes() -> void:
+	_pending_module.cancelar_pendentes()
+
+
+func tem_pendentes() -> bool:
+	return _pending_module.tem_pendentes()
+
+
+func rotacionar() -> void:
+	_on_input_rotacionou()
