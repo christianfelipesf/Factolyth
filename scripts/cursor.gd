@@ -177,6 +177,8 @@ func equipar_item(novo_item: ItemConstrucao) -> void:
 	_grid_module.recriar_indicador(_tamanho_grid_atual)
 	rotation_atual = 0.0
 	_ultima_posicao_colocacao = Vector2.INF
+	if _botao_rotacionar != null:
+		_botao_rotacionar.rotation = 0.0
 	_preview_module.atualizar_preview_visual()
 
 
