@@ -38,7 +38,7 @@ func _iniciar_giro_broca() -> void:
 	tween.tween_callback(func():
 		_jogador.controles_travados = false
 		_jogador.get_node("AudioBrocaManual").stop()
-		if SaveManager.modo_jogo == "sobrevivencia":
+		if SaveManager.modo_jogo == SaveManager.MODO_SOBREVIVENCIA:
 			_jogador.adicionar_item("quartzo", 4)
 	)
 

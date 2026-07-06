@@ -17,7 +17,14 @@ func _ready() -> void:
 	_tamanho_controle = knob.size if knob.size != Vector2.ZERO else knob.custom_minimum_size
 	_centro = _pos_base + _tamanho_controle * knob.scale * 0.5
 
+func _tem_hud_craft_aberta() -> bool:
+	var hud = get_node_or_null("/root/Mundo/Playerui/UI/CraftingHUD")
+	return hud != null and hud.visible
+
+
 func _input(event: InputEvent) -> void:
+	if _tem_hud_craft_aberta():
+		return
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed and event.position.distance_to(_centro) <= raio_maximo:

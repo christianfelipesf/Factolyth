@@ -4,10 +4,13 @@ signal save_concluido(slot: String)
 signal save_negado(reason: String)
 
 const DIR_SAVES := "user://saves/"
+const SLOT_PADRAO := "slot_1"
+const MODO_CRIATIVO := "criativo"
+const MODO_SOBREVIVENCIA := "sobrevivencia"
 var _carregando := false
 var save_pendente: String = ""
 var modo_procedural: bool = false
-var modo_jogo: String = "criativo"
+var modo_jogo: String = MODO_CRIATIVO
 
 var _overlay
 
@@ -36,9 +39,9 @@ func _process(_delta: float) -> void:
 			return
 
 	if Input.is_action_just_pressed("salvar_jogo"):
-		salvar("slot_1")
+		salvar(SLOT_PADRAO)
 	elif Input.is_action_just_pressed("carregar_jogo"):
-		carregar("slot_1")
+		carregar(SLOT_PADRAO)
 	elif Input.is_action_just_pressed("deletar_saves"):
 		deletar_todos_saves()
 
@@ -156,10 +159,7 @@ func _coletar_jogador() -> Dictionary:
 	var arvore := get_tree()
 	if arvore == null:
 		return {}
-	var cena = arvore.current_scene
-	if cena == null:
-		return {}
-	var jogador := cena.get_node_or_null("Jogador")
+	var jogador := arvore.get_first_node_in_group("jogador")
 	if jogador == null or not jogador.has_method("get_save_data"):
 		return {}
 	return jogador.get_save_data()
@@ -169,10 +169,7 @@ func _restaurar_jogador(dados: Dictionary) -> void:
 	var arvore := get_tree()
 	if arvore == null:
 		return
-	var cena = arvore.current_scene
-	if cena == null:
-		return
-	var jogador := cena.get_node_or_null("Jogador")
+	var jogador := arvore.get_first_node_in_group("jogador")
 	if jogador == null or not jogador.has_method("set_save_data"):
 		return
 	jogador.set_save_data(dados)
@@ -212,10 +209,9 @@ func _instanciar_estrutura(dados: Dictionary) -> void:
 	if cena_obj == null:
 		push_error("SaveManager: cena nao encontrada: ", dados.cena)
 		return
-	var inst := cena_obj.instantiate()
 	var pos_array: Array = dados.posicao
-	inst.global_position = Vector2(pos_array[0], pos_array[1])
-	inst.global_rotation = deg_to_rad(dados.rotacao)
+	var posicao := Vector2(pos_array[0], pos_array[1])
+	var inst = StructureFactory.criar("", cena_obj, posicao, dados.rotacao, false)
 	if inst.has_method("set_save_data") and dados.has("dados"):
 		inst.set_save_data(dados.dados)
 	var arvore := get_tree()
@@ -223,4 +219,3 @@ func _instanciar_estrutura(dados: Dictionary) -> void:
 		inst.queue_free()
 		return
 	arvore.current_scene.add_child(inst)
-	inst.add_to_group("estrutura")

@@ -135,6 +135,7 @@ func _alternar_aba(aba: String) -> void:
 	btn_inventario.disabled = (aba == "inventario")
 	if aba in ["estruturas", "inventario"]:
 		_estruturas_module.atualizar_slots()
+		_estruturas_module.atualizar_botoes()
 		if aba == "inventario":
 			_inventario_module.atualizar_inventario_player()
 

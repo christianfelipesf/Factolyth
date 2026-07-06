@@ -24,6 +24,7 @@ config/main_scene="res://scenes/main.tscn"
 
 SaveManager="*res://scripts/save_manager.gd"
 ItemRegistry="*res://scripts/item_registry.gd"
+AudioManager="*res://scripts/audio_manager.gd"
 
 [display]
 

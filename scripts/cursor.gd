@@ -42,6 +42,7 @@ var _pending_module: PendingPlacementModule
 
 
 func _ready() -> void:
+	add_to_group("cursor")
 	_grid_module = CursorGridModule.new()
 	_preview_module = CursorPreviewModule.new()
 	_placement_module = CursorPlacementModule.new()

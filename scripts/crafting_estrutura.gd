@@ -30,7 +30,7 @@ func setup(
 	_jogador = jogador
 	_util = util
 	_tamanho_botao = tamanho_botao
-	_eh_criativo = SaveManager.modo_jogo == "criativo"
+	_eh_criativo = SaveManager.modo_jogo == SaveManager.MODO_CRIATIVO
 
 	_construir_slots()
 	if _eh_criativo:

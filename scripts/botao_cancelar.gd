@@ -1,24 +1,17 @@
 extends TextureButton
 
-const CLIQUE = preload("res://sound/click.mp3")
-
-var _audio_click: AudioStreamPlayer
-
 
 func _ready() -> void:
-	_audio_click = AudioStreamPlayer.new()
-	_audio_click.stream = CLIQUE
-	add_child(_audio_click)
 	pressed.connect(_on_pressed)
 
 
 func _process(delta: float) -> void:
-	var cursor = get_tree().root.find_child("Marker2D", true, false)
+	var cursor = get_tree().get_first_node_in_group("cursor")
 	visible = cursor != null and cursor.has_method("tem_pendentes") and cursor.tem_pendentes()
 
 
 func _on_pressed() -> void:
-	_audio_click.play()
-	var cursor = get_tree().root.find_child("Marker2D", true, false)
+	AudioManager.play_click()
+	var cursor = get_tree().get_first_node_in_group("cursor")
 	if cursor != null and cursor.has_method("cancelar_pendentes"):
 		cursor.cancelar_pendentes()

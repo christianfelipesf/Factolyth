@@ -10,10 +10,10 @@ func setup(jogador: Node) -> void:
 
 
 func carregar_itens_construcao() -> void:
-	if SaveManager.modo_jogo == "criativo":
+	if SaveManager.modo_jogo == SaveManager.MODO_CRIATIVO:
 		return
 	var lista = ItemRegistry.estruturas.duplicate()
-	if SaveManager.modo_jogo == "sobrevivencia":
+	if SaveManager.modo_jogo == SaveManager.MODO_SOBREVIVENCIA:
 		lista = {"BrocaManual": {cena = BROCA_MANUAL_CENA}}
 	for nome in lista:
 		_adicionar_item_com_cena(nome, lista[nome].cena)
@@ -26,7 +26,7 @@ func _adicionar_item_com_cena(nome: String, cena: PackedScene) -> void:
 	item.nome = nome
 	item.cena_objeto = cena
 	item.compensar_rotacao_90 = false
-	item.tamanho_grid = _extrair_tamanho_grid(cena)
+	item.tamanho_grid = CraftingUtil.new().extrair_tamanho_grid(cena)
 	_jogador._itens_construcao.append(item)
 
 
@@ -49,12 +49,3 @@ func adicionar_item(tipo_id: String, quantidade: int = 1) -> void:
 func adicionar_item_construcao(item: ItemConstrucao) -> void:
 	_jogador._itens_construcao.append(item)
 	_jogador.itens_construcao_atualizados.emit()
-
-
-func _extrair_tamanho_grid(cena: PackedScene) -> Vector2i:
-	var inst = cena.instantiate()
-	if inst == null:
-		return Vector2i(1, 1)
-	var val = inst.get("TAMANHO_GRID")
-	inst.free()
-	return val if val != null else Vector2i(1, 1)

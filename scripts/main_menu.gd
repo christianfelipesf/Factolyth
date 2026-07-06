@@ -1,7 +1,5 @@
 extends Control
 
-const CLIQUE = preload("res://sound/click.mp3")
-
 @onready var btn_carregar: Button = $VBoxContainer/Carregar
 @onready var btn_deletar: Button = $VBoxContainer/DeletarSaves
 @onready var btn_novo_jogo: Button = $VBoxContainer/NovoJogo
@@ -11,18 +9,12 @@ const CLIQUE = preload("res://sound/click.mp3")
 @onready var btn_procedural: Button = $SubmenuNovoJogo/Procedural
 @onready var btn_voltar: Button = $SubmenuNovoJogo/Voltar
 
-var _audio_click: AudioStreamPlayer
 
 func _ready() -> void:
-	_audio_click = AudioStreamPlayer.new()
-	_audio_click.stream = CLIQUE
-	add_child(_audio_click)
 	_verificar_saves()
 	submenu.hide()
 	btn_novo_jogo.grab_focus()
 
-func _clicar() -> void:
-	_audio_click.play()
 
 func _verificar_saves() -> void:
 	var dir := DirAccess.open("user://saves/")
@@ -49,38 +41,38 @@ func _esconder_submenu() -> void:
 	btn_novo_jogo.grab_focus()
 
 func _on_novo_jogo_pressed() -> void:
-	_clicar()
+	AudioManager.play_click()
 	_mostrar_submenu()
 
 func _on_normal_pressed() -> void:
-	_clicar()
+	AudioManager.play_click()
 	SaveManager.modo_procedural = false
-	SaveManager.modo_jogo = "criativo"
+	SaveManager.modo_jogo = SaveManager.MODO_CRIATIVO
 	get_tree().change_scene_to_file("res://scenes/mundo.tscn")
 
 func _on_procedural_pressed() -> void:
-	_clicar()
-	SaveManager.modo_procedural = true
-	SaveManager.modo_jogo = "sobrevivencia"
+	AudioManager.play_click()
+	SaveManager.modo_procedural = false
+	SaveManager.modo_jogo = SaveManager.MODO_SOBREVIVENCIA
 	get_tree().change_scene_to_file("res://scenes/mundo.tscn")
 
 func _on_voltar_pressed() -> void:
-	_clicar()
+	AudioManager.play_click()
 	_esconder_submenu()
 
 func _on_carregar_pressed() -> void:
-	_clicar()
+	AudioManager.play_click()
 	SaveManager.modo_procedural = false
-	SaveManager.save_pendente = "slot_1"
+	SaveManager.save_pendente = SaveManager.SLOT_PADRAO
 	get_tree().change_scene_to_file("res://scenes/mundo.tscn")
 
 func _on_deletar_saves_pressed() -> void:
-	_clicar()
+	AudioManager.play_click()
 	SaveManager.deletar_todos_saves()
 	_verificar_saves()
 
 func _on_sair_pressed() -> void:
-	_clicar()
+	AudioManager.play_click()
 	get_tree().quit()
 
 func _unhandled_input(event: InputEvent) -> void:

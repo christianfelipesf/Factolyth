@@ -2,8 +2,6 @@ class_name PendingPlacementModule extends RefCounted
 
 signal pendentes_alterados(quantia: int)
 
-const PARTICULA = preload("res://scenes/particles/particula.tscn")
-
 var _cursor: Node
 var _pendentes: Array[Node] = []
 
@@ -29,7 +27,7 @@ func confirmar_pendentes() -> void:
 	if _pendentes.is_empty():
 		return
 
-	if SaveManager.modo_jogo == "sobrevivencia":
+	if SaveManager.modo_jogo == SaveManager.MODO_SOBREVIVENCIA:
 		if not _deduzir_custo_pendentes():
 			return
 
@@ -49,7 +47,7 @@ func confirmar_pendentes() -> void:
 
 	if count > 0:
 		pos_centro /= count
-		_spawnar_particula(pos_centro)
+		CraftingUtil.spawnar_particula(_cursor.get_tree(), pos_centro)
 		_cursor._audio_colocar.play()
 		Input.start_joy_vibration(0, 0.3, 0.3, 0.15)
 
@@ -96,29 +94,10 @@ func _deduzir_custo_pendentes() -> bool:
 		for item_id in receita:
 			custo_total[item_id] = custo_total.get(item_id, 0) + receita[item_id]
 
-	var faltando: Array[String] = []
-	for item_id in custo_total:
-		var necessario = custo_total[item_id]
-		var tem = int(jogador.inventario.get(item_id, 0))
-		if tem < necessario:
-			var item = ItemRegistry.get_item(item_id)
-			var nome_item = item.nome if item else item_id
-			faltando.append("%d %s" % [necessario - tem, nome_item])
+	if custo_total.is_empty():
+		return true
 
-	if not faltando.is_empty():
-		_cursor._placement_module._notificar("Faltam " + ", ".join(faltando) + "!")
-		return false
-
-	for item_id in custo_total:
-		jogador.inventario[item_id] = jogador.inventario.get(item_id, 0) - custo_total[item_id]
-	jogador.inventario_atualizado.emit(jogador.inventario)
-	return true
-
-
-func _spawnar_particula(pos: Vector2) -> void:
-	var p = PARTICULA.instantiate()
-	p.global_position = pos
-	p.one_shot = true
-	_cursor.get_tree().current_scene.add_child(p)
-	p.emitting = true
-	p.finished.connect(p.queue_free)
+	var ok = CraftingUtil.deduzir_materiais(jogador.inventario, custo_total, _cursor._placement_module._notificar)
+	if ok:
+		jogador.inventario_atualizado.emit(jogador.inventario)
+	return ok

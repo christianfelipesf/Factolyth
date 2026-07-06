@@ -8,7 +8,7 @@ var _jogador: Node = null
 @onready var hbox: HBoxContainer = $HBoxContainer
 
 func _ready() -> void:
-	_jogador = get_tree().root.find_child("Jogador", true, false)
+	_jogador = get_tree().get_first_node_in_group("jogador")
 	if _jogador:
 		if _jogador.has_method("get_itens_construcao"):
 			_itens = _jogador.get_itens_construcao()
@@ -56,17 +56,9 @@ func _extrair_icone(cena: PackedScene) -> Texture2D:
 	if cena == null:
 		return null
 	var temp = cena.instantiate()
-	var tex = _extrair_textura(temp)
+	var tex = CraftingUtil.new().extrair_textura(temp)
 	temp.queue_free()
 	return tex
-
-func _extrair_textura(node: Node) -> Texture2D:
-	for child in node.find_children("*", "Sprite2D", true, false):
-		return child.texture
-	for child in node.find_children("*", "AnimatedSprite2D", true, false):
-		if child.sprite_frames and child.sprite_frames.get_frame_texture("default", 0):
-			return child.sprite_frames.get_frame_texture("default", 0)
-	return null
 
 func _atualizar_destaque(indice: int) -> void:
 	_indice_selecionado = indice

@@ -1,7 +1,5 @@
 class_name CursorPlacementModule extends RefCounted
 
-const PARTICULA = preload("res://scenes/particles/particula.tscn")
-
 var _cursor: Node
 var _destruicoes_pendentes: Dictionary = {}
 var _construcoes_em_andamento: Dictionary = {}
@@ -21,20 +19,17 @@ func criar_objeto_posicionavel(pending: bool = false) -> void:
 		return
 
 	var nome = _cursor.item_atual.nome
-	if not pending and SaveManager.modo_jogo == "sobrevivencia":
+	if not pending and SaveManager.modo_jogo == SaveManager.MODO_SOBREVIVENCIA:
 		if not _deduzir_custo(nome):
 			_cursor._ultima_posicao_colocacao = _cursor._posicao_grid
 			return
 
-	var novo_objeto = _cursor.item_atual.cena_objeto.instantiate()
-	if "is_preview" in novo_objeto:
-		novo_objeto.is_preview = false
-	if "esta_posicionando" in novo_objeto:
-		novo_objeto.esta_posicionando = true
-
-	var offset = -90.0 if _cursor.item_atual.compensar_rotacao_90 else 0.0
-	novo_objeto.global_rotation = deg_to_rad(_cursor.rotation_atual + offset)
-	novo_objeto.global_position = _cursor._posicao_grid + _cursor._grid_module.offset_colocacao()
+	var novo_objeto = StructureFactory.criar_com_offset(
+		nome, _cursor.item_atual.cena_objeto,
+		_cursor._posicao_grid, _cursor.rotation_atual,
+		_cursor.item_atual.compensar_rotacao_90,
+		_cursor._grid_module.offset_colocacao()
+	)
 
 	if pending:
 		_cursor._pending_module.adicionar_pendente(novo_objeto)
@@ -51,21 +46,10 @@ func _deduzir_custo(nome: String) -> bool:
 	if receita.is_empty():
 		return true
 	var jogador = _cursor.get_parent()
-	var faltando: Array[String] = []
-	for item_id in receita:
-		var necessario = receita[item_id]
-		var tem = int(jogador.inventario.get(item_id, 0))
-		if tem < necessario:
-			var item = ItemRegistry.get_item(item_id)
-			var nome_item = item.nome if item else item_id
-			faltando.append("%d %s" % [necessario - tem, nome_item])
-	if not faltando.is_empty():
-		_notificar("Faltam " + ", ".join(faltando) + "!")
-		return false
-	for item_id in receita:
-		jogador.inventario[item_id] = jogador.inventario.get(item_id, 0) - receita[item_id]
-	jogador.inventario_atualizado.emit(jogador.inventario)
-	return true
+	var ok = CraftingUtil.deduzir_materiais(jogador.inventario, receita, func(msg): _notificar(msg))
+	if ok:
+		jogador.inventario_atualizado.emit(jogador.inventario)
+	return ok
 
 
 func _iniciar_construcao(objeto: Node, tempo: float) -> void:
@@ -81,7 +65,7 @@ func _iniciar_construcao(objeto: Node, tempo: float) -> void:
 	objeto.modulate = Color(1, 1, 1, 0.5)
 
 	_cursor._ultima_posicao_colocacao = _cursor._posicao_grid
-	_spawnar_particula_construcao(objeto.global_position)
+	CraftingUtil.spawnar_particula(_cursor.get_tree(), objeto.global_position, Color(0.5, 0.5, 1.0))
 
 	var id = objeto.get_instance_id()
 	_construcoes_em_andamento[id] = true
@@ -108,7 +92,7 @@ func _iniciar_construcao(objeto: Node, tempo: float) -> void:
 
 
 func _finalizar_construcao(objeto: Node) -> void:
-	_spawnar_particula(objeto.global_position)
+	CraftingUtil.spawnar_particula(_cursor.get_tree(), objeto.global_position)
 	_cursor._audio_colocar.play()
 	Input.start_joy_vibration(0, 0.3, 0.3, 0.15)
 
@@ -116,25 +100,6 @@ func _finalizar_construcao(objeto: Node) -> void:
 
 	await _cursor.get_tree().physics_frame
 	_cursor.get_tree().call_group("broca", "verificar_extrutura_e_atualizar_estado")
-
-
-func _spawnar_particula(pos: Vector2) -> void:
-	var p = PARTICULA.instantiate()
-	p.global_position = pos
-	p.one_shot = true
-	_cursor.get_tree().current_scene.add_child(p)
-	p.emitting = true
-	p.finished.connect(p.queue_free)
-
-
-func _spawnar_particula_construcao(pos: Vector2) -> void:
-	var p = PARTICULA.instantiate()
-	p.global_position = pos
-	p.one_shot = true
-	p.modulate = Color(0.5, 0.5, 1.0)
-	_cursor.get_tree().current_scene.add_child(p)
-	p.emitting = true
-	p.finished.connect(p.queue_free)
 
 
 func remover_objeto_na_posicao(nova_interacao: bool = true) -> void:
@@ -162,7 +127,7 @@ func remover_objeto_na_posicao(nova_interacao: bool = true) -> void:
 		if _construcoes_em_andamento.has(id):
 			corpo.set_meta("construcao_cancelada", true)
 			_devolver_materiais(corpo)
-			_spawnar_particula(corpo.global_position)
+			CraftingUtil.spawnar_particula(_cursor.get_tree(), corpo.global_position)
 			_cursor._audio_destruir.play()
 			continue
 
@@ -198,7 +163,7 @@ func _iniciar_destruicao(objeto: Node, tempo: float) -> void:
 	objeto.set_physics_process(false)
 	objeto.modulate = Color(1, 0.3, 0.3, 0.5)
 
-	_spawnar_particula_construcao(objeto.global_position)
+	CraftingUtil.spawnar_particula(_cursor.get_tree(), objeto.global_position, Color(0.5, 0.5, 1.0))
 
 	var timer = _cursor.get_tree().create_timer(tempo)
 	var timer_label = _criar_timer_label(objeto, Color(1, 0.3, 0.3))
@@ -247,14 +212,14 @@ func _cancelar_destruicao(id: int) -> void:
 func _finalizar_destruicao(objeto: Node) -> void:
 	ItemFlyModule.criar_e_trazer(_cursor.get_tree(), objeto)
 	_devolver_materiais(objeto)
-	_spawnar_particula(objeto.global_position)
+	CraftingUtil.spawnar_particula(_cursor.get_tree(), objeto.global_position)
 	_cursor._audio_destruir.play()
 	Input.start_joy_vibration(0, 0.5, 0.5, 0.2)
 	objeto.queue_free()
 
 
 func _devolver_materiais(objeto: Node) -> void:
-	if SaveManager.modo_jogo != "sobrevivencia":
+	if SaveManager.modo_jogo != SaveManager.MODO_SOBREVIVENCIA:
 		return
 	var path = objeto.scene_file_path
 	if path.is_empty():

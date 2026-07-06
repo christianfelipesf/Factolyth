@@ -34,6 +34,7 @@ var _inv_module: JogadorInventarioModule
 
 
 func _ready() -> void:
+	add_to_group("jogador")
 	_broca_module = JogadorBrocaModule.new()
 	_broca_module.setup(self)
 	_inv_module = JogadorInventarioModule.new()
@@ -134,8 +135,16 @@ func _input(event: InputEvent) -> void:
 		_pinça_iniciada = false
 
 
+func _tem_ui_aberta() -> bool:
+	if get_tree().paused:
+		return true
+	return _hud_craft_visivel()
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
+		if _tem_ui_aberta():
+			return
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:
 			target_zoom_value += ZOOM_STEP
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN and event.pressed:
