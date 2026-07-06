@@ -49,8 +49,7 @@ func process_physics(delta: float, tem_item: bool, pos_grid: Vector2, ultima_pos
 	if not tem_item or _cursor._arrastando_joystick() or _cursor._em_pinça():
 		return
 
-	var processar_mouse := _input_mode != InputMode.TOUCH or _touch_emulado
-	if processar_mouse:
+	if _input_mode != InputMode.TOUCH:
 		if Input.is_action_just_pressed("confirmar") and not _cursor._cursor_em_ui():
 			confirmou.emit(pos_grid)
 
@@ -82,7 +81,7 @@ func handle_input(event: InputEvent) -> void:
 			_touch_prev_pos = Vector2.INF
 
 	if event is InputEventScreenDrag and event.index == 0:
-		if _touch_start_pos != Vector2.INF:
+		if _touch_start_pos != Vector2.INF and not _cursor._arrastando_joystick():
 			if not _touch_arrastando and event.position.distance_to(_touch_start_pos) > DRAG_LIMIAR:
 				_touch_arrastando = true
 			if _touch_arrastando:
@@ -121,10 +120,10 @@ func handle_unhandled(event: InputEvent) -> void:
 				_input_handled()
 
 	if event is InputEventScreenTouch and not event.pressed and event.index == 0:
-		if _touch_foi_arrasto or _touch_emulado:
+		if _touch_foi_arrasto:
 			_input_handled()
 			return
-		if Time.get_ticks_msec() / 1000.0 - _touch_start_tempo < TAP_TEMPO_MINIMO:
+		if not _touch_emulado and Time.get_ticks_msec() / 1000.0 - _touch_start_tempo < TAP_TEMPO_MINIMO:
 			_input_handled()
 			return
 		if _cursor._arrastando_joystick() or _cursor._em_pinça():
@@ -133,7 +132,7 @@ func handle_unhandled(event: InputEvent) -> void:
 		if _joystick != null and _joystick.has_method("is_na_area_de_ui") and _joystick.is_na_area_de_ui(event.position):
 			_input_handled()
 			return
-		if not _cursor._cursor_em_ui():
+		if not _cursor._cursor_em_ui(event.position):
 			confirmou.emit(screen_para_mundo(event.position))
 			_input_handled()
 

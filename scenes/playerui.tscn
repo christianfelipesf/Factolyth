@@ -15,6 +15,7 @@
 [ext_resource type="Script" uid="uid://2eqewurg83k4" path="res://scripts/botao_alternar_modo.gd" id="13"]
 [ext_resource type="Texture2D" uid="uid://dqqxndd84rsxd" path="res://images/ui/craft_button.png" id="14"]
 [ext_resource type="Texture2D" uid="uid://tst3tgalyoad" path="res://images/ui/colocar_bloco.png" id="15"]
+[ext_resource type="Texture2D" uid="uid://btigg34vp68yf" path="res://images/ui/retirar_bloco.png" id="16"]
 
 [node name="CanvasLayer" type="CanvasLayer" unique_id=216092279]
 
@@ -34,7 +35,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 1
+mouse_filter = 2
 script = ExtResource("1_5vk06")
 raio_maximo = 100.0
 

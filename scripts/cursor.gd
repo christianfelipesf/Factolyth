@@ -175,18 +175,26 @@ func _em_pinça() -> bool:
 	return pai.has_method("is_pinçando") and pai.is_pinçando()
 
 
-func _cursor_em_ui() -> bool:
-	var mouse_pos := get_viewport().get_mouse_position()
+func _cursor_em_ui(pos_tela: Vector2 = Vector2.INF) -> bool:
+	var pos := pos_tela if pos_tela != Vector2.INF else get_viewport().get_mouse_position()
 
-	if _joystick != null and _joystick.has_method("is_na_area_de_ui") and _joystick.is_na_area_de_ui(mouse_pos):
+	# Usar o sistema de GUI do Godot: qualquer Control com mouse_filter STOP na hierarquia
+	var hovered := get_viewport().gui_get_hovered_control()
+	if hovered != null:
+		var ui_pai = _ui_root
+		if ui_pai != null and (hovered == ui_pai or ui_pai.is_ancestor_of(hovered)):
+			return true
+
+	# Fallback manual para elementos que o gui_get_hovered_control pode não capturar
+	if _joystick != null and _joystick.has_method("is_na_area_de_ui") and _joystick.is_na_area_de_ui(pos):
 		return true
-	if _botao_pausa != null and _botao_pausa.get_global_rect().has_point(mouse_pos):
+	if _botao_pausa != null and _ponto_no_controle(_botao_pausa, pos):
 		return true
-	if _botao_craft != null and _botao_craft.get_global_rect().has_point(mouse_pos):
+	if _botao_craft != null and _ponto_no_controle(_botao_craft, pos):
 		return true
-	if _botao_modo != null and _botao_modo.get_global_rect().has_point(mouse_pos):
+	if _botao_modo != null and _ponto_no_controle(_botao_modo, pos):
 		return true
-	if _barra_ui_root != null and _barra_ui_root.get_global_rect().has_point(mouse_pos):
+	if _barra_ui_root != null and _ponto_no_controle(_barra_ui_root, pos):
 		return true
 
 	var hud = get_node_or_null("/root/Mundo/Playerui/UI/CraftingHUD")
@@ -194,6 +202,17 @@ func _cursor_em_ui() -> bool:
 		return true
 
 	return false
+
+
+func _ponto_no_controle(control: Control, ponto: Vector2) -> bool:
+	var rect := control.get_global_rect()
+	var esc := control.scale
+	if esc == Vector2.ONE:
+		return rect.has_point(ponto)
+	var centro := rect.get_center()
+	var tam_visual := rect.size * esc
+	var rect_visual := Rect2(centro - tam_visual * 0.5, tam_visual)
+	return rect_visual.has_point(ponto)
 
 
 func _criar_objeto_posicionavel() -> void:
